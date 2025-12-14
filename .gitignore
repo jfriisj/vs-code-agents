@@ -1,0 +1,6 @@
+.flowbaby/
+.github/
+agent-output/
+*.env
+*.local 
+.DS_Store

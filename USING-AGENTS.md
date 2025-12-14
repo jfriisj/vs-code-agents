@@ -1,5 +1,7 @@
 # Using the Agents
 
+This file contains a high-level overview of these agents and how to get started using them quickly. However, you may find you want or need more guidance. In that case, see the AGENTS-DEEP-DEIVE.md file.
+
 ## Overview
 
 This repo defines a set of `.agent.md` files that configure specialized AI personas ("agents") for a structured software delivery workflow. Each agent focuses on a specific phase or concern (planning, implementation, QA, UAT, DevOps, etc.), with clear responsibilities, constraints, and handoffs.
