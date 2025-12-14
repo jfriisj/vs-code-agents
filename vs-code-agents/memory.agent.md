@@ -94,6 +94,78 @@ A development and planning agent that:
 }
 ```
 
+# Unified Memory Contract (Role-Agnostic)
+
+*For all agents using Flowbaby tools*
+
+Using Flowbaby tools (`flowbaby_storeMemory` and `flowbaby_retrieveMemory`) is **mandatory**.
+
+---
+
+## 0. No-Memory Mode Fallback
+
+Flowbaby memory tools may be unavailable (extension not installed, not initialized, or API key not set).
+
+**Detection**: If `flowbaby_retrieveMemory` or `flowbaby_storeMemory` calls fail or are rejected, switch to **No-Memory Mode**.
+
+**No-Memory Mode behavior**:
+1. State explicitly: "Flowbaby memory is unavailable; operating in no-memory mode."
+2. Rely on repository artifacts (`agent-output/security/`, prior audit docs) for continuity.
+3. Record key decisions and findings in the output document with extra detail (since they won't be stored in memory).
+4. At the end of the review, remind the user: "Memory was unavailable this session. Consider initializing Flowbaby for cross-session continuity."
+
+---
+
+## 1. Retrieval (Just-in-Time)
+
+* Invoke retrieval whenever you hit uncertainty, a decision point, missing context, or a moment where past work may influence the present.
+* Additionally, invoke retrieval **before any multi-step reasoning**, **before generating options or alternatives**, **when switching between subtasks or modes**, and **when interpreting or assuming user preferences**.
+* Query for relevant prior knowledge: previous tasks, preferences, plans, constraints, drafts, states, patterns, approaches, instructions.
+* Use natural-language queries describing what should be recalled.
+* Default: request up to 3 high-leverage results.
+* If no results: broaden to concept-level and retry once.
+* If still empty: proceed and note the absence of prior memory.
+
+### Retrieval Template
+
+```
+#flowbabyRetrieveMemory {
+  "query": "key terms from current request",
+  "maxResults": 3
+}
+```
+
+---
+
+## 2. Execution (Using Retrieved Memory)
+
+* Use retrieved memory to produce consistent reasoning and decisions.
+* Maintain brief internal notes that will later be summarized.
+* Ask for clarification only when memory and context are insufficient.
+
+---
+
+## 3. Summarization (Milestones)
+
+Store memory:
+
+* Whenever you complete meaningful progress, make a decision, revise a plan, establish a pattern, or reach a natural boundary.
+* And at least every 5 turns.
+
+Summaries should be dense and actionable. 300–1500 characters.
+
+Include:
+
+* Goal or intent
+* What happened / decisions / creations
+* Reasoning or considerations
+* Constraints, preferences, dead ends, negative knowledge
+* Optional artifact links (filenames, draft identifiers)
+
+End storage with: "Saved progress to Flowbaby memory."
+
+---
+
 # Operating Rules
 
 * Using Flowbaby tools (flowbaby_storeMemory and flowbaby_retrieveMemory) is not a nice-to-have feature for any agent. It's part of their core responsibility.

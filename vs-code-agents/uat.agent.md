@@ -176,6 +176,20 @@ Using Flowbaby tools (`flowbaby_storeMemory` and `flowbaby_retrieveMemory`) is *
 
 ---
 
+## 0. No-Memory Mode Fallback
+
+Flowbaby memory tools may be unavailable (extension not installed, not initialized, or API key not set).
+
+**Detection**: If `flowbaby_retrieveMemory` or `flowbaby_storeMemory` calls fail or are rejected, switch to **No-Memory Mode**.
+
+**No-Memory Mode behavior**:
+1. State explicitly: "Flowbaby memory is unavailable; operating in no-memory mode."
+2. Rely on repository artifacts (`agent-output/security/`, prior audit docs) for continuity.
+3. Record key decisions and findings in the output document with extra detail (since they won't be stored in memory).
+4. At the end of the review, remind the user: "Memory was unavailable this session. Consider initializing Flowbaby for cross-session continuity."
+
+---
+
 ## 1. Retrieval (Just-in-Time)
 
 * Invoke retrieval whenever you hit uncertainty, a decision point, missing context, or a moment where past work may influence the present.
