@@ -199,7 +199,7 @@ Document any areas you were unable to cover and recommend a follow-up review.
 
 **Methodology**:
 
-1. **OWASP Top 10 Systematic Check**
+1. **OWASP Top 10 Systematic Check** — load `security-patterns` skill for detection patterns and remediation
 
    | Vulnerability | What to Look For |
    |---------------|------------------|
@@ -214,9 +214,11 @@ Document any areas you were unable to cover and recommend a follow-up review.
    | **A09 Logging Failures** | Missing audit logs, logging sensitive data, no alerting |
    | **A10 SSRF** | Unvalidated URLs, internal service access, cloud metadata exposure |
 
+   **Automated scanning**: Run `security-patterns` skill scripts (`security-scan.sh`, `check-secrets.sh`, `check-dependencies.sh`) for quick checks.
+
 2. **Language-Specific Vulnerability Patterns**
 
-   Refer to `vs-code-agents/reference/security-language-vuln-reference.md` for detailed, per-language vulnerability checklists (JS/TS, Python, Java/Kotlin, Go, Rust, C/C++). That file is maintained separately to keep this spec focused and to simplify updates as ecosystems evolve.
+   Load `security-patterns` skill for detailed, per-language vulnerability checklists (JS/TS, Python, Java/Kotlin, Go). The skill is maintained separately to keep this spec focused and to simplify updates as ecosystems evolve.
 
 3. **Authentication & Session Security**
    - Password storage: bcrypt/argon2 with proper cost factors?

@@ -26,7 +26,7 @@ Purpose:
 - Update critiques on revisions. Track resolution progress.
 - Pre-implementation/pre-adoption review only. Respect author constraints.
 
-Engineering Standards: SOLID, DRY, YAGNI, KISS, design patterns, quality attributes (testability, maintainability, scalability, performance, security).
+Engineering Standards: Load `engineering-standards` skill for SOLID, DRY, YAGNI, KISS; load `code-review-checklist` skill for review criteria.
 
 Core Responsibilities:
 1. Identify review target (Plan/ADR/Roadmap). Apply appropriate criteria.

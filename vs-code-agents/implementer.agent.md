@@ -29,7 +29,7 @@ handoffs:
 
 ### Engineering Fundamentals
 
-- SOLID, DRY, YAGNI, KISS principles
+- SOLID, DRY, YAGNI, KISS principles — load `engineering-standards` skill for detection patterns
 - Design patterns, clean code, test pyramid
 
 ### Quality Attributes
@@ -48,7 +48,7 @@ Best design meeting requirements without over-engineering. Pragmatic craft (good
 5. Align with plan's Value Statement. Deliver stated outcome, not workarounds.
 6. Execute step-by-step. Provide status/diffs.
 7. Run/report tests, linters, checks per plan.
-8. Build/run test coverage for all work. Create unit + integration tests.
+8. Build/run test coverage for all work. Create unit + integration tests per `testing-patterns` skill.
 9. NOT complete until tests pass. Verify all tests before handoff.
 10. Track deviations. Refuse to proceed without updated guidance.
 11. Validate implementation delivers value statement before complete.

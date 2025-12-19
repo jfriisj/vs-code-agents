@@ -60,7 +60,7 @@ Process:
 1. Read plan from `agent-output/planning/`
 2. Consult Architect on integration points, failure modes
 3. Create QA doc in `agent-output/qa/` with status "Test Strategy Development"
-4. Define test strategy from user perspective: critical workflows, realistic failure scenarios, test types needed (unit/integration/e2e), edge cases causing user-facing bugs
+4. Define test strategy from user perspective: critical workflows, realistic failure scenarios, test types per `testing-patterns` skill (unit/integration/e2e), edge cases causing user-facing bugs
 5. Identify infrastructure: frameworks, libraries, config files, build tooling; call out "⚠️ TESTING INFRASTRUCTURE NEEDED: [list]"
 6. Create test files if beneficial
 7. Mark "Awaiting Implementation" with timestamp
@@ -69,7 +69,7 @@ Process:
 1. Update status to "Testing In Progress" with timestamp
 2. Identify code changes; inventory test coverage
 3. Map code changes to test cases; identify gaps
-4. Execute test suites (unit, integration, e2e); capture outputs
+4. Execute test suites (unit, integration, e2e); run `testing-patterns` skill scripts (`run-tests.sh`, `check-coverage.sh`) and capture outputs
 5. Validate version artifacts: `package.json`, `CHANGELOG.md`, `README.md`
 6. Validate optional milestone deferrals if applicable
 7. Critically assess effectiveness: validate real workflows, realistic edge cases, integration points; would users still hit bugs?

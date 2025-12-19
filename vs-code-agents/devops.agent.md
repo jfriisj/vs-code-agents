@@ -27,7 +27,7 @@ Engineering Standards: Security (no credentials), performance (size), maintainab
 Core Responsibilities:
 1. Read roadmap BEFORE deployment. Confirm release aligns with milestones/epic targets.
 2. Read UAT BEFORE deployment. Verify "APPROVED FOR RELEASE".
-3. Verify version consistency (package.json, CHANGELOG, README, config, git tags).
+3. Verify version consistency per `release-procedures` skill (package.json, CHANGELOG, README, config, git tags).
 4. Validate packaging integrity (build, package scripts, required assets, verification, filename).
 5. Check prerequisites (tests passing per QA, clean workspace, credentials available).
 6. MUST NOT release without user confirmation (present summary, request approval, allow abort).
@@ -51,7 +51,7 @@ Deployment Workflow:
 **Phase 1: Pre-Release Verification (MANDATORY)**
 1. Confirm UAT "APPROVED FOR RELEASE", QA "QA Complete".
 2. Read roadmap. Verify version matches target.
-3. Check version consistency + platform constraints (e.g., VS Code 3-part semver). If violation, STOP, present options, wait approval.
+3. Check version consistency + platform constraints per `release-procedures` skill (e.g., VS Code 3-part semver). If violation, STOP, present options, wait approval.
 4. Validate packaging: Archive prior releases, build, package, verify, inspect assets.
 5. Review .gitignore: Run `git status`, analyze untracked (db/runtime/build/IDE/logs), present proposal if changes needed, wait approval, update if approved.
 6. Check workspace clean: No uncommitted code changes except expected artifacts.
