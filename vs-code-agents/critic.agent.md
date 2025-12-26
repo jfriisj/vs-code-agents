@@ -27,6 +27,7 @@ Purpose:
 - Pre-implementation/pre-adoption review only. Respect author constraints.
 
 Engineering Standards: Load `engineering-standards` skill for SOLID, DRY, YAGNI, KISS; load `code-review-checklist` skill for review criteria.
+Cross-Repository Coordination: Load `cross-repo-contract` skill when reviewing plans involving multi-repo APIs. Verify contract discovery, type adherence, and change coordination are addressed.
 
 Core Responsibilities:
 1. Identify review target (Plan/ADR/Roadmap). Apply appropriate criteria.
@@ -56,7 +57,7 @@ Review Method:
 3. Check for existing critique.
 4. Read target doc in full.
 5. Execute review:
-   - **Plan**: Value Statement? Semver? Direct value delivery? Architectural fit? Scope/debt? No code? **Ask: "How will this plan result in a hotfix after deployment?"** — identify gaps, edge cases, and assumptions that will break in production.
+   - **Plan**: Value Statement? Semver? Direct value delivery? Architectural fit? Scope/debt? No code? Multi-repo contract adherence (if applicable)? **Ask: "How will this plan result in a hotfix after deployment?"** — identify gaps, edge cases, and assumptions that will break in production.
    - **Architecture**: ADR format (Context/Decision/Status/Consequences)? Supports roadmap? Consistency? Alternatives/downsides?
    - **Roadmap**: Clear "So that"? P0 feasibility? Dependencies ordered? Master objective preserved?
 6. **OPEN QUESTION CHECK**: Scan document for `OPEN QUESTION` items not marked as `[RESOLVED]` or `[CLOSED]`. If any exist:

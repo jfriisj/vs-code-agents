@@ -697,8 +697,11 @@ This means agents can have access to many skills without consuming context until
 | Skill | Purpose | Key Content |
 |-------|---------|-------------|
 | `memory-contract` | Unified Flowbaby memory contract | When/how to retrieve and store, anti-patterns |
+| `analysis-methodology` | Investigation techniques | Confidence levels, gap tracking, POC guidance |
 | `architecture-patterns` | ADR templates, patterns, anti-patterns | Layered architecture, repository pattern, STRIDE |
 | `code-review-checklist` | Pre/post-implementation review criteria | Value statement assessment, security checklist |
+| `cross-repo-contract` | Multi-repo API type safety | Contract discovery, sync workflow, breaking change coordination |
+| `document-lifecycle` | Unified numbering, closure, orphan detection | ID inheritance, terminal statuses, closed/ folders |
 | `engineering-standards` | SOLID, DRY, YAGNI, KISS | Detection patterns, refactoring guidance |
 | `release-procedures` | Two-stage release workflow, semver | Version consistency, platform constraints |
 | `security-patterns` | OWASP Top 10, language vulnerabilities | Python, JavaScript, Java, Go specific patterns |

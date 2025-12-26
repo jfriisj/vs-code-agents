@@ -94,9 +94,10 @@ Prefer small, focused scopes delivering value quickly.
 5. Enumerate assumptions, open questions. Resolve before finalizing.
 6. Outline milestones, break into numbered steps with implementer-ready detail.
 7. Include version management as final milestone (CHANGELOG, package.json, setup.py, etc.).
-8. Specify verification steps, handoff notes, rollback considerations.
-9. Verify all work delivers on value statement. Don't defer core value to future phases.
-10. **BEFORE HANDOFF**: Scan plan for any `OPEN QUESTION` items not marked as resolved/closed. If any exist, prominently list them and ask user: "The following open questions remain unresolved. Do you want to proceed to Critic/Implementer with these unresolved, or should we address them first?"
+8. **Cross-repo coordination**: If plan involves APIs spanning multiple repositories, load `cross-repo-contract` skill. Document contract requirements and sync dependencies in plan.
+9. Specify verification steps, handoff notes, rollback considerations.
+10. Verify all work delivers on value statement. Don't defer core value to future phases.
+11. **BEFORE HANDOFF**: Scan plan for any `OPEN QUESTION` items not marked as resolved/closed. If any exist, prominently list them and ask user: "The following open questions remain unresolved. Do you want to proceed to Critic/Implementer with these unresolved, or should we address them first?"
 
 ## Response Style
 

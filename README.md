@@ -262,8 +262,10 @@ Agents now use **Claude Skills**—modular, reusable instruction sets that load 
 | Skill | Purpose |
 |-------|---------|
 | `memory-contract` | Unified Flowbaby memory retrieval/storage contract |
+| `analysis-methodology` | Confidence levels, gap tracking, investigation techniques |
 | `architecture-patterns` | ADR templates, patterns, anti-pattern detection |
 | `code-review-checklist` | Pre/post-implementation review criteria |
+| `cross-repo-contract` | Multi-repo API type safety and contract coordination |
 | `document-lifecycle` | Unified numbering, automated closure, orphan detection |
 | `engineering-standards` | SOLID, DRY, YAGNI, KISS with detection patterns |
 | `release-procedures` | Two-stage release workflow, semver, platform constraints |
@@ -285,6 +287,17 @@ Agents now use **Claude Skills**—modular, reusable instruction sets that load 
 - **Open Question Gate**: Implementer halts if plans have unresolved questions; requires explicit user acknowledgment to proceed
 - **Memory as skill**: Memory contract moved from inline in each agent to a loadable `memory-contract` skill
 - **Slimmed Security agent**: Reduced by 46% using skill references instead of inline content
+
+### Cross-Repository Contract Skill (2025-12-26)
+
+New `cross-repo-contract` skill for projects with runtime + backend repos that need to stay aligned:
+
+- **Contract discovery**: Agents check `api-contract/` or `.contracts/` for type definitions
+- **Type safety enforcement**: Implementer verifies contract definitions before coding API endpoints/clients
+- **Breaking change coordination**: Plans must document contract changes and sync dependencies
+- **Quality gate**: Critic verifies multi-repo plans address contract adherence
+
+Integrated into Architect, Planner, Implementer, and Critic agents.
 
 ### Document Lifecycle System (2025-12-24)
 

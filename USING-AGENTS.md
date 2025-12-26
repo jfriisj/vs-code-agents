@@ -82,8 +82,11 @@ Agents can load **Skills**—modular, reusable instruction sets that provide spe
 | Skill | Purpose |
 |-------|---------|  
 | `memory-contract` | Unified Flowbaby memory retrieval/storage contract |
+| `analysis-methodology` | Confidence levels, gap tracking, investigation techniques |
 | `architecture-patterns` | ADR templates, patterns, anti-pattern detection |
 | `code-review-checklist` | Pre/post-implementation review criteria |
+| `cross-repo-contract` | Multi-repo API type safety and contract coordination |
+| `document-lifecycle` | Unified numbering, automated closure, orphan detection |
 | `engineering-standards` | SOLID, DRY, YAGNI, KISS with detection patterns |
 | `release-procedures` | Two-stage release workflow, semver, platform constraints |
 | `security-patterns` | OWASP Top 10, language-specific vulnerabilities |

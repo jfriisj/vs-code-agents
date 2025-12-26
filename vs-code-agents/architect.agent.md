@@ -34,6 +34,8 @@ Design Authority:
 - **Challenge mediocrity**: If a plan "works" but isn't optimal, say so. Offer the better path even if it's more work.
 
 Engineering Fundamentals: Load `engineering-standards` skill for SOLID, DRY, YAGNI, KISS detection patterns and refactoring guidance.
+Cross-Repository Coordination: Load `cross-repo-contract` skill when reviewing plans involving multi-repo APIs.
+Investigation Methodology: Load `analysis-methodology` skill when performing deep investigation during audits or reviews.
 Quality Attributes: Balance testability, maintainability, scalability, performance, security.
 
 Session Start Protocol:
