@@ -1,6 +1,6 @@
 # Flowbaby Memory Contract - Concrete Example
 
-This document provides a concrete example of how to add Flowbaby memory to your custom agents. All of the agents in this repo already use this feature, but this document specifically calls out this one aspect of the agent.md files for reference. You dont need to add it to these agents, but you may want to add it to your own, or modify it. 
+This document provides a concrete example of how to add Flowbaby memory to your custom agents. All of the agents in this repo already use this feature, but this document specifically calls out this one aspect of the agent.md files for reference. You don't need to add it to these agents, but you may want to add it to your own, or modify it. 
 
 You can copy/paste the markdown block below directly into any custom agent file in VS Code. You will need to install the Flowbaby memory extension from the VS Code extension marketplace for your agent to make use of these instructions.
 
@@ -17,15 +17,22 @@ Do **not** copy anything above or below that block.
 ## Copy this into your agent file
 
 ````markdown
-# Unified Memory Contract
+---
+name: memory-contract
+description: Unified Memory Contract for Flowbaby integration. Defines when and how to retrieve and store memory. Load at session start - memory is core to agent reasoning, not optional.
+license: MIT
+metadata:
+  author: groupzer0
+  version: "1.0"
+---
 
-*For all agents using Flowbaby tools*
+# Unified Memory Contract
 
 Using Flowbaby tools (`flowbabyStoreSummary` and `flowbabyRetrieveMemory`) is **mandatory**.
 
 ---
 
-## 1. Core Principle
+## Core Principle
 
 Memory is not a formality—it is part of your reasoning. Treat retrieval like asking a colleague who has perfect recall of this workspace. Treat storage like leaving a note for your future self who has total amnesia.
 
@@ -33,7 +40,7 @@ Memory is not a formality—it is part of your reasoning. Treat retrieval like a
 
 ---
 
-## 2. When to Retrieve
+## When to Retrieve
 
 Retrieve at **decision points**, not just at turn start. In a typical multi-step task, expect 2–5 retrievals.
 
@@ -50,7 +57,7 @@ Retrieve at **decision points**, not just at turn start. In a typical multi-step
 
 ---
 
-## 3. How to Query
+## How to Query
 
 Queries should be **specific and hypothesis-driven**, not vague or encyclopedic.
 
@@ -65,7 +72,7 @@ Queries should be **specific and hypothesis-driven**, not vague or encyclopedic.
 
 ---
 
-## 4. When to Store
+## When to Store
 
 Store at **value boundaries**—when you've created something worth preserving. Ask: "Would I be frustrated to lose this context?"
 
@@ -84,13 +91,24 @@ Store at **value boundaries**—when you've created something worth preserving. 
 - Duplicate information already in memory
 - Raw outputs without reasoning (store the *why*, not just the *what*)
 
+### Storage Format
+
+Structure summaries for downstream graph extraction:
+
+- **Use stable identifiers** when known: plan IDs (e.g., "Plan 070"), analysis IDs, workspace-relative file paths, semver versions. If you don't know an identifier, omit it—don't invent.
+- **Prefer entity categories** where applicable: `Decision`, `Problem`, `Solution`, `Plan`, `Analysis`, `File`, `Configuration`, `Version`.
+- **Name things consistently.** Use the same canonical name for an artifact across all turns—don't rename mid-conversation.
+- **Be concrete.** Mention specific file paths, setting names, and versions rather than vague references.
+- **Separate fields clearly.** Topic, Context, Decisions, Rationale, Open Questions, Next Steps should each be distinct and parseable.
+- **Avoid conversational fluff.** Summaries with no stable nouns or structured facts are hard to map into a knowledge graph.
+
 **Fallback minimum:** If you haven't stored in 5 turns, store now regardless.
 
 **Always end storage with:** "Saved progress to Flowbaby memory."
 
 ---
 
-## 5. Anti-Patterns
+## Anti-Patterns
 
 | Anti-pattern | Why it's harmful |
 |--------------|------------------|
@@ -103,7 +121,7 @@ Store at **value boundaries**—when you've created something worth preserving. 
 
 ---
 
-## 6. Commitments
+## Commitments
 
 1. **Retrieve before reasoning.** Don't generate options, make recommendations, or start implementation without checking for prior context.
 2. **Retrieve when uncertain.** Hedging language ("I think", "Probably", "Unless") is a retrieval trigger.
@@ -114,7 +132,7 @@ Store at **value boundaries**—when you've created something worth preserving. 
 
 ---
 
-## 7. No-Memory Fallback
+## No-Memory Fallback
 
 If `flowbabyRetrieveMemory` or `flowbabyStoreSummary` calls fail or are rejected:
 

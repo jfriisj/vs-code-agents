@@ -1,8 +1,14 @@
-# VS Code Agents
+# Flowbaby Agent Team
 
 > A multi-agent workflow system for GitHub Copilot in VS Code that brings structure, quality gates, and long-term memory to AI-assisted development.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## What This Is
+
+The Flowbaby Agent Team is the **reference implementation** for Flowbaby’s persistent memory system.
+
+These agents are intentionally designed to take advantage of long-term, workspace-scoped memory. They demonstrate what agent workflows look like when memory is treated as infrastructure rather than chat history.
 
 ## The Problem
 
@@ -40,7 +46,7 @@ Use as many or as few as you need, in any order. They are designed to know their
 ### 1. Get the Agents
 
 ```bash
-git clone https://github.com/yourusername/agents.git
+git clone https://github.com/groupzer0/agents.git
 ```
 
 ### 2. Add to Your Project
@@ -76,13 +82,19 @@ Create a plan for adding user authentication
 > [!NOTE]
 > Unlike built-in participants (e.g., `@workspace`), custom agents are **not** invoked with the `@` symbol. You must select them from the dropdown or use the Command Palette.
 
-### 4. (Recommended) Enable Memory
+### 4. Flowbaby Requirement
+
+These agents require Flowbaby to function correctly.
+
+Flowbaby provides the persistent memory layer that allows agents to remember decisions, constraints, and prior work across sessions. Without Flowbaby, the agents fall back to stateless behavior and lose most of their intended value.
 
 Install [Flowbaby](https://marketplace.visualstudio.com/items?itemName=flowbaby.flowbaby) for cross-session memory:
 
 1. VS Code Extensions → Search "Flowbaby" → Install
 2. Command Palette → "Flowbaby: Initialize Workspace"
 3. Command Palette → "Flowbaby: Set API Key"
+
+Flowbaby governs memory usage and evaluation limits for these agents.
 
 ### 5. (Optional) Use with GitHub Copilot CLI
 
@@ -145,31 +157,9 @@ Agents hand off to each other with context. No lost information between phases.
 
 ## Flowbaby Memory Integration
 
-[Flowbaby](https://github.com/groupzer0/flowbaby) is a VS Code extension that provides **workspace-scoped long-term memory** for GitHub Copilot.
+[Flowbaby](https://github.com/groupzer0/flowbaby) is a VS Code extension that solves a specific problem: Copilot forgets what you've discussed. Across sessions, developers repeatedly re-explain context, architecture decisions, and constraints. Flowbaby captures, summarizes, and resurfaces relevant prior work automatically—bridging context between sessions and maintaining continuity within long-running conversations.
 
-### Why Flowbaby?
-
-Most AI memory solutions don't work well:
-
-| Approach | Problem |
-|----------|---------|
-| Chat history | Lost between sessions |
-| Vector DB alone | No structure, poor relationships |
-| Manual notes | Inconsistent, requires effort |
-| RAG on files | Noisy, retrieves irrelevant content |
-
-**Flowbaby's approach**:
-- **Hybrid Graph-Vector Search**: Combines knowledge graphs with vector similarity
-- **Structured Summaries**: Stores decisions and reasoning, not raw logs
-- **Workspace Isolation**: Each project has separate memory
-- **Privacy-First**: All data stays local
-
-### Key Features
-
-- **Automatic memory search**: Flowbaby detects when context is needed
-- **Automatic memory storage**: Stores key decisions and milestones
-- **@flowbaby participant**: Query memory directly in chat
-- **Agent tools**: `#flowbabyStoreSummary` and `#flowbabyRetrieveMemory`
+The persistent memory layer that powers the Flowbaby Agent Team.
 
 ### Links
 
