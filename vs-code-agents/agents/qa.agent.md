@@ -4,7 +4,7 @@ name: QA
 target: vscode
 argument-hint: Reference the implementation or plan to test (e.g., plan 002)
 tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'execute/testFailure', 'execute/runTests', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'edit/editNotebook', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: GPT-5.2
+model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Request Testing Infrastructure
     agent: Planner

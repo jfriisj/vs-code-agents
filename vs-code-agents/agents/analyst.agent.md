@@ -4,7 +4,7 @@ name: Analyst
 target: vscode
 argument-hint: Describe the technical question, API, or system behavior to investigate
 tools: ['vscode/vscodeAPI', 'execute/getTerminalOutput', 'execute/runInTerminal', 'execute/runNotebookCell', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: GPT-5.1-Codex-Max
+model: GPT-5.2 (copilot)
 handoffs:
   - label: Create Plan
     agent: Planner

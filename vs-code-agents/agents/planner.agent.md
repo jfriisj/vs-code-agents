@@ -4,7 +4,7 @@ name: Planner
 target: vscode
 argument-hint: Describe the feature, epic, or change to plan
 tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: GPT-5.2
+model: GPT-5.2 (copilot)
 handoffs:
   - label: Validate Roadmap Alignment
     agent: Roadmap

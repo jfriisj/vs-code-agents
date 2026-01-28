@@ -4,7 +4,7 @@ name: Retrospective
 target: vscode
 argument-hint: Reference the completed plan or release to retrospect on
 tools: ['read/readFile', 'edit/createDirectory', 'edit/createFile', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: Gemini 3 Pro (Preview)
+model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Update Architecture
     agent: Architect

@@ -4,7 +4,7 @@ name: Implementer
 target: vscode
 argument-hint: Reference the approved plan to implement (e.g., plan 002)
 tools: ['vscode/vscodeAPI', 'execute', 'read', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment']
-model: Claude Opus 4.5
+model: GPT-5.2-Codex (copilot)
 handoffs:
   - label: Request Analysis
     agent: Analyst

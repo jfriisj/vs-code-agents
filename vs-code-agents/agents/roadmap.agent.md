@@ -4,7 +4,7 @@ name: Roadmap
 target: vscode
 argument-hint: Describe the epic, feature, or strategic question to address
 tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: Claude Sonnet 4.5
+model: GPT-5.2 (copilot)
 handoffs:
   - label: Request Architectural Guidance
     agent: Architect

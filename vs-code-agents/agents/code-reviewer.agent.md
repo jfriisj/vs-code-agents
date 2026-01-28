@@ -4,7 +4,7 @@ name: Code Reviewer
 target: vscode
 argument-hint: Reference the implementation to review (e.g., plan 002)
 tools: ['read/problems', 'read/readFile', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: Claude Sonnet 4.5
+model: GPT-5.2-Codex (copilot)
 handoffs:
   - label: Request Implementation Fixes
     agent: Implementer

@@ -4,7 +4,7 @@ name: UAT
 target: vscode
 argument-hint: Reference the implementation or plan to validate (e.g., plan 002)
 tools: ['read/problems', 'read/readFile', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: Claude Sonnet 4.5
+model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Report UAT Failure
     agent: Planner

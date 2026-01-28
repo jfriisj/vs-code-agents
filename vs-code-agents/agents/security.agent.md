@@ -4,7 +4,7 @@ name: Security
 target: vscode
 argument-hint: Describe the code, component, or PR to security-review
 tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: Claude Opus 4.5
+model: GPT-5.2 (copilot)
 handoffs:
   - label: Request Analysis
     agent: Analyst
