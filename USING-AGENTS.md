@@ -12,6 +12,16 @@ Roadmap → Planner → (Analyst, Architect, Critic, Security) → Implementer �
 
 **All agents use Memory** via the `memory-contract` skill to provide long-running context across sessions. Agents function without memory, but greatly benefit from durable cross-session context when a Memory server is enabled.
 
+### MCP Tools (filesystem/github/analyzer)
+
+This repo is designed to be used with MCP servers configured in `.vscode/mcp.json`. In VS Code, the MCP server name becomes the tool prefix:
+- `memory` → `memory_*`
+- `filesystem` → `filesystem_*`
+- `github` → `github_*`
+- `analyzer` → `analyzer_*`
+
+If you customize agents or rename MCP servers, make sure the agent `tools:` allowlist includes the corresponding `*/` namespace.
+
 ## Where to Put These Files
 
 There are two simple ways to make these agents available to VS Code:

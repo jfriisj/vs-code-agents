@@ -3,7 +3,7 @@ description: Execution-focused coding agent that implements approved plans.
 name: Implementer
 target: vscode
 argument-hint: Reference the approved plan to implement (e.g., plan 002)
-tools: ['vscode/vscodeAPI', 'execute', 'read', 'edit', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment', 'todo']
+tools: ['vscode/vscodeAPI', 'execute', 'read', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment']
 model: Claude Opus 4.5
 handoffs:
   - label: Request Analysis

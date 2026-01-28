@@ -158,6 +158,21 @@ Memory is a Model Context Protocol (MCP) server that provides a durable memory l
 
 With Memory enabled, these agents can persist and retrieve structured context across sessions via the `memory_*` tools.
 
+### MCP Tool Prefixes (`.vscode/mcp.json`)
+
+VS Code MCP tools are namespaced by the MCP server name. The server key you configure becomes the tool prefix.
+
+This repo ships an example MCP configuration at `.vscode/mcp.json` with these server names:
+
+| MCP server name | Tool prefix |
+|---|---|
+| `memory` | `memory_*` |
+| `filesystem` | `filesystem_*` |
+| `github` | `github_*` |
+| `analyzer` | `analyzer_*` |
+
+If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes accordingly (e.g. `fs_*`). Ensure your `.agent.md` files allow the tool namespaces they need.
+
 ---
 
 ## Repository Structure

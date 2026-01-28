@@ -11,6 +11,11 @@ metadata:
 
 Using Memory tools (the `memory_*` toolset) is **mandatory** when available.
 
+This repo also expects MCP tool usage when applicable:
+- Files: `filesystem_*`
+- GitHub: `github_*`
+- Static analysis: `analyzer_*`
+
 ---
 
 ## Core Principle

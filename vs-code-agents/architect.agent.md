@@ -3,7 +3,7 @@ description: Maintains architectural coherence across features and reviews techn
 name: Architect
 target: vscode
 argument-hint: Describe the feature, component, or system area requiring architectural review
-tools: ['execute/getTerminalOutput', 'execute/getTaskOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2
 handoffs:
   - label: Validate Roadmap Alignment

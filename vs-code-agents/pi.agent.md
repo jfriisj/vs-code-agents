@@ -3,7 +3,7 @@ description: Analyzes retrospectives and systematically improves agent workflows
 name: ProcessImprovement
 target: vscode
 argument-hint: Reference the retrospective or process area to analyze
-tools: ['vscode/vscodeAPI', 'execute/runNotebookCell', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['vscode/vscodeAPI', 'execute/getTerminalOutput', 'execute/runInTerminal', 'execute/runNotebookCell', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2
 handoffs:
   - label: Start New Plan

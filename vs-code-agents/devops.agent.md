@@ -3,7 +3,7 @@ description: DevOps specialist responsible for packaging, versioning, deployment
 name: DevOps
 target: vscode
 argument-hint: Specify the version to release or deployment task to perform
-tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: Gemini 3 Flash (Preview)
 handoffs:
   - label: Request Implementation Fixes

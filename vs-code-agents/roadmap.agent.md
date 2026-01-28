@@ -3,7 +3,7 @@ description: Strategic vision holder maintaining outcome-focused product roadmap
 name: Roadmap
 target: vscode
 argument-hint: Describe the epic, feature, or strategic question to address
-tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/runInTerminal', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Request Architectural Guidance

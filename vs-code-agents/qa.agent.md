@@ -3,7 +3,7 @@ description: Dedicated QA specialist verifying test coverage and execution befor
 name: QA
 target: vscode
 argument-hint: Reference the implementation or plan to test (e.g., plan 002)
-tools: ['execute/testFailure', 'execute/getTerminalOutput', 'execute/runInTerminal', 'execute/runTests', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'edit/editNotebook', 'search', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'execute/testFailure', 'execute/runTests', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'edit/editNotebook', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2
 handoffs:
   - label: Request Testing Infrastructure

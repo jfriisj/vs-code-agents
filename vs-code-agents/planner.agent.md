@@ -3,7 +3,7 @@ description: High-rigor planning assistant for upcoming feature changes.
 name: Planner
 target: vscode
 argument-hint: Describe the feature, epic, or change to plan
-tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2
 handoffs:
   - label: Validate Roadmap Alignment

@@ -15,6 +15,13 @@ Systematic review criteria for evaluating code and plans. Use this skill when:
 - Architect reviews architectural compliance
 - UAT validates implementation quality
 
+## Tooling (MCP)
+
+When reviewing, prefer MCP tools (when available) over ad-hoc shell commands:
+- Use `filesystem_*` to read/write review artifacts and inspect workspace files.
+- Use `github_*` to gather PR/issue context when the work is in GitHub.
+- Use `analyzer_*` for linting/static analysis (where supported) to support findings with evidence.
+
 ## Review Context
 
 **This skill supports two review phases:**

@@ -3,7 +3,7 @@ description: Captures lessons learned, architectural decisions, and patterns aft
 name: Retrospective
 target: vscode
 argument-hint: Reference the completed plan or release to retrospect on
-tools: ['read/readFile', 'edit/createDirectory', 'edit/createFile', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['read/readFile', 'edit/createDirectory', 'edit/createFile', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: Gemini 3 Pro (Preview)
 handoffs:
   - label: Update Architecture

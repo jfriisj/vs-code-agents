@@ -331,6 +331,21 @@ Most "memory" solutions for AI agents fall into traps:
 
 Configure and enable a Memory server in your environment, then ensure your agents have access to the `memory_*` toolset.
 
+### MCP Server Configuration (`.vscode/mcp.json`)
+
+In VS Code, MCP tools are namespaced by the MCP server name. The server key you configure becomes the tool prefix.
+
+This repo includes an example `.vscode/mcp.json` with these servers:
+
+| MCP server name | Tool prefix |
+|---|---|
+| `memory` | `memory_*` |
+| `filesystem` | `filesystem_*` |
+| `github` | `github_*` |
+| `analyzer` | `analyzer_*` |
+
+If you rename a server, the tool prefix changes accordingly. Make sure the agent `tools:` allowlist includes the needed namespaces (for example `filesystem/*` if the agent needs to read/write files via MCP).
+
 ### Memory Contract for Agents
 
 All agents load the **`memory-contract` skill** which defines when and how to use Memory. Agents function without memory but greatly benefit from cross-session context.

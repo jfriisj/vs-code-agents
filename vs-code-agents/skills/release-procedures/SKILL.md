@@ -222,7 +222,7 @@ git push origin v1.2.3
 | VS Code | `vsce publish` |
 | npm | `npm publish` |
 | PyPI | `twine upload dist/*` |
-| GitHub | `gh release create v1.2.3` |
+| GitHub | `gh release create v1.2.3` (or use `github_*` MCP tools) |
 
 ### Post-Publication Verification
 

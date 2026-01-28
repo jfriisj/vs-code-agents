@@ -5,3 +5,6 @@ agent-output/
 *.local 
 .DS_Store
 **.mardownlint.json
+.vscode/
+.github/
+!.github/workflows/

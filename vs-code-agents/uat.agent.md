@@ -3,7 +3,7 @@ description: Product Owner conducting UAT to verify implementation delivers stat
 name: UAT
 target: vscode
 argument-hint: Reference the implementation or plan to validate (e.g., plan 002)
-tools: ['read/problems', 'read/readFile', 'search', 'memory_read_graph', 'memory_create_relations', 'todo']
+tools: ['read/problems', 'read/readFile', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Report UAT Failure
