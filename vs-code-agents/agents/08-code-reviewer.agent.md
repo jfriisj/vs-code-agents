@@ -1,21 +1,21 @@
 ---
 description: Reviews code quality, architecture alignment, and maintainability before QA testing.
-name: Code Reviewer
+name: 08-Code Reviewer
 target: vscode
 argument-hint: Reference the implementation to review (e.g., plan 002)
 tools: ['read/problems', 'read/readFile', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2-Codex (copilot)
 handoffs:
   - label: Request Implementation Fixes
-    agent: Implementer
+    agent: 07-Implementer
     prompt: Code review found quality issues. Please address findings before proceeding to QA.
     send: false
   - label: Escalate Design Concerns
-    agent: Architect
+    agent: 04-Architect
     prompt: Implementation reveals architectural issues or deviates significantly from design.
     send: false
   - label: Send for Testing
-    agent: QA
+    agent: 09-QA
     prompt: Code review approved. Implementation ready for QA testing.
     send: false
 ---

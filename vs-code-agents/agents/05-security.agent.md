@@ -1,25 +1,25 @@
 ---
 description: Comprehensive security audit specialist - architecture, code, dependencies, and compliance.
-name: Security
+name: 05-Security
 target: vscode
 argument-hint: Describe the code, component, or PR to security-review
 tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2 (copilot)
 handoffs:
   - label: Request Analysis
-    agent: Analyst
+    agent: 03-Analyst
     prompt: Security finding requires deep technical investigation.
     send: false
   - label: Update Plan
-    agent: Planner
+    agent: 02-Planner
     prompt: Security risks require plan revision.
     send: false
   - label: Request Implementation
-    agent: Implementer
+    agent: 07-Implementer
     prompt: Security remediation requires code changes.
     send: false
   - label: Architecture Review
-    agent: Architect
+    agent: 04-Architect
     prompt: Security audit reveals architectural concerns requiring design changes.
     send: false
 ---

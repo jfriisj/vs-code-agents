@@ -1,21 +1,21 @@
 ---
 description: Captures lessons learned, architectural decisions, and patterns after implementation completes.
-name: Retrospective
+name: 12-Retrospective
 target: vscode
 argument-hint: Reference the completed plan or release to retrospect on
 tools: ['read/readFile', 'edit/createDirectory', 'edit/createFile', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Update Architecture
-    agent: Architect
+    agent: 04-Architect
     prompt: Retrospective reveals architectural patterns that should be documented.
     send: false
   - label: Improve Process
-    agent: Planner
+    agent: 02-Planner
     prompt: Retrospective identifies process improvements for future planning.
     send: false
   - label: Update Roadmap
-    agent: Roadmap
+    agent: 01-Roadmap
     prompt: Retrospective is closed for this plan. Please update the roadmap accordingly.
     send: false
 ---

@@ -1,21 +1,21 @@
 ---
 description: Constructive reviewer and program manager that stress-tests planning documents.
-name: Critic
+name: 06-Critic
 target: vscode
 argument-hint: Reference the plan or architecture document to critique (e.g., plan 002)
 tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2 (copilot)
 handoffs:
   - label: Revise Plan
-    agent: Planner
+    agent: 02-Planner
     prompt: Please revise the plan based on my critique findings.
     send: false
   - label: Request Analysis
-    agent: Analyst
+    agent: 03-Analyst
     prompt: Plan reveals research gaps or unverified assumptions. Please investigate.
     send: false
   - label: Approve for Implementation
-    agent: Implementer
+    agent: 07-Implementer
     prompt: Plan is sound and ready for implementation. Please begin implementation now. 
     send: false
 ---

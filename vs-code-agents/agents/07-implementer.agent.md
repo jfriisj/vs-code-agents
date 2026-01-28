@@ -1,21 +1,21 @@
 ---
 description: Execution-focused coding agent that implements approved plans.
-name: Implementer
+name: 07-Implementer
 target: vscode
 argument-hint: Reference the approved plan to implement (e.g., plan 002)
 tools: ['vscode/vscodeAPI', 'execute', 'read', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment']
 model: GPT-5.2-Codex (copilot)
 handoffs:
   - label: Request Analysis
-    agent: Analyst
+    agent: 03-Analyst
     prompt: I've encountered technical unknowns during implementation. Please investigate.
     send: false
   - label: Request Plan Clarification
-    agent: Planner
+    agent: 02-Planner
     prompt: The plan has ambiguities or conflicts. Please clarify.
     send: false
   - label: Submit for Code Review
-    agent: Code Reviewer
+    agent: 08-Code Reviewer
     prompt: Implementation is complete. Please review code quality before QA.
     send: false
 ---

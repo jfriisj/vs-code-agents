@@ -1,21 +1,21 @@
 ---
 description: Research and analysis specialist for code-level investigation and determination.
-name: Analyst
+name: 03-Analyst
 target: vscode
 argument-hint: Describe the technical question, API, or system behavior to investigate
 tools: ['vscode/vscodeAPI', 'execute/getTerminalOutput', 'execute/runInTerminal', 'execute/runNotebookCell', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2 (copilot)
 handoffs:
   - label: Create Plan
-    agent: Planner
+    agent: 02-Planner
     prompt: Based on my analysis findings, create or update an implementation plan.
     send: false
   - label: Continue Implementation
-    agent: Implementer
+    agent: 07-Implementer
     prompt: Resume implementation using my analysis findings.
     send: false
   - label: Deepen Research
-    agent: Analyst
+    agent: 03-Analyst
     prompt: Continue investigation with additional depth based on initial findings.
     send: false
 ---

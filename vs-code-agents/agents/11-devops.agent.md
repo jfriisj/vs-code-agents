@@ -1,21 +1,21 @@
 ---
 description: DevOps specialist responsible for packaging, versioning, deployment readiness, and release execution with user confirmation.
-name: DevOps
+name: 11-DevOps
 target: vscode
 argument-hint: Specify the version to release or deployment task to perform
 tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Request Implementation Fixes
-    agent: Implementer
+    agent: 07-Implementer
     prompt: Packaging issues or version mismatches detected. Please fix before release.
     send: false
   - label: Hand Off to Retrospective
-    agent: Retrospective
+    agent: 12-Retrospective
     prompt: Release complete. Please capture deployment lessons learned.
     send: false
   - label: Update Release Tracker
-    agent: Roadmap
+    agent: 01-Roadmap
     prompt: Plan committed locally. Please update release tracker with current status.
     send: false
 ---

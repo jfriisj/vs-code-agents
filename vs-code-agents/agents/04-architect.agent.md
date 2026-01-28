@@ -1,21 +1,21 @@
 ---
 description: Maintains architectural coherence across features and reviews technical debt accumulation.
-name: Architect
+name: 04-Architect
 target: vscode
 argument-hint: Describe the feature, component, or system area requiring architectural review
 tools: ['execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2 (copilot)
 handoffs:
   - label: Validate Roadmap Alignment
-    agent: Roadmap
+    agent: 01-Roadmap
     prompt: Validate that architectural approach supports epic outcomes.
     send: false
   - label: Request Analysis
-    agent: Analyst
+    agent: 03-Analyst
     prompt: Technical unknowns require deep investigation before architectural decision.
     send: false
   - label: Update Plan
-    agent: Planner
+    agent: 02-Planner
     prompt: Architectural concerns require plan revision.
     send: false
 ---

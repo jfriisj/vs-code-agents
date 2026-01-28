@@ -1,29 +1,29 @@
 ---
 description: High-rigor planning assistant for upcoming feature changes.
-name: Planner
+name: 02-Planner
 target: vscode
 argument-hint: Describe the feature, epic, or change to plan
 tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2 (copilot)
 handoffs:
   - label: Validate Roadmap Alignment
-    agent: Roadmap
+    agent: 01-Roadmap
     prompt: Validate that plan delivers epic outcomes defined in roadmap.
     send: false
   - label: Validate Architectural Alignment
-    agent: Architect
+    agent: 04-Architect
     prompt: Please review this plan to ensure it aligns with the architecture.
     send: false
   - label: Request Analysis
-    agent: Analyst
+    agent: 03-Analyst
     prompt: I've encountered technical unknowns that require deep investigation. Please analyze.
     send: false
   - label: Submit for Review
-    agent: Critic
+    agent: 06-Critic
     prompt: Plan is complete. Please review for clarity, completeness, and architectural alignment.
     send: false
   - label: Begin Implementation
-    agent: Implementer
+    agent: 07-Implementer
     prompt: Plan has been approved. Proceed with implementation; the user will decide whether to run Implementer locally or as a background agent.
     send: false
 ---

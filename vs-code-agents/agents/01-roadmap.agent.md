@@ -1,25 +1,25 @@
 ---
 description: Strategic vision holder maintaining outcome-focused product roadmap aligned with releases.
-name: Roadmap
+name: 01-Roadmap
 target: vscode
 argument-hint: Describe the epic, feature, or strategic question to address
 tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.2 (copilot)
 handoffs:
   - label: Request Architectural Guidance
-    agent: Architect
+    agent: 04-Architect
     prompt: Epic requires architectural assessment and documentation before planning.
     send: false
   - label: Request Plan Creation
-    agent: Planner
+    agent: 02-Planner
     prompt: Epic is ready for detailed implementation planning.
     send: false
   - label: Request Plan Update
-    agent: Planner
+    agent: 02-Planner
     prompt: Please review and potentially revise the plan based on the updated roadmap.
     send: false
   - label: Receive Plan Commit Notification
-    agent: DevOps
+    agent: 11-DevOps
     prompt: Plan committed locally, updating release tracker with current status.
     send: false
 ---

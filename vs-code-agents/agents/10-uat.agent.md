@@ -1,25 +1,25 @@
 ---
 description: Product Owner conducting UAT to verify implementation delivers stated business value.
-name: UAT
+name: 10-UAT
 target: vscode
 argument-hint: Reference the implementation or plan to validate (e.g., plan 002)
 tools: ['read/problems', 'read/readFile', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
 model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Report UAT Failure
-    agent: Planner
+    agent: 02-Planner
     prompt: Implementation does not deliver stated value. Plan revision may be needed.
     send: false
   - label: Request Value Fixes
-    agent: Implementer
+    agent: 07-Implementer
     prompt: Implementation has gaps in value delivery. Please address UAT findings.
     send: false
   - label: Prepare Release
-    agent: DevOps
+    agent: 11-DevOps
     prompt: Implementation complete with release decision. Please manage release steps.
     send: false
   - label: Update Roadmap
-    agent: Roadmap
+    agent: 01-Roadmap
     prompt: Retrospective is closed for this plan. Please update the roadmap accordingly.
     send: false
 ---
