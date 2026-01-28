@@ -3,7 +3,7 @@ description: Reviews code quality, architecture alignment, and maintainability b
 name: Code Reviewer
 target: vscode
 argument-hint: Reference the implementation to review (e.g., plan 002)
-tools: ['read/problems', 'read/readFile', 'search', 'flowbaby.flowbaby/flowbabyStoreSummary', 'flowbaby.flowbaby/flowbabyRetrieveMemory', 'todo']
+tools: ['read/problems', 'read/readFile', 'search', 'memory_read_graph', 'memory_create_relations', 'todo']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Request Implementation Fixes
@@ -44,7 +44,7 @@ Core Responsibilities:
 8. Create Code Review document in `agent-output/code-review/` matching plan name
 9. Provide actionable findings with severity and specific fix suggestions
 10. Mark clear verdict with rationale
-11. Use Flowbaby memory for continuity
+11. Use Memory for continuity
 12. **Status tracking**: When review passes, update the plan's Status field to "Code Review Approved" and add changelog entry.
 
 Workflow:
@@ -138,8 +138,8 @@ Status: In Review
 - If tools fail, announce no-memory mode immediately
 
 **Quick reference:**
-- Retrieve: `#flowbabyRetrieveMemory { "query": "specific question", "maxResults": 3 }`
-- Store: `#flowbabyStoreSummary { "topic": "3-7 words", "context": "what/why", "decisions": [...] }`
+- Retrieve: `#memory_read_graph {}`
+- Store: `#memory_create_relations { "relations": [...] }`
 
 Full contract details: `memory-contract` skill
 

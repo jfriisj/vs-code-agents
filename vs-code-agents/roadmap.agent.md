@@ -3,7 +3,7 @@ description: Strategic vision holder maintaining outcome-focused product roadmap
 name: Roadmap
 target: vscode
 argument-hint: Describe the epic, feature, or strategic question to address
-tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/runInTerminal', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'flowbaby.flowbaby/flowbabyStoreSummary', 'flowbaby.flowbaby/flowbabyRetrieveMemory', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/runInTerminal', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
 model: Claude Sonnet 4.5
 handoffs:
   - label: Request Architectural Guidance
@@ -41,7 +41,7 @@ Core Responsibilities:
 10. Update roadmap with decisions (NEVER touch Master Product Objective section)
 11. Maintain vision consistency
 12. Guide the user: challenge misaligned features; suggest better approaches
-13. Use Flowbaby memory for continuity
+13. Use Memory for continuity
 14. Review agent outputs to ensure roadmap reflects completed/deployed/planned work
 15. **Status tracking**: Keep epic Status fields current (Planned, In Progress, Delivered, Deferred). Other agents and users rely on accurate status at a glance.
 16. **Track current working release**: Maintain which release version is currently in-progress (e.g., "Working on v0.6.2"). Update when release is published or new release cycle begins.
@@ -179,8 +179,8 @@ Moved to respective closed/ folders.
 - If tools fail, announce no-memory mode immediately
 
 **Quick reference:**
-- Retrieve: `#flowbabyRetrieveMemory { "query": "specific question", "maxResults": 3 }`
-- Store: `#flowbabyStoreSummary { "topic": "3-7 words", "context": "what/why", "decisions": [...] }`
+- Retrieve: `#memory_read_graph {}`
+- Store: `#memory_create_relations { "relations": [...] }`
 
 Full contract details: `memory-contract` skill
 

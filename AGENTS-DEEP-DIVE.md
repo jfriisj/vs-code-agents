@@ -11,7 +11,7 @@
 1. [Design Philosophy](#design-philosophy)
 2. [Agent Collaboration Patterns](#agent-collaboration-patterns)
 3. [The Document-Driven Workflow](#the-document-driven-workflow)
-4. [Flowbaby Memory Integration](#flowbaby-memory-integration)
+4. [Memory Integration](#memory-mcp-integration)
 5. [Agent Deep Dives](#agent-deep-dives)
 6. [Customization Guide](#customization-guide)
 7. [Troubleshooting & FAQ](#troubleshooting--faq)
@@ -67,7 +67,7 @@ agent-output/
 
 - **Auditability**: See what was decided and why
 - **Handoff context**: Next agent reads the artifacts
-- **Memory anchors**: Flowbaby stores references to documents
+- **Memory anchors**: Memory stores references to documents
 - **Version control**: Track evolution of decisions
 
 ---
@@ -299,19 +299,18 @@ When handing off between agents:
 
 ---
 
-## Flowbaby Memory Integration
+## Memory Integration
 
-### What is Flowbaby?
+### What is Memory?
 
-[Flowbaby](https://github.com/groupzer0/flowbaby) is a VS Code extension that provides **workspace-scoped long-term memory** for GitHub Copilot. Unlike chat history (which is lost between sessions), Flowbaby stores memories in a local knowledge graph that persists across sessions.
+Memory is a Model Context Protocol (MCP) server that provides **workspace-scoped long-term memory** for GitHub Copilot and other tools. Unlike chat history (which is lost between sessions), a Memory server stores durable memories (often in a knowledge graph) that persist across sessions.
 
-**Key Features**:
-- **Hybrid Graph-Vector Search**: Combines knowledge graph structure with vector similarity
-- **Workspace Isolation**: Each workspace has separate memory
-- **Privacy-First**: All data stays local; no cloud services
-- **Agent Tools**: Exposes `#flowbabyStoreSummary` and `#flowbabyRetrieveMemory` for agents
+**Key Features** (implementation dependent):
+- **Structured memory**: Entities, relations, and observations
+- **Workspace isolation**: Each workspace can have separate memory
+- **Agent tools**: Exposes `memory_*` tools for agents
 
-### Why Flowbaby is Unique
+### Why Memory is Useful
 
 Most "memory" solutions for AI agents fall into traps:
 
@@ -322,43 +321,22 @@ Most "memory" solutions for AI agents fall into traps:
 | Manual notes | Requires human effort, inconsistent |
 | RAG on files | Noisy, retrieves irrelevant context |
 
-**Flowbaby's approach**:
+**A Memory approach**:
 - **Structured summaries**: Agents store decisions, not raw logs
 - **Knowledge graph**: Captures relationships between concepts
 - **Semantic search**: Finds relevant context even with different wording
 - **Automatic + Manual**: Can store automatically or on demand
 
-### Installation
+### Enable Memory
 
-1. **Install from VS Code Marketplace**:
-   - Open Extensions (`Ctrl+Shift+X`)
-   - Search "Flowbaby"
-   - Click Install
-
-  Or install via command line:
-  ```bash
-  ext install flowbaby.flowbaby
-  ```
-
-2. **Initialize Workspace**:
-   - Command Palette (`Ctrl+Shift+P`)
-   - Run "Flowbaby: Initialize Workspace"
-
-3. **Set API Key**:
-   - Command Palette
-   - Run "Flowbaby: Set API Key"
-   - Enter your OpenAI/Anthropic key (used for local summarization)
-
-**Links**:
-- GitHub: https://github.com/groupzer0/flowbaby
-- Marketplace: https://marketplace.visualstudio.com/items?itemName=flowbaby.flowbaby
+Configure and enable a Memory server in your environment, then ensure your agents have access to the `memory_*` toolset.
 
 ### Memory Contract for Agents
 
-All agents load the **`memory-contract` skill** which defines when and how to use Flowbaby memory. Agents function without Flowbaby but greatly benefit from its cross-session context.
+All agents load the **`memory-contract` skill** which defines when and how to use Memory. Agents function without memory but greatly benefit from cross-session context.
 
 > [!TIP]
-> The full memory contract is in `vs-code-agents/skills/memory-contract/SKILL.md`. See [memory-contract-example.md](vs-code-agents/memory-contract-example.md) for usage examples.
+> The full memory contract is in `vs-code-agents/skills/memory-contract/SKILL.md`. See [memory-contract-example.md](vs-code-agents/reference/memory-contract-example.md) for usage examples.
 
 **Core principles**:
 
@@ -369,21 +347,12 @@ All agents load the **`memory-contract` skill** which defines when and how to us
 
 ### Retrieval Patterns
 
-**Good retrieval queries** are specific and contextual:
+When a query-capable memory tool is available, prefer hypothesis-driven queries (specific questions) rather than vague prompts.
+
+If the only available tool is a full-graph read, retrieve the graph and then focus your reasoning on the relevant subgraph.
 
 ```json
-#flowbabyRetrieveMemory {
-  "query": "Previous decisions about authentication flow and security requirements for user login",
-  "maxResults": 3
-}
-```
-
-**Bad queries** are vague:
-```json
-#flowbabyRetrieveMemory {
-  "query": "auth stuff",
-  "maxResults": 3
-}
+#memory_read_graph {}
 ```
 
 ### Storage Patterns
@@ -402,21 +371,12 @@ All agents load the **`memory-contract` skill** which defines when and how to us
 - Artifacts: File paths to detailed docs
 
 ```json
-#flowbabyStoreSummary {
-  "topic": "Auth plan review complete",
-  "context": "Completed critique of Plan 001 (user authentication). Found 2 critical issues: missing rate limiting and no threat model for password reset. Plan BLOCKED until addressed. See agent-output/critiques/001-auth-critique.md.",
-  "decisions": [
-    "Rate limiting required on all auth endpoints",
-    "Threat model needed for password reset flow"
-  ],
-  "rationale": [
-    "Without rate limiting, credential stuffing attacks are trivial",
-    "Password reset is a common attack vector requiring explicit analysis"
-  ],
-  "metadata": {
-    "status": "Active",
-    "artifact": "agent-output/critiques/001-auth-critique.md"
-  }
+#memory_create_relations {
+  "relations": [
+    {"from": "Plan 001", "to": "Finding: Missing rate limiting", "relationType": "has_finding"},
+    {"from": "Plan 001", "to": "Finding: Missing password-reset threat model", "relationType": "has_finding"},
+    {"from": "Plan 001", "to": "Artifact: agent-output/critiques/001-auth-critique.md", "relationType": "has_artifact"}
+  ]
 }
 ```
 
@@ -745,7 +705,7 @@ This means agents can have access to many skills without consuming context until
 
 | Skill | Purpose | Key Content |
 |-------|---------|-------------|
-| `memory-contract` | Unified Flowbaby memory contract | When/how to retrieve and store, anti-patterns |
+| `memory-contract` | Unified Memory contract | When/how to retrieve and store, anti-patterns |
 | `analysis-methodology` | Investigation techniques | Confidence levels, gap tracking, POC guidance |
 | `architecture-patterns` | ADR templates, patterns, anti-patterns | Layered architecture, repository pattern, STRIDE |
 | `code-review-checklist` | Pre/post-implementation review criteria | Value statement assessment, security checklist |
@@ -871,10 +831,9 @@ You can have project-specific agent variants:
 ### Memory Issues
 
 **Q: Memory not working**
-- Is Flowbaby installed? Check Extensions
-- Is workspace initialized? Run "Flowbaby: Initialize Workspace"
-- Is API key set? Run "Flowbaby: Set API Key"
-- Check Output panel for Flowbaby errors
+- Is a Memory server enabled for this workspace?
+- Do agents have access to the `memory_*` tools?
+- Check relevant MCP/server logs or VS Code output for MCP connection errors
 
 **Q: Retrievals return nothing**
 - Broadens query: be less specific
@@ -907,7 +866,7 @@ You can have project-specific agent variants:
 **Q: Do I need all 13 agents?**
 No. Start with Planner + Implementer. Add others as needed.
 
-**Q: Can I use this without Flowbaby?**
+**Q: Can I use this without Memory?**
 Yes, but agents won't remember across sessions. Each conversation starts fresh.
 
 **Q: Why separate QA and UAT?**

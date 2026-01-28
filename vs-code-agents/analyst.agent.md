@@ -3,7 +3,7 @@ description: Research and analysis specialist for code-level investigation and d
 name: Analyst
 target: vscode
 argument-hint: Describe the technical question, API, or system behavior to investigate
-tools: ['vscode/vscodeAPI', 'execute/runNotebookCell', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'flowbaby.flowbaby/flowbabyStoreSummary', 'flowbaby.flowbaby/flowbabyRetrieveMemory', 'todo']
+tools: ['vscode/vscodeAPI', 'execute/runNotebookCell', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
 model: GPT-5.1-Codex-Max
 handoffs:
   - label: Create Plan
@@ -34,7 +34,7 @@ Core Responsibilities:
 3. Determine actual system behavior through testing. Avoid theoretical hypotheses.
 4. Create `NNN-topic.md` in `agent-output/analysis/`. Start with "Value Statement and Business Objective".
 5. Provide factual findings with examples. Recommend only further analysis steps, not solutions. Document test infrastructure needs.
-6. Retrieve/store Flowbaby memory.
+6. Retrieve/store Memory context.
 7. **Status tracking**: Keep own analysis doc's Status current (Active, Planned, Implemented). Other agents and users rely on accurate status at a glance.
 8. **Surface remaining gaps**: Always clearly identify unaddressed parts of the requested analysis—in both the document and directly to the user in chat. If an unknown cannot be resolved, explain why and what is needed to close it.
 
@@ -108,8 +108,8 @@ Status: Active
 - If tools fail, announce no-memory mode immediately
 
 **Quick reference:**
-- Retrieve: `#flowbabyRetrieveMemory { "query": "specific question", "maxResults": 3 }`
-- Store: `#flowbabyStoreSummary { "topic": "3-7 words", "context": "what/why", "decisions": [...] }`
+- Retrieve: `#memory_read_graph {}`
+- Store: `#memory_create_relations { "relations": [...] }`
 
 Full contract details: `memory-contract` skill
 

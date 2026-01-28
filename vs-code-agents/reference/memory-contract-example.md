@@ -1,8 +1,8 @@
-# Flowbaby Memory Contract - Concrete Example
+# Memory Contract - Concrete Example
 
-This document provides a concrete example of how to add Flowbaby memory to your custom agents. All of the agents in this repo already use this feature, but this document specifically calls out this one aspect of the agent.md files for reference. You don't need to add it to these agents, but you may want to add it to your own, or modify it. 
+This document provides a concrete example of how to add Memory-based memory to your custom agents. All of the agents in this repo already use this pattern, but this document specifically calls out this one aspect of the agent.md files for reference. You don't need to add it to these agents, but you may want to add it to your own, or modify it.
 
-You can copy/paste the markdown block below directly into any custom agent file in VS Code. You will need to install the Flowbaby memory extension from the VS Code extension marketplace for your agent to make use of these instructions.
+You can copy/paste the markdown block below directly into any custom agent file in VS Code. You will need to enable a Memory server (knowledge-graph style durable memory) for your agent to make use of these instructions.
 
 ## How to use this
 
@@ -19,7 +19,7 @@ Do **not** copy anything above or below that block.
 ````markdown
 ---
 name: memory-contract
-description: Unified Memory Contract for Flowbaby integration. Defines when and how to retrieve and store memory. Load at session start - memory is core to agent reasoning, not optional.
+description: Unified Memory Contract for Memory integration. Defines when and how to retrieve and store durable context. Load at session start - memory is core to agent reasoning, not optional.
 license: MIT
 metadata:
   author: groupzer0
@@ -28,7 +28,7 @@ metadata:
 
 # Unified Memory Contract
 
-Using Flowbaby tools (`flowbabyStoreSummary` and `flowbabyRetrieveMemory`) is **mandatory**.
+Using Memory tools (the `memory_*` toolset) is **mandatory** when available.
 
 ---
 
@@ -104,7 +104,7 @@ Structure summaries for downstream graph extraction:
 
 **Fallback minimum:** If you haven't stored in 5 turns, store now regardless.
 
-**Always end storage with:** "Saved progress to Flowbaby memory."
+**Always end storage with:** "Saved progress to Memory."
 
 ---
 
@@ -134,11 +134,11 @@ Structure summaries for downstream graph extraction:
 
 ## No-Memory Fallback
 
-If `flowbabyRetrieveMemory` or `flowbabyStoreSummary` calls fail or are rejected:
+If Memory tool calls fail or are rejected:
 
-1. **Announce immediately:** "Flowbaby memory is unavailable; operating in no-memory mode."
+1. **Announce immediately:** "Memory is unavailable; operating in no-memory mode."
 2. **Compensate:** Record decisions in output documents with extra detail.
-3. **Remind at end:** "Memory was unavailable. Consider initializing Flowbaby for cross-session continuity."
+3. **Remind at end:** "Memory was unavailable. Consider enabling a Memory server for cross-session continuity."
 
 ---
 
@@ -147,21 +147,20 @@ If `flowbabyRetrieveMemory` or `flowbabyStoreSummary` calls fail or are rejected
 ### Retrieval
 
 ```json
-#flowbabyRetrieveMemory {
-  "query": "Specific question or hypothesis about prior context",
-  "maxResults": 3
-}
+#memory_read_graph {}
 ```
 
 ### Storage
 
 ```json
-#flowbabyStoreSummary {
-  "topic": "3–7 word title",
-  "context": "300–1500 chars: what happened, why, constraints, dead ends",
-  "decisions": ["Decision 1", "Decision 2"],
-  "rationale": ["Why decision 1", "Why decision 2"],
-  "metadata": {"status": "Active"}
+#memory_create_relations {
+  "relations": [
+    {
+      "from": "Project: <repo-or-workspace>",
+      "to": "Memory: <topic>",
+      "relationType": "has_context"
+    }
+  ]
 }
 ```
 ````

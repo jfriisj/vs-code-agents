@@ -3,7 +3,7 @@ description: High-rigor planning assistant for upcoming feature changes.
 name: Planner
 target: vscode
 argument-hint: Describe the feature, epic, or change to plan
-tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit', 'search', 'web', 'flowbaby.flowbaby/flowbabyStoreSummary', 'flowbaby.flowbaby/flowbabyRetrieveMemory', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit', 'search', 'web', 'memory_read_graph', 'memory_create_relations', 'todo']
 model: GPT-5.2
 handoffs:
   - label: Validate Roadmap Alignment
@@ -49,7 +49,7 @@ Produce implementation-ready plans translating roadmap epics into actionable, ve
 11. Ensure value statement guides all decisions. Core value delivered by plan, not deferred.
 12. MUST NOT define QA processes/test cases/test requirements. QA agent's exclusive responsibility in `agent-output/qa/`.
 13. Include version management milestone. Update release artifacts to match roadmap target version.
-14. Retrieve/store Flowbaby memory.
+14. Retrieve/store Memory context.
 15. **Status tracking**: When incorporating analysis into a plan, update the analysis doc's Status field to "Planned" and add changelog entry. Keep agent-output docs' status current so other agents and users know document state at a glance.
 16. **Track release assignment**: When creating or updating plans, verify target release with Roadmap agent. Multiple plans target the same release version. Plans are grouped by release, not released individually. Coordinate version bumps only at release level.
 
@@ -188,8 +188,8 @@ Status: Active
 - If tools fail, announce no-memory mode immediately
 
 **Quick reference:**
-- Retrieve: `#flowbabyRetrieveMemory { "query": "specific question", "maxResults": 3 }`
-- Store: `#flowbabyStoreSummary { "topic": "3-7 words", "context": "what/why", "decisions": [...] }`
+- Retrieve: `#memory_read_graph {}`
+- Store: `#memory_create_relations { "relations": [...] }`
 
 Full contract details: `memory-contract` skill
 
