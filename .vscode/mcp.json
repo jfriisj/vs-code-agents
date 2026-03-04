@@ -2,10 +2,10 @@
   "servers": {
     "memory": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_FILE_PATH": "${workspaceFolder}/.vscode/memory.jsonl"
+      }
     },
     "filesystem": {
       "command": "npx",
