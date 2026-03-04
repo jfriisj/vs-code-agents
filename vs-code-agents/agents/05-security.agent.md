@@ -3,8 +3,8 @@ description: Comprehensive security audit specialist - architecture, code, depen
 name: 05-Security
 target: vscode
 argument-hint: Describe the code, component, or PR to security-review
-tools: ['execute/getTerminalOutput', 'execute/runTask', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: GPT-5.2 (copilot)
+tools: ['execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
+model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Request Analysis
     agent: 03-Analyst
@@ -293,6 +293,18 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
 **Self-check on start**: Before starting work, scan `agent-output/security/` for docs with terminal Status (Committed, Released, Abandoned, Deferred) outside `closed/`. Move them to `closed/` first.
 
 ---
+
+# Planka Workflow Sync
+
+**MANDATORY**: Load `planka-workflow` skill at session start.
+
+Workflow contract:
+- Markdown artifacts in `agent-output/` are the source of truth.
+- Planka + Memory are synchronized operational views.
+- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
+- Move the primary workflow card to this agent's list when work starts.
+- On handoff, move the card to the receiving agent list and add a short handoff comment.
+- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
 
 # Memory Contract
 

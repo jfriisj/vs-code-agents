@@ -3,7 +3,7 @@ description: Captures lessons learned, architectural decisions, and patterns aft
 name: 12-Retrospective
 target: vscode
 argument-hint: Reference the completed plan or release to retrospect on
-tools: ['read/readFile', 'edit/createDirectory', 'edit/createFile', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
+tools: ['read/readFile', 'edit/createDirectory', 'edit/createFile', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
 model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Update Architecture
@@ -168,6 +168,18 @@ Status: Active
 **Closure**: PI agent closes your retrospective doc after extracting process improvements.
 
 ---
+
+# Planka Workflow Sync
+
+**MANDATORY**: Load `planka-workflow` skill at session start.
+
+Workflow contract:
+- Markdown artifacts in `agent-output/` are the source of truth.
+- Planka + Memory are synchronized operational views.
+- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
+- Move the primary workflow card to this agent's list when work starts.
+- On handoff, move the card to the receiving agent list and add a short handoff comment.
+- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
 
 # Memory Contract
 

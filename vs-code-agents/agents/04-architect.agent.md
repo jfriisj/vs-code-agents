@@ -3,8 +3,8 @@ description: Maintains architectural coherence across features and reviews techn
 name: 04-Architect
 target: vscode
 argument-hint: Describe the feature, component, or system area requiring architectural review
-tools: ['execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: GPT-5.2 (copilot)
+tools: ['execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
+model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Validate Roadmap Alignment
     agent: 01-Roadmap
@@ -163,6 +163,18 @@ Escalation:
 - Self-check on start: Scan `agent-output/architecture/` for findings docs with terminal Status outside `closed/`. Move them first.
 
 ---
+
+# Planka Workflow Sync
+
+**MANDATORY**: Load `planka-workflow` skill at session start.
+
+Workflow contract:
+- Markdown artifacts in `agent-output/` are the source of truth.
+- Planka + Memory are synchronized operational views.
+- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
+- Move the primary workflow card to this agent's list when work starts.
+- On handoff, move the card to the receiving agent list and add a short handoff comment.
+- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
 
 # Memory Contract
 

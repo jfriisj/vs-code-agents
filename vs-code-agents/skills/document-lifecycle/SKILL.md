@@ -19,6 +19,23 @@ Every work chain shares a single ID. When Analyst creates analysis 080, the down
 
 Documents in terminal status belong in `closed/` subfolders. Active work stays visible; completed work is archived but accessible.
 
+## Operational Sync Model
+
+Markdown in `agent-output/` remains the **source of truth**.
+
+Operational visibility is synchronized across:
+- **Planka boards** (live workflow state by active agent)
+- **Memory graph** (durable decisions, constraints, and mappings)
+
+When state differs between systems:
+1. Trust Markdown artifacts first
+2. Reconcile Planka state to match Markdown
+3. Persist reconciliation context in Memory
+
+Board granularity rule:
+- One Planka board per workflow process (`WF-[ID]-[short-title]`)
+- Primary workflow card moves between agent lists as ownership changes
+
 ---
 
 ## Terminal Statuses
@@ -83,6 +100,8 @@ When a document reaches terminal status:
 3. **Create closed folder** if needed: `mkdir -p agent-output/<domain>/closed/`
 4. **Move file**: `mv agent-output/<domain>/NNN-name.md agent-output/<domain>/closed/`
 5. **Log action**: "Closed document NNN-name.md (Status: [status])"
+6. **Move Planka primary workflow card** to `Closed` list and append terminal-status note
+7. **Store closure mapping in Memory** (document status + board/card final state)
 
 ### Cross-Reference Handling
 

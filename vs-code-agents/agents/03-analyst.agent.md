@@ -3,8 +3,8 @@ description: Research and analysis specialist for code-level investigation and d
 name: 03-Analyst
 target: vscode
 argument-hint: Describe the technical question, API, or system behavior to investigate
-tools: ['vscode/vscodeAPI', 'execute/getTerminalOutput', 'execute/runInTerminal', 'execute/runNotebookCell', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: GPT-5.2 (copilot)
+tools: ['vscode/vscodeAPI', 'execute/getTerminalOutput', 'execute/runInTerminal', 'execute/runNotebookCell', 'read', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
+model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Create Plan
     agent: 02-Planner
@@ -97,6 +97,18 @@ Status: Active
 **Closure**: Planner closes your analysis doc when creating a plan from it.
 
 ---
+
+# Planka Workflow Sync
+
+**MANDATORY**: Load `planka-workflow` skill at session start.
+
+Workflow contract:
+- Markdown artifacts in `agent-output/` are the source of truth.
+- Planka + Memory are synchronized operational views.
+- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
+- Move the primary workflow card to this agent's list when work starts.
+- On handoff, move the card to the receiving agent list and add a short handoff comment.
+- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
 
 # Memory Contract
 

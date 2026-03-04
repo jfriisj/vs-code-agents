@@ -3,7 +3,7 @@ description: DevOps specialist responsible for packaging, versioning, deployment
 name: 11-DevOps
 target: vscode
 argument-hint: Specify the version to release or deployment task to perform
-tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
 model: GPT-5.1-Codex-Mini (Preview) (copilot)
 handoffs:
   - label: Request Implementation Fixes
@@ -177,6 +177,18 @@ Escalation:
 **Note**: Deployment docs (`deployment/`) may stay open for rollback reference; close only after release is stable.
 
 ---
+
+# Planka Workflow Sync
+
+**MANDATORY**: Load `planka-workflow` skill at session start.
+
+Workflow contract:
+- Markdown artifacts in `agent-output/` are the source of truth.
+- Planka + Memory are synchronized operational views.
+- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
+- Move the primary workflow card to this agent's list when work starts.
+- On handoff, move the card to the receiving agent list and add a short handoff comment.
+- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
 
 # Memory Contract
 

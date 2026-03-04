@@ -3,8 +3,8 @@ description: Constructive reviewer and program manager that stress-tests plannin
 name: 06-Critic
 target: vscode
 argument-hint: Reference the plan or architecture document to critique (e.g., plan 002)
-tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo']
-model: GPT-5.2 (copilot)
+tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
+model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Revise Plan
     agent: 02-Planner
@@ -123,6 +123,18 @@ Status: OPEN
 **Self-check on start**: Before starting work, scan `agent-output/critiques/` for docs with Status "Resolved" outside `closed/`. Move them to `closed/` first.
 
 ---
+
+# Planka Workflow Sync
+
+**MANDATORY**: Load `planka-workflow` skill at session start.
+
+Workflow contract:
+- Markdown artifacts in `agent-output/` are the source of truth.
+- Planka + Memory are synchronized operational views.
+- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
+- Move the primary workflow card to this agent's list when work starts.
+- On handoff, move the card to the receiving agent list and add a short handoff comment.
+- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
 
 # Memory Contract
 

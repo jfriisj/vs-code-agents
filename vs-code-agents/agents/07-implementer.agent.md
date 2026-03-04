@@ -3,9 +3,13 @@ description: Execution-focused coding agent that implements approved plans.
 name: 07-Implementer
 target: vscode
 argument-hint: Reference the approved plan to implement (e.g., plan 002)
-tools: ['vscode/vscodeAPI', 'execute', 'read', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'todo', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment']
-model: GPT-5.2-Codex (copilot)
+tools: ['vscode/vscodeAPI', 'execute', 'read', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment']
+model: GPT-5.3-Codex (copilot)
 handoffs:
+  - label: Continue Implementation
+    agent: agent
+    prompt: Continue implementing the plan
+    send: true
   - label: Request Analysis
     agent: 03-Analyst
     prompt: I've encountered technical unknowns during implementation. Please investigate.
@@ -299,6 +303,18 @@ Status: Active
 **Closure**: DevOps closes your implementation doc after successful commit.
 
 ---
+
+# Planka Workflow Sync
+
+**MANDATORY**: Load `planka-workflow` skill at session start.
+
+Workflow contract:
+- Markdown artifacts in `agent-output/` are the source of truth.
+- Planka + Memory are synchronized operational views.
+- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
+- Move the primary workflow card to this agent's list when work starts.
+- On handoff, move the card to the receiving agent list and add a short handoff comment.
+- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
 
 # Memory Contract
 

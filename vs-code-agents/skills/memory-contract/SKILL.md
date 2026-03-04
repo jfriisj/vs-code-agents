@@ -24,6 +24,27 @@ Memory is not a formality—it is part of your reasoning. Treat retrieval like a
 
 **The cost/benefit rule:** Retrieval is cheap (sub-second, a few hundred tokens). Proceeding without context when it exists is expensive (wrong answers, repeated mistakes, user frustration). When in doubt, retrieve.
 
+## Planka Interoperability Contract
+
+Markdown artifacts remain authoritative. Memory and Planka are synchronized operational views.
+
+When Planka workflow tracking is enabled:
+- Store workflow mapping entities: `Workflow ID` ↔ `Board` ↔ `Primary Card`
+- Store active ownership transitions (`from agent` → `to agent`)
+- Store drift/reconciliation events whenever Markdown and Planka temporarily diverge
+- Keep Memory mapping aligned with markdown truth file: `agent-output/planka/workflow-index.md`
+
+Recommended stored fields at each sync boundary:
+- Workflow ID / Origin / UUID
+- Board name or board id
+- Primary card id
+- Current agent and lifecycle status
+- Last sync timestamp
+
+If Planka is unavailable:
+- Continue retrieval/storage for Markdown-driven lifecycle context
+- Record that operational board sync is deferred
+
 ---
 
 ## When to Retrieve
