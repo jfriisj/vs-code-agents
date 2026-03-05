@@ -1,63 +1,62 @@
-# Planka Board Template (Per Workflow Process)
+# Planka Board Template (Agile Epic Management)
 
-Use one board per workflow process (`WF-[ID]-[short-title]`).
+**Project**: `Product Roadmap`
+**Board**: `Epics`
 
-## Lists
+## Status Lists (Columns)
+Kortene bevæger sig gennem disse kolonner baseret på deres overordnede livscyklus.
 
-1. `01-Roadmap`
-2. `02-Planner`
-3. `03-Analyst`
-4. `04-Architect`
-5. `05-Security`
-6. `06-Critic`
-7. `07-Implementer`
-8. `08-Code Reviewer`
-9. `09-QA`
-10. `10-UAT`
-11. `11-DevOps`
-12. `12-Retrospective`
-13. `13-Process Improvement`
-14. `Blocked`
-15. `Closed`
+1. `Planned` (Backlog og godkendte Epics)
+2. `In Progress` (Epics under aktiv udvikling, test eller review)
+3. `Delivered` (Kode i produktion)
+4. `Deferred` (Udskudt eller droppet)
+5. `Closed` (Terminal tilstand for gamle kort)
 
-## Primary Workflow Card
+## Primary Workflow Card (Epic)
+Hvert kort repræsenterer en komplet Epic.
 
-**Title**: `WF-[ID] [Plan/Topic Title]`
+**Title**: `Epic [X.Y]: [Title]`
+**Due Date**: Sync from release `**Target Date**` when available (`YYYY-MM-DDT23:59:59.000Z`).
 
 **Description template**:
+Beskrivelsen fungerer som "Single Source of Truth" i Planka. Den indeholder Epic-definitionen i toppen, og agenterne tilføjer løbende links til deres markdown-filer i bunden.
 
-```markdown
-ID: [NNN]
-Origin: [NNN]
-UUID: [8-char]
-Primary Markdown Artifact: agent-output/[domain]/[file].md
-Current Status: [Active/In Progress/QA Complete/UAT Approved/Released/etc]
-Current Agent: [Agent Name]
-Last Synced At: [ISO-8601]
-```
+**User Story**:
+As a [user type], I want [capability/outcome], So that [business value/benefit].
 
-## Standard Metadata and Control Features
+**Business Value**:
+- [Why this matters]
 
-Use these Planka features on the primary workflow card:
+**Dependencies**:
+- [List]
 
-- **Labels**: At least one status/risk label (e.g., `Blocked`, `Needs Review`, `Ready for Release`)
-- **Task list**: `Workflow Checklist` with phase-completion tasks
-- **Comments**: Use handoff template for each agent transition
-- **Attachments**: Add evidence artifacts (logs, screenshots, reports)
-- **Card members**: Assign active owner(s)
-- **Stopwatch**: Start/stop for effort tracking on active execution phases
-- **Custom fields**: Maintain structured fields for Workflow ID, Artifact, Status, Current Agent
-- **Subscribe**: Active owner subscribed; unsubscribe when handoff complete
+**Acceptance Criteria** (outcome-focused):
+- [ ] [Observable outcome 1]
+- [ ] [Observable outcome 2]
 
-## Handoff Comment Template
+**Constraints**:
+- [List]
 
-```markdown
-Handoff From: [Agent A]
-Handoff To: [Agent B]
-Updated Artifacts:
-- agent-output/[domain]/[file].md
-Summary:
-- [one-line outcome]
-Next:
-- [next expected action]
-```
+**Labels (Portfolio Overview):**
+- `Release vX.Y.Z`
+- `Priority P0|P1|P2|P3`
+
+**Default Task-List Scaffolding (bootstrap mode `--ensure-task-lists`):**
+- `Acceptance Criteria`
+- `Analysis & Spikes`
+- `Architecture & Design`
+- `Security & Compliance`
+- `Implementation`
+- `Code Review`
+- `QA & Testing`
+- `UAT & Acceptance`
+- `Release & Deployment`
+- `Retrospective & Learnings`
+
+---
+**Artifacts (Appended by agents):**
+- [Analysis]: agent-output/analysis/...
+- [Plan]: agent-output/planning/...
+- [Architecture]: agent-output/architecture/...
+- [Implementation]: agent-output/implementation/...
+- [QA]: agent-output/qa/...

@@ -24,19 +24,19 @@ This repository provides **specialized AI agents** that each own a specific part
 
 | Agent | Role |
 |-------|------|
-| **Roadmap** | Product vision and epics |
-| **Planner** | Implementation-ready plans (WHAT, not HOW) |
-| **Analyst** | Deep technical research |
-| **Architect** | System design and patterns |
-| **Critic** | Plan quality review |
-| **Security** | Comprehensive security assessment |
-| **Implementer** | Code and tests |
-| **Code Reviewer** | Code quality gate before QA |
-| **QA** | Test strategy and verification |
-| **UAT** | Business value validation |
-| **DevOps** | Packaging and releases |
-| **Retrospective** | Lessons learned |
-| **ProcessImprovement** | Workflow evolution |
+| **01-Roadmap** | Product vision and epics |
+| **02-Planner** | Implementation-ready plans (WHAT, not HOW) |
+| **03-Analyst** | Deep technical research |
+| **04-Architect** | System design and patterns |
+| **05-Security** | Comprehensive security assessment |
+| **06-Critic** | Plan quality review |
+| **07-Implementer** | Code and tests |
+| **08-Code Reviewer** | Code quality gate before QA |
+| **09-QA** | Test strategy and verification |
+| **10-UAT** | Business value validation |
+| **11-DevOps** | Packaging and releases |
+| **12-Retrospective** | Lessons learned |
+| **13-Process Improvement** | Workflow evolution |
 
 Each agent has **clear constraints** (Planner can't write code, Implementer can't redesign) and produces **structured documents** that create an audit trail.
 
@@ -57,8 +57,8 @@ Copy agents to your workspace (per-repo, recommended):
 your-project/
 └── .github/
     └── agents/
-        ├── planner.agent.md
-        ├── implementer.agent.md
+        ├── 02-planner.agent.md
+        ├── 07-implementer.agent.md
         └── ... (others you need)
 ```
 
@@ -96,7 +96,7 @@ Enable a Memory server in your environment and ensure the agent has access to th
 You can also use these agents with the GitHub Copilot CLI by placing your `.agent.md` files under `.github/agents/` in each repository where you run the CLI, then invoking them with commands like:
 
 ```bash
-copilot --agent planner --prompt "Create a plan for adding user authentication"
+copilot --agent 02-planner --prompt "Create a plan for adding user authentication"
 ```
 
 **Known limitation (user-level agents):** The Copilot CLI currently has an upstream bug where user-level agents in `~/.copilot/agents/` are not loaded, even though they are documented ([github/copilot-cli#452](https://github.com/github/copilot-cli/issues/452)). This behavior and the recommended per-repository workaround were identified and documented by @rjmurillo. Until the bug is fixed, prefer `.github/agents/` in each repo.
@@ -116,7 +116,7 @@ copilot --agent planner --prompt "Create a plan for adding user authentication"
 ### Typical Workflow
 
 ```text
-Roadmap → Planner → Analyst/Architect/Security/Critic → Implementer → Code Reviewer → QA → UAT → DevOps
+01-Roadmap → 02-Planner → 03-Analyst/04-Architect/05-Security/06-Critic → 07-Implementer → 08-Code Reviewer → 09-QA → 10-UAT → 11-DevOps
 ```
 
 1. **Roadmap** defines what to build and why
@@ -170,6 +170,8 @@ This repo ships an example MCP configuration at `.vscode/mcp.json` with these se
 | `filesystem` | `filesystem_*` |
 | `github` | `github_*` |
 | `analyzer` | `analyzer_*` |
+| `planka` | `planka_*` |
+| `mcp-obsidian` | `mcp-obsidian_*` |
 
 If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes accordingly (e.g. `fs_*`). Ensure your `.agent.md` files allow the tool namespaces they need.
 
@@ -178,28 +180,47 @@ If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes acc
 ## Repository Structure
 
 ```text
-agents/
-├── CHANGELOG.md                 # Notable changes
-├── README.md                    # This file
-├── USING-AGENTS.md              # Quick start guide
-├── AGENTS-DEEP-DIVE.md          # Comprehensive documentation
-├── LICENSE                      # MIT License
-└── vs-code-agents/              # Agent definitions
-    ├── analyst.agent.md
-    ├── architect.agent.md
-    ├── critic.agent.md
-    ├── devops.agent.md
-    ├── implementer.agent.md
-    ├── pi.agent.md              # ProcessImprovement
-    ├── planner.agent.md
-    ├── qa.agent.md
-    ├── code-reviewer.agent.md
-    ├── retrospective.agent.md
-    ├── roadmap.agent.md
-    ├── security.agent.md
-    ├── uat.agent.md
-    └── reference/
-        └── memory-contract-example.md
+.
+├── AGENTS-DEEP-DIVE.md
+├── CHANGELOG.md
+├── LICENSE
+├── README.md
+├── USING-AGENTS.md
+├── workflows/
+│   └── markdown-lint.yml
+└── vs-code-agents/
+    ├── agents/
+    │   ├── 01-roadmap.agent.md
+    │   ├── 02-planner.agent.md
+    │   ├── 03-analyst.agent.md
+    │   ├── 04-architect.agent.md
+    │   ├── 05-security.agent.md
+    │   ├── 06-critic.agent.md
+    │   ├── 07-implementer.agent.md
+    │   ├── 08-code-reviewer.agent.md
+    │   ├── 09-qa.agent.md
+    │   ├── 10-uat.agent.md
+    │   ├── 11-devops.agent.md
+    │   ├── 12-retrospective.agent.md
+    │   └── 13-pi.agent.md
+    ├── reference/
+    │   ├── agents.md
+    │   ├── memory-contract-example.md
+    │   ├── security-language-vuln-reference.md
+    │   └── uncertainty-review-template.md
+    └── skills/
+        ├── analysis-methodology/
+        ├── architecture-patterns/
+        ├── code-review-checklist/
+        ├── code-review-standards/
+        ├── cross-repo-contract/
+        ├── document-lifecycle/
+        ├── engineering-standards/
+        ├── memory-contract/
+        ├── planka-workflow/
+        ├── release-procedures/
+        ├── security-patterns/
+        └── testing-patterns/
 ```
 
 ---
@@ -225,7 +246,7 @@ Most developers don't know how to conduct thorough security reviews. They miss:
 
 The Security Agent systematically checks all of these, producing actionable findings with severity ratings and remediation guidance.You can then hand this off to the Planner agent and the Implementer to address. 
 
-See [security.agent.md](vs-code-agents/security.agent.md) for the full specification.
+See [05-security.agent.md](vs-code-agents/agents/05-security.agent.md) for the full specification.
 
 ---
 
@@ -246,6 +267,29 @@ Edit `.agent.md` files to adjust:
 3. Include the Memory Contract section
 4. Add to `.github/agents/` in your workspace
 
+If you are contributing to this repository directly, place agent specs under `vs-code-agents/agents/`.
+
+---
+
+## Skills Catalog
+
+All reusable skills live under `vs-code-agents/skills/`. Every skill includes a `SKILL.md`, and some skills also include optional `references/` and `scripts/` resources.
+
+| Skill | Focus | Included resources |
+|-------|-------|--------------------|
+| [analysis-methodology](vs-code-agents/skills/analysis-methodology/SKILL.md) | Systematic investigation workflow (confidence levels, gap tracking, handoff protocol) | `SKILL.md` |
+| [architecture-patterns](vs-code-agents/skills/architecture-patterns/SKILL.md) | Architecture patterns, ADR templates, and anti-pattern detection | `SKILL.md`, `references/diagram-templates.md` |
+| [code-review-checklist](vs-code-agents/skills/code-review-checklist/SKILL.md) | Pre/post-implementation review criteria with severity-oriented checks | `SKILL.md`, `scripts/check-complexity.sh`, `scripts/pre-review-check.sh`, `scripts/run-linters.sh` |
+| [code-review-standards](vs-code-agents/skills/code-review-standards/SKILL.md) | Review checklist, severity definitions, and review document templates | `SKILL.md` |
+| [cross-repo-contract](vs-code-agents/skills/cross-repo-contract/SKILL.md) | Multi-repo API contract discovery, type safety, and coordinated contract changes | `SKILL.md` |
+| [document-lifecycle](vs-code-agents/skills/document-lifecycle/SKILL.md) | Unified numbering, terminal statuses, close procedures, and orphan detection | `SKILL.md`, `references/close-procedure.md` |
+| [engineering-standards](vs-code-agents/skills/engineering-standards/SKILL.md) | SOLID/DRY/YAGNI/KISS guidance with detection and refactoring patterns | `SKILL.md`, `references/refactoring-catalog.md` |
+| [memory-contract](vs-code-agents/skills/memory-contract/SKILL.md) | Unified memory retrieval/storage contract for durable cross-session context | `SKILL.md` |
+| [planka-workflow](vs-code-agents/skills/planka-workflow/SKILL.md) | Status-only Planka workflow synchronization contract across markdown, Planka, and memory | `SKILL.md`, `references/*`, `scripts/*.py` |
+| [release-procedures](vs-code-agents/skills/release-procedures/SKILL.md) | Versioning, release verification, and deployment process checks | `SKILL.md`, `references/release-templates.md` |
+| [security-patterns](vs-code-agents/skills/security-patterns/SKILL.md) | OWASP + language-specific vulnerability patterns and remediation guidance | `SKILL.md`, `references/*`, `scripts/check-dependencies.sh`, `scripts/check-secrets.sh`, `scripts/security-scan.sh` |
+| [testing-patterns](vs-code-agents/skills/testing-patterns/SKILL.md) | TDD workflow, test pyramid, coverage strategy, mocking, and anti-patterns | `SKILL.md`, `references/*`, `scripts/check-coverage.sh`, `scripts/run-tests.sh`, `scripts/validate-tests.sh` |
+
 ---
 
 ## Recent Updates
@@ -265,19 +309,7 @@ Agents now explicitly avoid forced root-cause narratives when evidence is missin
 
 Agents now use **Claude Skills**—modular, reusable instruction sets that load on-demand:
 
-| Skill | Purpose |
-|-------|---------|
-| `memory-contract` | Unified Memory retrieval/storage contract |
-| `analysis-methodology` | Confidence levels, gap tracking, investigation techniques |
-| `architecture-patterns` | ADR templates, patterns, anti-pattern detection |
-| `code-review-checklist` | Pre/post-implementation review criteria |
-| `code-review-standards` | Code review checklist, severity definitions, document templates |
-| `cross-repo-contract` | Multi-repo API type safety and contract coordination |
-| `document-lifecycle` | Unified numbering, automated closure, orphan detection |
-| `engineering-standards` | SOLID, DRY, YAGNI, KISS with detection patterns |
-| `release-procedures` | Two-stage release workflow, semver, platform constraints |
-| `security-patterns` | OWASP Top 10, language-specific vulnerabilities |
-| `testing-patterns` | TDD workflow, test pyramid, coverage strategies |
+For the current complete list of skills and included references/scripts, see [Skills Catalog](#skills-catalog).
 
 **Skill Placement:**
 - **VS Code Stable (1.107.1)**: Place in `.claude/skills/`
@@ -288,6 +320,8 @@ Agents now use **Claude Skills**—modular, reusable instruction sets that load 
 
 ### Key Agent Flow Improvements
 
+- **Numbered agent IDs**: Agent names and filenames now follow a stable numbered sequence (`01-...` through `13-...`) for predictable ordering and handoff consistency.
+- **Planka workflow sync (status-only runtime)**: Agents now include a mandatory `planka-workflow` contract to keep workflow cards, list moves, stopwatch transitions, and handoff comments synchronized with markdown artifacts.
 - **TDD mandatory**: Implementer and QA now require Test-Driven Development for new feature code
 - **Two-stage release**: DevOps commits locally first; pushes only on explicit release approval
 - **Document status tracking**: All agents update Status fields in planning docs ("Draft", "In Progress", "Released")

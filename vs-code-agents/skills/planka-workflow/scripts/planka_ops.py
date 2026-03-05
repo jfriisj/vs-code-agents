@@ -262,7 +262,7 @@ def catalog_payload() -> dict[str, Any]:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Full-feature Planka MCP operations CLI")
+    parser = argparse.ArgumentParser(description="Planka MCP operations CLI")
     parser.add_argument("--mcp-url", default="http://localhost:25478/mcp")
 
     subparsers = parser.add_subparsers(dest="command", required=True)

@@ -11,12 +11,6 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
     },
-    "huggingface": {
-      "url": "https://huggingface.co/mcp",
-      "headers": {
-        "Authorization": "Bearer <HF_TOKEN>"
-      }
-    },
     "analyzer": {
       "command": "uvx",
       "args": ["mcp-server-analyzer"]
@@ -29,15 +23,12 @@
       "url": "http://localhost:25478/mcp"
     },
     "mcp-obsidian": {
-      "command": "uvx",
+      "command": "npx",
       "args": [
-        "mcp-obsidian"
-      ],
-      "env": {
-        "OBSIDIAN_API_KEY": "<your_api_key_here>",
-        "OBSIDIAN_HOST": "<your_obsidian_host>",
-        "OBSIDIAN_PORT": "<your_obsidian_port>"
-      }
+        "-y",
+        "@mauricio.wolff/mcp-obsidian@0.8.1",
+        "${workspaceFolder}/agent-output"
+      ]
     }
   }
 }

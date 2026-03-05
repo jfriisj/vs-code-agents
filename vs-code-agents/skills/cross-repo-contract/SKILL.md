@@ -1,3 +1,12 @@
+---
+name: cross-repo-contract
+description: A skill for maintaining and adhering to cross-repository API contracts through local contract definitions, automated sync, and type validation. Ensures consistent implementation and consumption of APIs across repos.
+license: MIT
+metadata:
+  author: groupzer0
+  version: "1.0"
+
+
 # Cross-Repository API Contract Skill
 
 ## Purpose

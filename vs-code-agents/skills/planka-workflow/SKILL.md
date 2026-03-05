@@ -1,291 +1,175 @@
-````skill
 ---
 name: planka-workflow
-description: Operational synchronization contract for agent lifecycle tracking in Planka MCP. Markdown remains source of truth; Planka + Memory provide live workflow visibility.
+description: Agile Epic Management and synchronization contract for Planka MCP. Markdown remains the source of truth; Planka provides live agile execution visibility.
 license: MIT
 metadata:
   author: groupzer0
-  version: "1.1"
+  version: "2.0"
 ---
 
-# Planka Workflow
+# Planka Workflow (Agile Epic Management)
 
-Unified operational workflow tracking with Planka boards.
+Unified Agile workflow tracking with Planka boards.
 
 Use this skill when:
-- Starting or continuing any agent workflow process
-- Handing work between agents
-- Reconciling lifecycle status across Markdown, Planka, and Memory
+- Synchronizing Epics from the Product Roadmap to Planka.
+- Breaking down Acceptance Criteria into actionable Tasks.
+- Executing cross-functional work (Analysis, Architecture, Security, QA) on a shared Epic.
+- Tracking execution time and status transitions.
 
 ---
 
 ## Source of Truth Model
 
-**Canonical source**: Markdown artifacts in `agent-output/`.
+**Canonical source**: Markdown artifacts in `agent-output/` (specifically `product-roadmap.md` and individual planning/domain docs).
 
-Planka and Memory are synchronized operational views:
-- **Planka**: live execution board (who is working now, what stage is active)
-- **Memory**: durable context for decisions, constraints, and mappings
-- **Workflow index markdown**: `agent-output/planka/workflow-index.md` stores workflow↔project↔board↔card mappings for backup and cross-instance recovery
+Planka is the synchronized operational execution view:
+- **Planka**: Live Agile board tracking Epics, Tasks, and delivery status.
+- **Memory**: Durable context for decisions, constraints, and IDs.
 
 When conflicts occur:
-1. Trust Markdown first
-2. Update Planka to match Markdown
-3. Store reconciliation context in Memory
-
-Project isolation rule:
-- Agents MUST operate only within the mapped workflow project (`projectId`) from `agent-output/planka/workflow-index.md`.
-- Agents MUST NOT scan or operate across unrelated Planka projects/boards.
+1. Trust the Markdown artifacts first.
+2. Update Planka to match the Markdown state.
+3. Add a comment on the Planka card detailing the reconciliation.
 
 ---
 
-## Board Granularity
+## Board Granularity & Structure
 
-**Rule**: One board per workflow process.
+**Rule**: One master Project for the Roadmap, containing an "Epics" board.
 
-A workflow process is one cross-agent lifecycle chain (typically one shared document ID).
+**Project**: `Product Roadmap`
+**Board**: `Epics`
 
-Recommended board naming:
-- `WF-[ID]-[short-title]`
-- Example: `WF-042-audio-session-hotfix`
-
-The board reflects the **currently active agent** by card placement.
-
----
-
-## Required Board Structure
-
-Create lists in this exact order:
-1. `01-Roadmap`
-2. `02-Planner`
-3. `03-Analyst`
-4. `04-Architect`
-5. `05-Security`
-6. `06-Critic`
-7. `07-Implementer`
-8. `08-Code Reviewer`
-9. `09-QA`
-10. `10-UAT`
-11. `11-DevOps`
-12. `12-Retrospective`
-13. `13-Process Improvement`
-14. `Blocked`
-15. `Closed`
+Create lists in this exact order to represent the Epic Lifecycle:
+1. `Planned` (Backlog and upcoming Epics)
+2. `In Progress` (Actively being planned, developed, or tested)
+3. `Delivered` (Successfully deployed to production)
+4. `Deferred` (Paused or waived)
+5. `Closed` (Terminal state)
 
 ---
 
-## Full Feature Utilization Requirement
+## Card Model (The Epic)
 
-This workflow MUST leverage the full Planka capability surface across lifecycle operations.
+Each Card represents a single **Epic**.
+- **Card Name**: `Epic [X.Y]: [Title]`
+- **Description**: Contains the full Epic Markdown Template from the Roadmap (User Story, Business Value, Dependencies, Acceptance Criteria, Constraints).
 
-Required feature categories:
-- Projects — list/get/create/update/delete
-- Boards — list/get/create/update/delete
-- Lists — create/update/delete
-- Cards — get/create/update/move/delete
-- Labels — create/add/remove
-- Task lists & tasks — checklist creation, updates, completion tracking
-- Comments — get/add/delete
-- Attachments — upload (base64) and delete
-- Card members — add/remove ownership participants
-- Stopwatch — start/stop work timing
-- Custom fields — groups, fields, values
-- Subscribe — subscribe/unsubscribe notifications
+### Task Lists (Agent Workspaces)
+Instead of moving cards between agent-specific lists, the card stays in its Status List (e.g., `In Progress`). Agentes create and manage their own **Task Lists** inside the Epic card:
 
-Operational rule:
-- Use the smallest feature set needed for each step, but maintain capability coverage in tooling and workflow playbooks.
-- For destructive actions (delete operations), require explicit user intent.
-
----
-
-## Card Model
-
-Each workflow board MUST include one primary workflow card:
-- Title: `WF-[ID] [Plan/Topic Title]`
-- Description fields (minimum):
-  - `ID`
-  - `Origin`
-  - `UUID`
-  - `Primary Markdown Artifact`
-  - `Current Status`
-  - `Current Agent`
-  - `Last Synced At`
-
-Optional supporting cards can be used for substreams, but the primary card remains authoritative for active ownership.
+- `Acceptance Criteria` (Managed by Planner)
+- `Analysis & Spikes` (Managed by Analyst)
+- `Architecture & Design` (Managed by Architect)
+- `Security & Compliance` (Managed by Security)
+- `Implementation` (Managed by Implementer)
+- `Code Review` (Managed by Code Reviewer)
+- `QA & Testing` (Managed by QA)
+- `UAT & Acceptance` (Managed by UAT)
+- `Release & Deployment` (Managed by DevOps)
+- `Retrospective & Learnings` (Managed by Retrospective/PI)
 
 ---
 
 ## Synchronization Protocol
 
-### On Session Start (agent begins work)
-1. Resolve workflow ID from active artifact
-2. **MUST execute bootstrap command** to reconcile/create project+board+card:
+### 1. Portfolio Reconciliation (Roadmap Agent)
+Whenever the roadmap changes in `product-roadmap.md`:
+- Reconcile **all releases and all epics** to Planka in one pass (not only the currently-started epic).
+- Ensure Project, Board, and Status Lists exist (`project:create`, `board:create`, `list:create`).
+- Ensure every roadmap epic exists as a card, is in the matching lifecycle list, and has updated description + due date (from release `**Target Date**` when available).
+- Ensure labels for release and priority are present on each epic card.
+- Optionally bootstrap default agile task lists on each epic card (`--ensure-task-lists`) so downstream agents can execute directly in Planka.
 
-   ```bash
-   python .github/skills/planka-workflow/scripts/bootstrap_workflow_board.py \
-     --workflow-id <workflow-id> \
-     --title "<workflow-title>" \
-     --agent "<agent-name>" \
-     --status "<status>" \
-     --artifact "<primary-artifact-path>" \
-     --project-name "Universal Speech Translation Platform" \
-     --state-file "agent-output/planka/workflow-index.md" \
-     --create-project-if-missing
-   ```
+### Label Taxonomy (Portfolio Overview)
+- `Release vX.Y.Z` label on every epic for release grouping.
+- `Priority P0|P1|P2|P3` label on every epic for criticality overview.
+- Keep labels stable and reused by name; do not create duplicates with variant naming.
 
-3. Move card to current agent list (if not already there)
-4. Update card description/status metadata
-5. Store/update board+card mapping in Memory
-6. Persist/update workflow mapping in `agent-output/planka/workflow-index.md`
+### 2. Task Breakdown (Planner Agent)
+When planning an Epic:
+- Read the Epic Card's description to fetch Acceptance Criteria.
+- Create a Task List for the Acceptance Criteria (`tasklist:create`).
+- Add individual execution Tasks (`task:create`).
 
-If bootstrap fails, stop lifecycle sync actions and explicitly report the failure.
+### 3. Active Execution (All specialized agents)
+When an agent (Analyst, Architect, Security, Implementer, QA, Code Reviewer) works on an Epic:
+- **Start Stopwatch**: `stopwatch:start` to track time spent.
+- **Create Workspace**: If missing, create your specific Task List (`tasklist:create`).
+- **Log Tasks**: Add tasks for the specific checks, code, or validations you perform (`task:create`).
+- **Complete Work**: Stop the stopwatch (`stopwatch:stop`).
+- **Handoff / Report**: Add a comment summarizing the findings/verdict and link to your generated markdown artifact (`comment:add`).
 
-### During Work
-- Keep Markdown updates first
-- Reflect state transitions in Planka after Markdown updates
-- Record key decisions/constraints in Memory
-
-### On Handoff
-1. Ensure Markdown artifacts are saved/updated
-2. **MUST execute handoff sync command**:
-
-   ```bash
-   python .github/skills/planka-workflow/scripts/sync_workflow_handoff.py \
-     --project-id <project-id> \
-     --workflow-id <workflow-id> \
-     --from-agent "<from-agent>" \
-     --to-agent "<to-agent>" \
-     --status "<status>" \
-     --artifact "<primary-artifact-path>" \
-     --summary "<handoff-summary>" \
-     --next "<next-step>" \
-     --state-file "agent-output/planka/workflow-index.md"
-   ```
-
-3. Add short handoff note on card (what changed, what is next)
-4. Move card to receiving agent list
-5. Store handoff relation in Memory
-
-### On Terminal Status
-When workflow reaches terminal lifecycle status (`Committed`, `Released`, `Resolved`, `Abandoned`, `Deferred`, `Superseded`):
-1. Close/move Markdown artifact per `document-lifecycle`
-2. Move primary card to `Closed`
-3. Add terminal status note + timestamp on card
-4. Store final state in Memory
-
----
-
-## Drift Detection and Reconciliation
-
-Drift example: card in `09-QA` while plan status is `In Progress` with implementer active.
-
-Reconciliation order:
-1. Confirm latest Markdown status + changelog
-2. Correct Planka list/metadata to match
-3. Add reconciliation comment to card
-4. Persist drift context in Memory
-
----
-
-## Failure Mode
-
-If Planka MCP is unavailable:
-1. Continue workflow using Markdown + Memory (do not block delivery)
-2. Add a “Planka desync” note in active artifact changelog
-3. Reconcile board state when Planka is restored
-
----
-
-## Tool Usage Guidance
-
-Use Planka MCP operations for:
-- Project and board discovery (`list_projects`, `list_boards`, `get_board`)
-- Board/list setup (`create_board`, `create_list`, `update_list`)
-- Workflow card management (`create_card`, `update_card`, `move_card`, `get_card`)
-- Handoff audit trail (`add_comment`, `get_comments`)
-- Optional metadata (`create_custom_field_group`, `create_custom_field`, `set_custom_field_value`)
-- Full feature operations (`planka_ops.py`) spanning all categories above
-
-Prefer idempotent actions:
-- List/find before create
-- Update/move only when state differs
+### 4. Terminal Lifecycle (DevOps & UAT)
+When an Epic is deployed:
+- DevOps moves the Epic Card to the `Delivered` list (`card:move`).
+- UAT and DevOps leave final approval and deployment comments.
 
 ---
 
 ## Script Helpers
 
-Use these scripts for structured operations:
+The primary engine for Planka operations is `planka_ops.py`. 
+*Note: The old `bootstrap_workflow_board.py` and `sync_workflow_handoff.py` are legacy scripts from the "Status-Only" model and should generally be avoided in favor of direct Agile operations via `planka_ops.py`.*
 
-- `scripts/bootstrap_workflow_board.py`
-  - bootstrap/reconcile project + board + required lists + primary workflow card
-- `scripts/sync_workflow_handoff.py`
-  - move card across agent lists, update card metadata, add handoff comment
-- `scripts/planka_ops.py`
-  - full-feature operations CLI for all Planka feature categories
-
----
-
-## Agent-by-Agent Execution Playbook
-
-Use the canonical 01→13 workflow runbook for `start`, `handoff`, and `close` operation sets:
-
-- `references/agent-playbook.md`
-- `references/feature-coverage-matrix.md`
-
-This playbook defines exactly which `planka_ops.py` / sync commands each agent executes and includes full feature-category coverage across the lifecycle.
-
-Quick examples:
+For roadmap-level synchronization, prefer `sync_roadmap_epics.py`:
 
 ```bash
-# Full catalog (all feature categories)
-python .github/skills/planka-workflow/scripts/planka_ops.py catalog
+# Parse roadmap and preview all required changes
+python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --dry-run
 
-# Run any operation by alias
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op project:create --arg name="Workflow Operations"
+# Apply full reconciliation (all epics, lists, labels, descriptions, due dates)
+python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py
 
-# Labels
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op label:create --arg boardId=<board-id> --arg name=Blocked --arg color=berry-red
+# Optional: do not write [CardID]/[BoardID] metadata back to roadmap Status lines
+python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --no-write-roadmap-status
 
-# Tasks/checklist + completion
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op tasklist:create --arg cardId=<card-id> --arg name="Acceptance Checklist"
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op task:update --arg taskId=<task-id> --arg isCompleted=true
+# Optional bootstrap: auto-create default agile task lists on each epic card
+python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --ensure-task-lists
+```
 
-# Attachment from local file
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op attachment:upload-file --arg cardId=<card-id> --arg path=./evidence.log
+By default, `sync_roadmap_epics.py` also writes `CardID` and `BoardID` into each epic's roadmap `**Status**` line for downstream agent traceability.
 
-# Card member + subscribe + stopwatch
+**Usage Example:**
+```bash
+# Create Task List
 python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op member:add --arg cardId=<card-id> --arg userId=<user-id>
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op subscribe:set --arg cardId=<card-id> --arg enabled=true
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op stopwatch:start --arg cardId=<card-id>
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op stopwatch:stop --arg cardId=<card-id>
+  --op tasklist:create --arg cardId=<id> --arg name="QA & Testing"
 
-# Custom fields
+# Add Task
 python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op customgroup:create --arg boardId=<board-id> --arg name="Workflow Metadata"
+  --op task:create --arg taskListId=<id> --arg name="Test edge case X"
+
+# Add Comment (Handoff/Verdict)
 python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op customvalue:set --arg cardId=<card-id> --arg groupId=<group-id> --arg fieldId=<field-id> --arg content="In Progress"
+  --op comment:add --arg cardId=<id> --arg text="QA Passed. Ready for UAT."
+
+# Move Card (Change Status)
+python .github/skills/planka-workflow/scripts/planka_ops.py run \
+  --op card:move --arg cardId=<id> --arg listId=<delivered_list_id>
 ```
 
 ---
 
-## Quick Mapping
+## Tool Usage Guidance
 
-| Artifact Status / Stage | Agent List | Planka Action |
-|---|---|---|
-| Planning started | `02-Planner` | Move card to planner list |
-| Implementation started | `07-Implementer` | Move card to implementer list |
-| Testing in progress | `09-QA` | Move card to QA list |
-| UAT validation | `10-UAT` | Move card to UAT list |
-| Release execution | `11-DevOps` | Move card to DevOps list |
-| Terminal lifecycle | `Closed` | Move card to Closed + add terminal note |
+Use Planka MCP operations (`planka_ops.py`) for:
+- Discovery (`list_projects`, `list_boards`, `get_board`, `get_card`)
+- Card & List management (`create_card`, `update_card`, `move_card`)
+- Task management (`create_task_list`, `create_task`, `update_task`)
+- Audit trail (`add_comment`)
+- Time tracking (`stopwatch:start`, `stopwatch:stop`)
 
-````
+Prefer idempotent actions:
+- List/find before create.
+- Update/move only when state differs.
+
+## Token & Quality Optimization Contract
+
+For high-quality low-token operation:
+- Do one board snapshot (`get_board`) per reconciliation run and compute diffs locally.
+- Allow targeted per-card fetch (`get_card`) only for task-list hydration and when board payload lacks required fields.
+- Write only changed entities (create missing cards/lists/labels, move status drift, update changed descriptions/due dates; create task-lists only when `--ensure-task-lists` is enabled).
+- Reuse existing labels by canonical names (`Release vX.Y.Z`, `Priority PX`) and remove obsolete release/priority labels from cards when needed.
+- Keep comments sparse and meaningful; description + labels + tasks should carry primary operational state.

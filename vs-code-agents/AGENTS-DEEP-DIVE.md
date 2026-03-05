@@ -34,17 +34,17 @@ A single general-purpose AI tries to do everything—plan, code, test, review—
 
 | Concern | Agent(s) | Key Constraint |
 |---------|----------|----------------|
-| **Vision** | Roadmap | Outcomes, not implementation |
-| **Planning** | Planner | WHAT/WHY, never HOW (no code) |
-| **Research** | Analyst | Analysis only, no fixes |
-| **Design** | Architect | Patterns, not implementation details |
-| **Quality** | Critic | Reviews, doesn't modify artifacts |
-| **Security** | Security | Findings, doesn't implement remediations |
-| **Implementation** | Implementer | Follows plans, doesn't redesign |
-| **Code Quality** | Code Reviewer | Quality gate before QA, can reject |
-| **Testing** | QA | Test strategy, not business value |
-| **Value** | UAT | Business value, not technical quality |
-| **Release** | DevOps | Requires explicit user approval |
+| **Vision** | 01-Roadmap | Outcomes, not implementation |
+| **Planning** | 02-Planner | WHAT/WHY, never HOW (no code) |
+| **Research** | 03-Analyst | Analysis only, no fixes |
+| **Design** | 04-Architect | Patterns, not implementation details |
+| **Quality** | 06-Critic | Reviews, doesn't modify artifacts |
+| **Security** | 05-Security | Findings, doesn't implement remediations |
+| **Implementation** | 07-Implementer | Follows plans, doesn't redesign |
+| **Code Quality** | 08-Code Reviewer | Quality gate before QA, can reject |
+| **Testing** | 09-QA | Test strategy, not business value |
+| **Value** | 10-UAT | Business value, not technical quality |
+| **Release** | 11-DevOps | Requires explicit user approval |
 
 ### Document-First Development
 
@@ -163,7 +163,7 @@ agent-output/
 
 ```text
 ┌──────────┐    ┌───────────────┐    ┌────────────────────┐
-│ Delivery │───▶│ Retrospective │───▶│ ProcessImprovement │
+│ Delivery │───▶│ Retrospective │───▶│ Process Improvement│
 │ complete │    │ (lessons)     │    │ (evolve agents)    │
 └──────────┘    └───────────────┘    └────────────────────┘
 ```
@@ -173,7 +173,7 @@ agent-output/
 **Example flow**:
 1. Feature shipped
 2. Select **Retrospective** → captures what went well/poorly
-3. Select **ProcessImprovement** → updates agent instructions if patterns emerge
+3. Select **Process Improvement** → updates agent instructions if patterns emerge
 
 ---
 
@@ -343,6 +343,8 @@ This repo includes an example `.vscode/mcp.json` with these servers:
 | `filesystem` | `filesystem_*` |
 | `github` | `github_*` |
 | `analyzer` | `analyzer_*` |
+| `planka` | `planka_*` |
+| `mcp-obsidian` | `mcp-obsidian_*` |
 
 If you rename a server, the tool prefix changes accordingly. Make sure the agent `tools:` allowlist includes the needed namespaces (for example `filesystem/*` if the agent needs to read/write files via MCP).
 
@@ -546,7 +548,7 @@ Plans do NOT contain:
 
 **Purpose**: Comprehensive security assessment and guidance.
 
-The Security Agent has been significantly enhanced to provide truly objective, comprehensive security reviews. See [security.agent.md](vs-code-agents/security.agent.md) for the full specification.
+The Security Agent has been significantly enhanced to provide truly objective, comprehensive security reviews. See [05-security.agent.md](vs-code-agents/agents/05-security.agent.md) for the full specification.
 
 **Five-Phase Framework**:
 1. **Architectural Security**: Trust boundaries, STRIDE threat modeling, attack surface
@@ -681,14 +683,14 @@ The Security Agent has been significantly enhanced to provide truly objective, c
 - Facilitate retrospective
 - Document what went well/poorly
 - Identify process improvements
-- Feed into ProcessImprovement
+- Feed into Process Improvement
 
 **Outputs**:
 - Retrospectives in `agent-output/retrospectives/`
 
 ---
 
-### ProcessImprovement Agent
+### Process Improvement Agent
 
 **Purpose**: Evolve the agent workflow based on retrospectives.
 
@@ -731,6 +733,7 @@ This means agents can have access to many skills without consuming context until
 | `release-procedures` | Two-stage release workflow, semver | Version consistency, platform constraints |
 | `security-patterns` | OWASP Top 10, language vulnerabilities | Python, JavaScript, Java, Go specific patterns |
 | `testing-patterns` | TDD workflow, test pyramid | Anti-patterns, coverage strategies, mocking |
+| `planka-workflow` | Board/list/card synchronization and handoff workflow | Workflow board conventions, list transitions, handoff comments |
 
 ### Skill Placement
 
@@ -781,7 +784,7 @@ Detailed instructions, tables, code examples...
 
 ### Adding New Agents
 
-1. Create `your-agent.agent.md` in `vs-code-agents/`
+1. Create `your-agent.agent.md` in `vs-code-agents/agents/`
 2. Follow the frontmatter format:
    ```yaml
    ---
@@ -819,7 +822,7 @@ Detailed instructions, tables, code examples...
 
 You can have project-specific agent variants:
 
-1. Copy agent from `vs-code-agents/` to `.github/agents/`
+1. Copy agent from `vs-code-agents/agents/` to `.github/agents/`
 2. Modify for project needs
 3. Project-specific agents override global agents with same name
 
@@ -1019,7 +1022,7 @@ Background results ──▶ Local: @QA verify tests
 |-------|--------|
 | Roadmap | Strategic decisions require user involvement |
 | Architect | System-level decisions need explicit review |
-| ProcessImprovement | Cross-cutting process changes need approval |
+| Process Improvement | Cross-cutting process changes need approval |
 | DevOps | Release actions require explicit user confirmation |
 
 **Subagent Invocation Example**:

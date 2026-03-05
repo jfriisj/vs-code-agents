@@ -1,278 +1,111 @@
-````markdown
-# Agent Playbook (01 → 13)
+# Agile Agent Playbook (01 → 13)
 
-This playbook defines exactly which `planka_ops.py` and sync scripts each agent executes at **start**, **handoff**, and **close**.
+This playbook defines the **visual, status-driven** Agile Epic operations for each agent.
+**Rule:** Markdown is the source of truth. Planka provides live, visual execution tracking.
 
 ## Global Conventions
 
 - `PLANKA_OPS="python .github/skills/planka-workflow/scripts/planka_ops.py run"`
-- `SYNC="python .github/skills/planka-workflow/scripts/sync_workflow_handoff.py"`
-- `BOOTSTRAP="python .github/skills/planka-workflow/scripts/bootstrap_workflow_board.py"`
-- `STATE_FILE="agent-output/planka/workflow-index.md"`
-- Append `--state-file "$STATE_FILE"` to every `BOOTSTRAP` and `SYNC` command.
-- Every **Start** stage must begin with bootstrap/reconcile:
-  - `$BOOTSTRAP --workflow-id <workflow-id> --title "<title>" --agent "<agent-name>" --status "<status>" --artifact "<primary-artifact-path>" --project-name "Universal Speech Translation Platform" --create-project-if-missing --state-file "$STATE_FILE"`
-- Always update Markdown first, then sync Planka.
-- Destructive operations (`*delete`) require explicit user confirmation.
+- All operations target the Epic Card using its `cardId`.
 
-Required placeholders:
-- `<workflow-id>`, `<project-id>`, `<board-id>`, `<card-id>`, `<from-agent>`, `<to-agent>`
+**Agent Workflow Steps (Always follow this order):**
+1. **Update Markdown**: Save your work in `agent-output/`.
+2. **Start Time**: Start the stopwatch on the Epic card.
+3. **Task Lists**: Create your agent-specific Task List (if missing) and add/check off Tasks to generate a visual Progress Bar.
+4. **Labels**: Keep release + priority labels consistent (`Release vX.Y.Z`, `Priority PX`) and add status/verdict labels only when needed. Remove old conflicting labels.
+5. **Single Source of Truth**: Update the Epic Card's description to append a link to your final markdown artifact (do not spam the comments).
+6. **Stop Time**: Stop the stopwatch.
 
-Operation-level coverage source:
-- `references/feature-coverage-matrix.md` (maps every list/get/create/update/delete and advanced operation alias)
+### Command Templates
 
----
+**Stopwatch:**
+```bash
+$PLANKA_OPS --op stopwatch:start --arg cardId=<card-id>
+$PLANKA_OPS --op stopwatch:stop --arg cardId=<card-id>
+```
 
-## 01-Roadmap
+**Task Lists (Progress Bar):**
+```bash
+$PLANKA_OPS --op tasklist:create --arg cardId=<card-id> --arg name="[Agent Workspace]"
+$PLANKA_OPS --op task:create --arg taskListId=<id> --arg name="[Task name]"
+$PLANKA_OPS --op task:update --arg taskId=<id> --arg isCompleted=true
+```
 
-**Start**
-- Bootstrap workflow board/card:
-  - `$BOOTSTRAP --workflow-id <workflow-id> --title "<title>" --agent "01-Roadmap" --status "Planned" --artifact "agent-output/roadmap/product-roadmap.md" --project-name "Universal Speech Translation Platform" --create-project-if-missing --state-file "$STATE_FILE"`
-- Set metadata foundation:
-  - `$PLANKA_OPS --op customgroup:create --arg boardId=<board-id> --arg name="Workflow Metadata"`
-  - `$PLANKA_OPS --op label:create --arg boardId=<board-id> --arg name="Feature" --arg color=bright-moss`
+**Labels (Visual Status):**
+```bash
+$PLANKA_OPS --op label:create --arg boardId=<id> --arg name="[Status]" --arg color="[hex]"
+$PLANKA_OPS --op label:add --arg cardId=<card-id> --arg labelId=<id>
+```
 
-**Handoff**
-- Transfer ownership to planner:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "01-Roadmap" --to-agent "02-Planner" --status "Planned" --artifact "agent-output/planning/<plan>.md" --summary "Roadmap alignment complete" --next "Create implementation-ready plan"`
-
-**Close**
-- If deferred/abandoned at strategy stage:
-  - `$PLANKA_OPS --op label:add --arg cardId=<card-id> --arg labelId=<deferred-label-id>`
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "01-Roadmap" --to-agent "Closed" --status "Deferred" --summary "Roadmap deferred by user"`
-
----
-
-## 02-Planner
-
-**Start**
-- Subscribe + assign active ownership:
-  - `$PLANKA_OPS --op subscribe:set --arg cardId=<card-id> --arg enabled=true`
-  - `$PLANKA_OPS --op member:add --arg cardId=<card-id> --arg userId=<planner-user-id>`
-- Create planning checklist:
-  - `$PLANKA_OPS --op tasklist:create --arg cardId=<card-id> --arg name="Planning Checklist"`
-  - `$PLANKA_OPS --op task:create --arg taskListId=<tasklist-id> --arg name="Value statement drafted"`
-
-**Handoff**
-- Move to analyst or critic:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "02-Planner" --to-agent "03-Analyst" --status "Analysis Requested" --artifact "agent-output/analysis/<analysis>.md" --summary "Research questions identified" --next "Investigate unknowns"`
-
-**Close**
-- Mark checklist completion before leaving planning stage:
-  - `$PLANKA_OPS --op task:update --arg taskId=<task-id> --arg isCompleted=true`
+**Description / Due Date Update:**
+```bash
+$PLANKA_OPS --op card:update --arg cardId=<card-id> --arg description="[Original Description] \n\n**Artifacts:**\n- agent-output/domain/file.md"
+$PLANKA_OPS --op card:update --arg cardId=<card-id> --arg dueDate="2026-03-31T23:59:59.000Z"
+```
 
 ---
 
-## 03-Analyst
+## Agent Operations Reference
 
-**Start**
-- Track active investigation time:
-  - `$PLANKA_OPS --op stopwatch:start --arg cardId=<card-id>`
-- Attach investigation artifacts:
-  - `$PLANKA_OPS --op attachment:upload-file --arg cardId=<card-id> --arg path=./agent-output/analysis/<evidence-file>`
+### 01-Roadmap
+- **Role**: Epic Creator & Status Manager
+- **Action**: Reconciles **all roadmap epics** to Project/Board (`Epics`) in one pass; creates missing cards and keeps lifecycle lists synchronized.
+- **Metadata**: Syncs card due dates from roadmap release `**Target Date**` and keeps card descriptions aligned.
+- **Task Lists**: Can bootstrap baseline agile task-list scaffolding on every epic card via `--ensure-task-lists`.
+- **Labels**: Ensures `Release vX.Y.Z` and `Priority PX` labels on every epic card for portfolio visibility.
+- **Move**: Moves the Epic Card between Status Lists as the lifecycle progresses.
 
-**Handoff**
-- Stop timer and transfer:
-  - `$PLANKA_OPS --op stopwatch:stop --arg cardId=<card-id>`
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "03-Analyst" --to-agent "02-Planner" --status "Analysis Complete" --artifact "agent-output/analysis/<analysis>.md" --summary "Findings documented with confidence levels" --next "Incorporate into plan"`
+### 02-Planner
+- **Workspace**: `Acceptance Criteria` (Task List)
+- **Action**: Extracts acceptance criteria from the Epic description and creates actionable Tasks for the Implementer/QA.
+- **Artifact**: Appends Plan link to Epic description.
 
-**Close**
-- Remove sensitive temporary evidence when required:
-  - `$PLANKA_OPS --op attachment:delete --arg attachmentId=<attachment-id>`
+### 03-Analyst
+- **Workspace**: `Analysis & Spikes` (Task List)
+- **Action**: Creates tasks for technical investigations.
+- **Label**: Adds `Analysis Complete` label.
+- **Artifact**: Appends Analysis doc link to Epic description.
 
----
+### 04-Architect
+- **Workspace**: `Architecture & Design` (Task List)
+- **Action**: Adds architectural constraints as tasks.
+- **Label**: Adds `Architecture Approved` (Green) or `Architecture Rejected` (Red) label.
+- **Artifact**: Appends Findings doc link to Epic description.
 
-## 04-Architect
+### 05-Security
+- **Workspace**: `Security & Compliance` (Task List)
+- **Action**: Adds security checks as tasks. Checks them off.
+- **Label**: Adds `Security Passed` (Green) or `Security Blocked` (Red) label.
 
-**Start**
-- Retrieve board/card context + apply architecture label:
-  - `$PLANKA_OPS --op board:get --arg boardId=<board-id>`
-  - `$PLANKA_OPS --op label:add --arg cardId=<card-id> --arg labelId=<architecture-label-id>`
+### 06-Critic
+- **Workspace**: `Plan Review & Critique` (Task List)
+- **Label**: Adds `Plan Approved` or `Revision Required`.
 
-**Handoff**
-- Transfer to planner/critic after review:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "04-Architect" --to-agent "02-Planner" --status "Architecture Reviewed" --artifact "agent-output/architecture/<findings>.md" --summary "Architecture constraints updated" --next "Revise plan accordingly"`
+### 07-Implementer
+- **Action**: Marks tasks in the `Acceptance Criteria` and `Architecture & Design` lists as completed (`isCompleted=true`) to fill the Planka Progress Bar!
+- **Label**: Adds `In Implementation` or `Ready for Code Review` label.
 
-**Close**
-- Remove temporary architecture label if resolved:
-  - `$PLANKA_OPS --op label:remove --arg cardId=<card-id> --arg labelId=<architecture-label-id>`
+### 08-Code Reviewer
+- **Workspace**: `Code Review` (Task List)
+- **Label**: Adds `Code Review Passed` (Green) or `Code Review Failed` (Red) label.
 
----
+### 09-QA
+- **Workspace**: `QA & Testing` (Task List)
+- **Action**: Creates testing tasks (e.g., E2E, Unit) and marks them completed.
+- **Label**: Adds `QA Passed` (Green) or `QA Failed` (Red) label.
 
-## 05-Security
+### 10-UAT
+- **Workspace**: `UAT & Acceptance` (Task List)
+- **Action**: Verifies business value.
+- **Label**: Adds `UAT Approved` (Green) or `UAT Failed` (Red).
 
-**Start**
-- Apply risk labels and assign reviewer:
-  - `$PLANKA_OPS --op label:create --arg boardId=<board-id> --arg name="Urgent/Bug" --arg color=berry-red`
-  - `$PLANKA_OPS --op label:add --arg cardId=<card-id> --arg labelId=<risk-label-id>`
+### 11-DevOps
+- **Workspace**: `Release & Deployment` (Task List)
+- **Action**: Executes pre-flight deployment tasks.
+- **Move (CRITICAL)**: Moves the Epic Card to the `Delivered` list upon successful production release.
+- **Label**: Adds `Released vX.Y.Z` label.
 
-**Handoff**
-- Transfer with risk summary:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "05-Security" --to-agent "07-Implementer" --status "Security Fix Required" --artifact "agent-output/security/<audit>.md" --summary "Blocking security findings identified" --next "Implement remediation"`
-
-**Close**
-- Remove risk label on remediation completion:
-  - `$PLANKA_OPS --op label:remove --arg cardId=<card-id> --arg labelId=<risk-label-id>`
-
----
-
-## 06-Critic
-
-**Start**
-- Subscribe and review context:
-  - `$PLANKA_OPS --op subscribe:set --arg cardId=<card-id> --arg enabled=true`
-  - `$PLANKA_OPS --op comments:get --arg cardId=<card-id>`
-
-**Handoff**
-- Transfer to planner/implementer:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "06-Critic" --to-agent "02-Planner" --status "Plan Revision Needed" --artifact "agent-output/critiques/<critique>.md" --summary "Critical findings logged" --next "Address open issues"`
-
-**Close**
-- Unsubscribe when critique resolved:
-  - `$PLANKA_OPS --op subscribe:set --arg cardId=<card-id> --arg enabled=false`
-
----
-
-## 07-Implementer
-
-**Start**
-- Start execution timer + assign implementer:
-  - `$PLANKA_OPS --op member:add --arg cardId=<card-id> --arg userId=<implementer-user-id>`
-  - `$PLANKA_OPS --op stopwatch:start --arg cardId=<card-id>`
-- Create implementation checklist:
-  - `$PLANKA_OPS --op tasklist:create --arg cardId=<card-id> --arg name="Implementation Checklist"`
-
-**Handoff**
-- Stop timer and move to code review:
-  - `$PLANKA_OPS --op stopwatch:stop --arg cardId=<card-id>`
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "07-Implementer" --to-agent "08-Code Reviewer" --status "Implemented" --artifact "agent-output/implementation/<implementation>.md" --summary "Implementation complete, ready for review" --next "Code quality gate"`
-
-**Close**
-- Remove implementation-only member if needed:
-  - `$PLANKA_OPS --op member:remove --arg cardId=<card-id> --arg userId=<implementer-user-id>`
-
----
-
-## 08-Code Reviewer
-
-**Start**
-- Pull review context and comment:
-  - `$PLANKA_OPS --op card:get --arg cardId=<card-id>`
-  - `$PLANKA_OPS --op comment:add --arg cardId=<card-id> --arg text="Code review started"`
-
-**Handoff**
-- Route based on verdict:
-  - Pass: `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "08-Code Reviewer" --to-agent "09-QA" --status "Code Review Approved" --artifact "agent-output/code-review/<review>.md" --summary "Approved for QA" --next "Execute QA tests"`
-  - Fail: `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "08-Code Reviewer" --to-agent "07-Implementer" --status "Code Review Rejected" --artifact "agent-output/code-review/<review>.md" --summary "Fixes required" --next "Address findings"`
-
-**Close**
-- Delete accidental duplicate reviewer comments if needed:
-  - `$PLANKA_OPS --op comment:delete --arg commentId=<comment-id>`
-
----
-
-## 09-QA
-
-**Start**
-- Create QA checklist and scenarios:
-  - `$PLANKA_OPS --op tasklist:create --arg cardId=<card-id> --arg name="QA Scenarios"`
-  - `$PLANKA_OPS --op task:create --arg taskListId=<tasklist-id> --arg name="Critical path passes"`
-
-**Handoff**
-- Attach QA evidence and move to UAT:
-  - `$PLANKA_OPS --op attachment:upload-file --arg cardId=<card-id> --arg path=./agent-output/qa/<qa-report>.md`
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "09-QA" --to-agent "10-UAT" --status "QA Complete" --artifact "agent-output/qa/<qa>.md" --summary "QA passed" --next "Validate business value"`
-
-**Close**
-- Remove obsolete QA checklist items if refined:
-  - `$PLANKA_OPS --op task:delete --arg taskId=<task-id>`
-
----
-
-## 10-UAT
-
-**Start**
-- Subscribe + review QA context:
-  - `$PLANKA_OPS --op subscribe:set --arg cardId=<card-id> --arg enabled=true`
-  - `$PLANKA_OPS --op comments:get --arg cardId=<card-id>`
-
-**Handoff**
-- Pass to DevOps or return to planner:
-  - Approved: `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "10-UAT" --to-agent "11-DevOps" --status "UAT Approved" --artifact "agent-output/uat/<uat>.md" --summary "Approved for release" --next "Prepare release"`
-  - Not approved: `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "10-UAT" --to-agent "02-Planner" --status "UAT Failed" --artifact "agent-output/uat/<uat>.md" --summary "Value gaps found" --next "Re-plan work"`
-
-**Close**
-- Unsubscribe after handoff:
-  - `$PLANKA_OPS --op subscribe:set --arg cardId=<card-id> --arg enabled=false`
-
----
-
-## 11-DevOps
-
-**Start**
-- Add release label and release metadata:
-  - `$PLANKA_OPS --op label:add --arg cardId=<card-id> --arg labelId=<ready-release-label-id>`
-  - `$PLANKA_OPS --op customvalue:set --arg cardId=<card-id> --arg groupId=<group-id> --arg fieldId=<release-field-id> --arg content="vX.Y.Z"`
-
-**Handoff**
-- On release completion, move to retrospective:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "11-DevOps" --to-agent "12-Retrospective" --status "Released" --artifact "agent-output/deployment/<version>.md" --summary "Release executed" --next "Capture lessons learned"`
-
-**Close**
-- Optionally remove release label and retain closed state metadata:
-  - `$PLANKA_OPS --op label:remove --arg cardId=<card-id> --arg labelId=<ready-release-label-id>`
-
----
-
-## 12-Retrospective
-
-**Start**
-- Pull comments and add retrospective note:
-  - `$PLANKA_OPS --op comments:get --arg cardId=<card-id>`
-  - `$PLANKA_OPS --op comment:add --arg cardId=<card-id> --arg text="Retrospective analysis started"`
-
-**Handoff**
-- Transfer to process-improvement:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "12-Retrospective" --to-agent "13-Process Improvement" --status "Retrospective Complete" --artifact "agent-output/retrospectives/<retro>.md" --summary "Process lessons documented" --next "Apply process improvements"`
-
-**Close**
-- Remove non-essential duplicate retro comments if needed:
-  - `$PLANKA_OPS --op comment:delete --arg commentId=<comment-id>`
-
----
-
-## 13-Process Improvement
-
-**Start**
-- Update custom workflow status and ownership:
-  - `$PLANKA_OPS --op customvalue:set --arg cardId=<card-id> --arg groupId=<group-id> --arg fieldId=<status-field-id> --arg content="Process Improvement In Progress"`
-
-**Handoff**
-- Return to planner/new cycle or close:
-  - `$SYNC --project-id <project-id> --workflow-id <workflow-id> --from-agent "13-Process Improvement" --to-agent "02-Planner" --status "Ready for Next Cycle" --summary "Instruction updates complete" --next "Start next plan"`
-
-**Close**
-- Controlled cleanup operations (explicit user approval required):
-  - Card cleanup: `$PLANKA_OPS --op card:delete --arg cardId=<card-id>`
-  - List cleanup: `$PLANKA_OPS --op list:delete --arg listId=<list-id>`
-  - Task cleanup: `$PLANKA_OPS --op tasklist:delete --arg taskListId=<tasklist-id>`
-  - Custom metadata cleanup:
-    - `$PLANKA_OPS --op customvalue:delete --arg cardId=<card-id> --arg groupId=<group-id> --arg fieldId=<field-id>`
-    - `$PLANKA_OPS --op customfield:delete --arg fieldId=<field-id>`
-    - `$PLANKA_OPS --op customgroup:delete --arg groupId=<group-id>`
-  - Board/project cleanup after retention:
-    - `$PLANKA_OPS --op board:delete --arg boardId=<board-id>`
-    - `$PLANKA_OPS --op project:delete --arg projectId=<project-id>`
-
----
-
-## Full Coverage Verification (Operational)
-
-Run these checks before declaring lifecycle-complete setup:
-
-1. `python .github/skills/planka-workflow/scripts/planka_ops.py catalog`
-2. Confirm all required categories appear:
-   - Projects, Boards, Lists, Cards, Labels, Task lists & tasks, Comments, Attachments, Card members, Stopwatch, Custom fields, Subscribe
-3. Confirm each agent (01→13) has start/handoff/close execution in this playbook.
-
-````
+### 12-Retrospective & 13-Process Improvement
+- **Workspace**: `Retrospective & Learnings` / `Process Improvement` (Task Lists)
+- **Action**: Adds process improvements as tasks and checks them off when agent instructions are updated.
+- **Artifact**: Appends Retrospective doc link to Epic description.

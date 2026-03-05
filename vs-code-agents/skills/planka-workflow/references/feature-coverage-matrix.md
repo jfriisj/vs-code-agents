@@ -1,28 +1,29 @@
-````markdown
-# Planka Feature Coverage Matrix
+# Planka Agile Feature Coverage Matrix
 
-This matrix ensures workflow tooling leverages every Planka feature category.
+This matrix defines the **Visual Agile** operational contract for Planka MCP. Markdown remains the source of truth; Planka provides live, visual execution tracking through native Kanban features.
 
-| Feature Category | MCP Tools | `planka_ops.py` Operations | Workflow Usage |
-|---|---|---|---|
-| Projects | `list_projects`, `get_project`, `create_project`, `update_project`, `delete_project` | `projects:list`, `project:get`, `project:create`, `project:update`, `project:delete` | Project discovery, setup, cleanup |
-| Boards | `list_boards`, `get_board`, `create_board`, `update_board`, `delete_board` | `boards:list`, `board:get`, `board:create`, `board:update`, `board:delete` | One board per workflow process |
-| Lists | `create_list`, `update_list`, `delete_list` | `list:create`, `list:update`, `list:delete` | Agent-stage columns |
-| Cards | `get_card`, `create_card`, `update_card`, `move_card`, `delete_card` | `card:get`, `card:create`, `card:update`, `card:move`, `card:delete` | Primary workflow card lifecycle |
-| Labels | `create_label`, `add_label_to_card`, `remove_label_from_card` | `label:create`, `label:add`, `label:remove` | Tagging (blocked, risk, feature type) |
-| Task lists & tasks | `create_task_list`, `update_task_list`, `delete_task_list`, `create_task`, `update_task`, `delete_task` | `tasklist:create`, `tasklist:update`, `tasklist:delete`, `task:create`, `task:update`, `task:delete` | Acceptance checklist tracking |
-| Comments | `get_comments`, `add_comment`, `delete_comment` | `comments:get`, `comment:add`, `comment:delete` | Structured handoffs and audit trail |
-| Attachments | `upload_attachment`, `delete_attachment` | `attachment:upload`, `attachment:upload-file`, `attachment:delete` | Evidence/log attachments |
-| Card members | `add_card_member`, `remove_card_member` | `member:add`, `member:remove` | Ownership assignment |
-| Stopwatch | `update_card` with `stopwatch` payload | `stopwatch:start`, `stopwatch:stop` | Time tracking for implementation/testing |
-| Custom fields | `create_custom_field_group`, `update_custom_field_group`, `delete_custom_field_group`, `create_custom_field`, `update_custom_field`, `delete_custom_field`, `set_custom_field_value`, `delete_custom_field_value` | `customgroup:create`, `customgroup:update`, `customgroup:delete`, `customfield:create`, `customfield:update`, `customfield:delete`, `customvalue:set`, `customvalue:delete` | Structured metadata (status, workflow ID, artifact path) |
-| Subscribe | `update_card` with `isSubscribed` | `subscribe:set` | Notification management by active owner |
+| Agile Feature | MCP / Script Surface | Required Usage |
+|---|---|---|
+| **Bulk Epic Sync** | `sync_roadmap_epics.py`, `project:create`, `board:create`, `list:create`, `card:create`, `card:update`, `card:move` | Roadmap agent reconciles all roadmap epics in one run, not only the current epic. |
+| **Lifecycle Movement** | `card:move` | Move Epic card across status lists (`Planned` → `In Progress` → `Delivered`). |
+| **Roadmap Due Dates** | `card:update` (`dueDate`) | Sync card due date from roadmap release `**Target Date**` for delivery visibility. |
+| **Task-List Scaffolding** | `get_card`, `tasklist:create` | Optional bootstrap mode (`--ensure-task-lists`) to ensure baseline agile task lists exist on every epic card before agent execution starts. |
+| **Progress Tracking** | `tasklist:create`, `task:create`, `task:update` | Agents create Task Lists for their domains and check off tasks (`isCompleted=true`) to drive the visual Progress Bar. |
+| **Release/Priority Taxonomy** | `label:create`, `label:add`, `label:remove` | Every epic card carries `Release vX.Y.Z` + `Priority PX` labels for roadmap overview. |
+| **Roadmap Traceability** | `sync_roadmap_epics.py` status write-back | Persist `CardID` and `BoardID` in each epic `**Status**` line (default on) for low-token downstream lookups. |
+| **Visual Status** | `label:create`, `label:add`, `label:remove` | Use additional color-coded status labels (e.g., "QA Passed", "Blocked") only when they add operational clarity. |
+| **Single Source of Truth** | `card:update` (description) | Agents append links to their generated markdown artifacts in the card description. |
+| **Time Tracking** | `stopwatch:start`, `stopwatch:stop` | Track active execution time per agent phase. |
+| **Audit Trail** | `comment:add` | Add concise handoff summaries, verdicts, and key decisions. |
+| **Token Efficiency** | `get_board` + local diff + minimal writes | One board snapshot per run; write only changed entities; allow targeted `get_card` reads only when needed (task-list bootstrap or missing metadata). |
+
+## Deprecated Features (Do Not Use)
+- Moving cards between agent-specific lists (e.g., from a "Planner" list to an "Analyst" list).
+- The `bootstrap_workflow_board.py` and `sync_workflow_handoff.py` scripts (replaced completely by `planka_ops.py run --op ...`).
 
 ## Validation Rule
-
-Before claiming workflow-complete integration, verify:
-1. The operation catalog exposes all rows above.
-2. At least one workflow playbook/example uses each category.
-3. Agent sync procedures reference the full-feature operations layer.
-
-````
+Before claiming lifecycle sync is complete, verify:
+1. Every agent (01→13) interacts with the Epic Card using `planka_ops.py`.
+2. Roadmap reconciliation covers all epics in `product-roadmap.md`, not only active ones.
+3. Every epic card includes release and priority labels.
+4. The board uses Task Lists, Labels, and Description updates for visibility rather than comment-spam or list-bouncing.

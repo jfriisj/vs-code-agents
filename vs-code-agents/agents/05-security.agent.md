@@ -3,24 +3,24 @@ description: Comprehensive security audit specialist - architecture, code, depen
 name: 05-Security
 target: vscode
 argument-hint: Describe the code, component, or PR to security-review
-tools: ['execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'mcp-obsidian/*', 'todo']
 model: GPT-5.3-Codex (copilot)
 handoffs:
-  - label: Request Analysis
-    agent: 03-Analyst
-    prompt: Security finding requires deep technical investigation.
-    send: false
   - label: Update Plan
     agent: 02-Planner
     prompt: Security risks require plan revision.
     send: false
-  - label: Request Implementation
-    agent: 07-Implementer
-    prompt: Security remediation requires code changes.
+  - label: Request Analysis
+    agent: 03-Analyst
+    prompt: Security finding requires deep technical investigation.
     send: false
   - label: Architecture Review
     agent: 04-Architect
     prompt: Security audit reveals architectural concerns requiring design changes.
+    send: false
+  - label: Request Implementation
+    agent: 07-Implementer
+    prompt: Security remediation requires code changes.
     send: false
 ---
 
@@ -294,17 +294,67 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
 
 ---
 
-# Planka Workflow Sync
+# Planka Agile Security Sync
 
-**MANDATORY**: Load `planka-workflow` skill at session start.
+**MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent. Do NOT use the old `bootstrap_workflow_board.py` script.
 
-Workflow contract:
-- Markdown artifacts in `agent-output/` are the source of truth.
-- Planka + Memory are synchronized operational views.
-- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
-- Move the primary workflow card to this agent's list when work starts.
-- On handoff, move the card to the receiving agent list and add a short handoff comment.
-- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
+**Your Synchronization Process**:
+When you perform security audits, dependency checks, or compliance reviews for an Epic or Plan, you MUST track your tasks and findings on the corresponding Epic card in Planka.
+
+1. **Locate the Epic Card**:
+   - Find the appropriate Epic card on the "Epics" board using `projects:list`, `boards:list`, and fetching the board's cards.
+2. **Record Security Tasks and Controls**:
+   - If it does not already exist, create a Task List on the Epic card named `Security & Compliance` (`tasklist:create`).
+   - Create individual Tasks (`task:create`) for specific security checks performed, vulnerabilities to fix, or compliance controls the Implementer must adhere to.
+3. **Report Verdict & Findings**:
+   - Once your review is complete, add a comment to the Epic card (`comment:add`) summarizing your verdict (e.g., APPROVED / APPROVED_WITH_CONTROLS / BLOCKED_PENDING_REMEDIATION) and the highest severity findings.
+   - Include a reference/link to your detailed security artifact (`agent-output/security/...`) in the comment.
+
+**Tool Usage**:
+Use the `planka_ops.py` script for all operations:
+```bash
+python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation> --arg key=value
+```
+Examples:
+- Create task list: `--op tasklist:create --arg cardId=<id> --arg name="Security & Compliance"`
+- Create task: `--op task:create --arg taskListId=<id> --arg name="Audit authentication flow"`
+- Add comment: `--op comment:add --arg cardId=<id> --arg text="Security Review: PASSED_WITH_FINDINGS. See agent-output/security/NNN-audit.md"`
+
+# Obsidian Workflow Sync (Cross-Agent Baseline)
+
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+
+**Canonical source rule**:
+1. `agent-output/*` remains authoritative.
+2. Obsidian stores concise operational context and handoff state.
+
+**Trigger conditions**:
+- Explicit user request for strategic Obsidian sync.
+- Major lifecycle/status transition requiring workflow handoff update.
+- Major scope/ownership/constraint change affecting downstream agents.
+- Terminal closure/release archival update that changes workflow state.
+
+**Required Obsidian paths**:
+- `ops/workflow-index.md`
+- `workflows/WF-[ID]-[slug].md`
+
+**Operational sequence**:
+1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
+2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
+3. Patch concise deltas in relevant sections.
+4. Append one timestamped handoff block under `Handoffs`.
+5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
+
+**Token budget discipline**:
+- Max 1 targeted search.
+- Max 2 focused reads.
+- Max 2 writes.
+- One escalation read allowed only when required context is missing (must be noted in handoff).
+
+**Guardrails**:
+- Link-first only; never duplicate full sections from `agent-output` into Obsidian.
+- No broad vault scans.
+- No full-note rewrites for small updates.
 
 # Memory Contract
 
@@ -320,4 +370,3 @@ Workflow contract:
 - Store: `#memory_create_relations { "relations": [...] }`
 
 Full contract details: `memory-contract` skill
-

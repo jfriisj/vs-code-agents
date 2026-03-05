@@ -1,6 +1,6 @@
 # Using the Agents
 
-This file contains a high-level overview of these agents and how to get started using them quickly. However, you may find you want or need more guidance. In that case, see the AGENTS-DEEP-DEIVE.md file.
+This file contains a high-level overview of these agents and how to get started using them quickly. However, you may find you want or need more guidance. In that case, see the AGENTS-DEEP-DIVE.md file.
 
 ## Overview
 
@@ -8,17 +8,19 @@ This repo defines a set of `.agent.md` files that configure specialized AI perso
 
 A typical high-level workflow looks like:
 
-Roadmap → Planner → (Analyst, Architect, Critic, Security) → Implementer → Code Reviewer → QA → UAT → DevOps → Retrospective → ProcessImprovement
+01-Roadmap → 02-Planner → (03-Analyst, 04-Architect, 05-Security, 06-Critic) → 07-Implementer → 08-Code Reviewer → 09-QA → 10-UAT → 11-DevOps → 12-Retrospective → 13-Process Improvement
 
 **All agents use Memory** via the `memory-contract` skill to provide long-running context across sessions. Agents function without memory, but greatly benefit from durable cross-session context when a Memory server is enabled.
 
-### MCP Tools (filesystem/github/analyzer)
+### MCP Tools (memory/filesystem/github/analyzer/planka/mcp-obsidian)
 
 This repo is designed to be used with MCP servers configured in `.vscode/mcp.json`. In VS Code, the MCP server name becomes the tool prefix:
 - `memory` → `memory_*`
 - `filesystem` → `filesystem_*`
 - `github` → `github_*`
 - `analyzer` → `analyzer_*`
+- `planka` → `planka_*`
+- `mcp-obsidian` → `mcp-obsidian_*`
 
 If you customize agents or rename MCP servers, make sure the agent `tools:` allowlist includes the corresponding `*/` namespace.
 
@@ -38,7 +40,7 @@ There are two simple ways to make these agents available to VS Code:
 > [!TIP]
 > The easiest way to create a user-level agent is via the Command Palette: **Chat: New Custom Agent** → select **User profile**. VS Code will place it in the correct location automatically.
 
-In this repo, the source copies live under `vs-code-agents/`; you can copy or sync from there into `.github/agents/` or your user-level folder.
+In this repo, the source copies live under `vs-code-agents/agents/`; you can copy or sync from there into `.github/agents/` or your user-level folder.
 
 For more guidance on GitHub Copilot agents in VS Code, see the official documentation: https://code.visualstudio.com/docs/copilot/customization/custom-agents
 
@@ -50,7 +52,7 @@ These agents were originally written for GitHub Copilot in VS Code, but you can 
 - Then invoke an agent with a command like:
 
 ```bash
-copilot --agent planner --prompt "Create a plan for adding user authentication"
+copilot --agent 02-planner --prompt "Create a plan for adding user authentication"
 ```
 
 ### Known limitation (user-level agents)
@@ -108,6 +110,7 @@ Agents can load **Skills**—modular, reusable instruction sets that provide spe
 | `release-procedures` | Two-stage release workflow, semver, platform constraints |
 | `security-patterns` | OWASP Top 10, language-specific vulnerabilities |
 | `testing-patterns` | TDD workflow, test pyramid, coverage strategies |
+| `planka-workflow` | Board/list/card synchronization and handoff workflow |
 
 ### Skill Placement
 
@@ -380,7 +383,7 @@ That's it! The agents handle the rest automatically.
 
 ---
 
-### ProcessImprovement – Evolving Agents & Workflow
+### Process Improvement – Evolving Agents & Workflow
 
 **Role**: Reads retrospectives and updates the **agent instructions/workflow** (with your approval).
 
@@ -402,5 +405,5 @@ That's it! The agents handle the rest automatically.
 - Start with **Roadmap** for vision, then **Planner** for a concrete plan.
 - Use **Architect / Analyst / Security / Critic** to refine and de‑risk the plan and architecture.
 - Hand off to **Implementer** for code and tests, then **QA** for technical quality, **UAT** for value, **DevOps** for release.
-- Afterward, let **Retrospective** and **ProcessImprovement** update how you work next time.
+- Afterward, let **Retrospective** and **Process Improvement** update how you work next time.
 - **All agents use Memory** via the `memory-contract` skill. Agents function without memory but greatly benefit from cross-session context.

@@ -1,3 +1,12 @@
+---
+name: analysis-methodology
+description: A structured approach to investigating unknowns, classifying findings by confidence level, and tracking remaining gaps. Use this skill to produce rigorous analysis documents that surface actionable insights and blockers.
+license: MIT
+metadata:
+  author: groupzer0
+  version: "1.0"
+---
+
 # Analysis Methodology
 
 A systematic approach to converting unknowns to knowns through structured investigation.

@@ -3,7 +3,7 @@ description: Constructive reviewer and program manager that stress-tests plannin
 name: 06-Critic
 target: vscode
 argument-hint: Reference the plan or architecture document to critique (e.g., plan 002)
-tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'todo']
+tools: ['execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/readFile', 'edit', 'search', 'web', 'filesystem/*', 'github/*', 'analyzer/*', 'memory/*', 'planka/*', 'mcp-obsidian/*', 'todo']
 model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Revise Plan
@@ -124,17 +124,70 @@ Status: OPEN
 
 ---
 
-# Planka Workflow Sync
+# Planka Agile Critic Sync
 
-**MANDATORY**: Load `planka-workflow` skill at session start.
+**MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework. Use `planka_ops.py` for all operations.
 
-Workflow contract:
-- Markdown artifacts in `agent-output/` are the source of truth.
-- Planka + Memory are synchronized operational views.
-- Use one Planka board per workflow process (`WF-[ID]-[short-title]`).
-- Move the primary workflow card to this agent's list when work starts.
-- On handoff, move the card to the receiving agent list and add a short handoff comment.
-- If Planka is unavailable, continue in markdown+memory, log desync, and reconcile later.
+**Your Synchronization Process**:
+1. **Locate & Prep**: Find the Epic card on the "Epics" board. Start the `stopwatch`.
+2. **Record Tasks**: 
+   - Create a Task List named `Plan Review & Critique` (`tasklist:create`) if it doesn't exist.
+   - Add individual Tasks (`task:create`) for specific risks or missing requirements.
+3. **Visual Verdict (Labels)**:
+   - Add a Label (`label:add`) to the card: `Plan Approved` (Green) or `Revision Required` (Red/Orange). Remove the opposing label if it exists.
+4. **Update Description**:
+   - Append the link to your critique artifact (`agent-output/critiques/Name-critique.md`) to the Card's **Description** field so it's always easy to find.
+5. **Finalize**: Add a summary comment and stop the `stopwatch`.
+
+**Tool Usage Examples**:
+- **Add Label**: `--op label:add --arg cardId=<id> --arg labelId=<approved_label_id>`
+- **Update Description**: `--op card:update --arg cardId=<id> --arg description="...original... \n\n**Latest Critique:** [Name-critique.md](path)"`
+
+**Tool Usage**:
+Use the `planka_ops.py` script for all operations:
+```bash
+python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation> --arg key=value
+```
+Examples:
+- Create task list: `--op tasklist:create --arg cardId=<id> --arg name="Plan Review & Critique"`
+- Create task: `--op task:create --arg taskListId=<id> --arg name="Resolve missing edge case in step 4"`
+- Add comment: `--op comment:add --arg cardId=<id> --arg text="Plan Critique: REVISION REQUIRED. See NNN-feature-critique.md"`
+
+# Obsidian Workflow Sync (Cross-Agent Baseline)
+
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+
+**Canonical source rule**:
+1. `agent-output/*` remains authoritative.
+2. Obsidian stores concise operational context and handoff state.
+
+**Trigger conditions**:
+- Explicit user request for strategic Obsidian sync.
+- Major lifecycle/status transition requiring workflow handoff update.
+- Major scope/ownership/constraint change affecting downstream agents.
+- Terminal closure/release archival update that changes workflow state.
+
+**Required Obsidian paths**:
+- `ops/workflow-index.md`
+- `workflows/WF-[ID]-[slug].md`
+
+**Operational sequence**:
+1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
+2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
+3. Patch concise deltas in relevant sections.
+4. Append one timestamped handoff block under `Handoffs`.
+5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
+
+**Token budget discipline**:
+- Max 1 targeted search.
+- Max 2 focused reads.
+- Max 2 writes.
+- One escalation read allowed only when required context is missing (must be noted in handoff).
+
+**Guardrails**:
+- Link-first only; never duplicate full sections from `agent-output` into Obsidian.
+- No broad vault scans.
+- No full-note rewrites for small updates.
 
 # Memory Contract
 
@@ -150,4 +203,3 @@ Workflow contract:
 - Store: `#memory_create_relations { "relations": [...] }`
 
 Full contract details: `memory-contract` skill
-
