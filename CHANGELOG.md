@@ -4,6 +4,21 @@ All notable changes to this repository will be documented in this file.
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.0] - 2026-03-06
+
+### Added
+- **Optimized Agent Instruction Set**: Comprehensive updates to all 13 agent role definitions for improved task execution and integration.
+- **Planka Integration Regression Suite**: Added `test_planka_ops.py` to verify ID handling and security redaction logic.
+- **Workflow State Management**: New `agent-output/` directory structure for tracking plan, implementation, and verification artifacts.
+
+### Fixed
+- **Planka ID Type Casting**: Fixed critical bug in `planka_ops.py` where numeric string IDs (e.g. `1724...`) were incorrectly cast to integers, breaking MCP tool calls.
+- **Log Sanitization**: Implemented `PLANKA_TOKEN` and secret redaction in script error logs (SEC-002) to prevent credential leakage.
+- **Redundant Imports**: Resolved issue in `planka_ops.py` where imports were duplicated across exception handlers.
+
+### Changed
+- **Lifecycle Pipeline**: Validated the complete round-trip and handoff between Roadmap, Planner, Architect, Implementer, Code Reviewer, QA, UAT, and DevOps.
+
 ## 2026-01-18
 
 ### Added

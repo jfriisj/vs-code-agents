@@ -1,0 +1,216 @@
+{
+  "main": {
+    "id": "e3e29c2b4e906ee0",
+    "type": "split",
+    "children": [
+      {
+        "id": "7ea19ce75efb7264",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e1462557d442be0c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "planning/001-initial-test-plan.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "001-initial-test-plan"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "0b54c5aa1ef3fa66",
+    "type": "split",
+    "children": [
+      {
+        "id": "42eaaf3c433efb93",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "df9d78bc496e4955",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "aed3ea657c6d5bb9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "012d57eabd306e58",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "4e1e6a230771cd25",
+    "type": "split",
+    "children": [
+      {
+        "id": "4bf8e7e83dd15aa0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b541b003de069eb6",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "planning/001-initial-test-plan.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 001-initial-test-plan"
+            }
+          },
+          {
+            "id": "27474c1c8e9277a4",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "planning/001-initial-test-plan.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from 001-initial-test-plan"
+            }
+          },
+          {
+            "id": "949708ae52090933",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "00e4ae3432592965",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "1ac64285ec742f5d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "planning/001-initial-test-plan.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 001-initial-test-plan"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "e1462557d442be0c",
+  "lastOpenFiles": [
+    "workflows/WF-7.md",
+    "uat/001-core-handoff-lifecycle-uat.md",
+    "uat",
+    "workflows/WF-6.md",
+    "qa/001-core-handoff-lifecycle-qa.md",
+    "qa",
+    "workflows/WF-5.md",
+    "code-review/002-planka-ops-final-review.md",
+    "workflows/WF-4.md",
+    "code-review/001-planka-ops-fix-review.md",
+    "code-review",
+    "workflows/WF-3.md",
+    "critiques/001-core-handoff-critique.md",
+    "critiques",
+    "implementation/001-core-handoff-implementation.md",
+    "implementation",
+    "analysis/003-planka-move-failure-analysis.md",
+    "workflows/WF-2.md",
+    "security/001-core-handoff-security-audit.md",
+    "security/001-core-handoff-code-audit.md",
+    "security",
+    "analysis/002-planka-ops-fix-analysis.md",
+    "workflows/WF-1.md",
+    "workflows",
+    "architecture/001-core-handoff-architecture-findings.md",
+    "architecture/system-architecture.md",
+    "architecture"
+  ]
+}
