@@ -192,41 +192,18 @@ Use the `planka_ops.py` script for all operations:
 python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation> --arg key=value
 ```
 
-# Obsidian Workflow Sync (Cross-Agent Baseline)
+# Obsidian Workflow Sync (Graph-Relational Baseline)
 
-**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
-**Canonical source rule**:
-1. `agent-output/*` remains authoritative.
-2. Obsidian stores concise operational context and handoff state.
+**Your Graph Role (The Design Authority):** You create "Architecture" nodes that evaluate Epics or Plans.
+1. Create or update `workflows/WF-[ID]-[slug].md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Architecture`. Set `parent: "[[WF-Calling-ID]]"` using the Epic or Plan ID provided by the calling agent in the chat history.
+3. **Closing the Loop**: When your review is complete, use `patch_note` to update the calling agent's `Constraints` or `Decisions` section with a direct wikilink to your node (e.g., `See [[WF-[Your-ID]]] for architectural invariants.`).
+4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[Calling-ID]]]."
 
-**Trigger conditions**:
-- Explicit user request for strategic Obsidian sync.
-- Major lifecycle/status transition requiring workflow handoff update.
-- Major scope/ownership/constraint change affecting downstream agents.
-- Terminal closure/release archival update that changes workflow state.
-
-**Required Obsidian paths**:
-- `ops/workflow-index.md`
-- `workflows/WF-[ID]-[slug].md`
-
-**Operational sequence**:
-1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
-2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
-3. Patch concise deltas in relevant sections.
-4. Append one timestamped handoff block under `Handoffs`.
-5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
-
-**Token budget discipline**:
-- Max 1 targeted search.
-- Max 2 focused reads.
-- Max 2 writes.
-- One escalation read allowed only when required context is missing (must be noted in handoff).
-
-**Guardrails**:
-- Link-first only; never duplicate full architecture sections into Obsidian.
-- No broad vault scans.
-- No full-note rewrites for small updates.
+**Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
 # Memory Contract
 

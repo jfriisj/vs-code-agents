@@ -72,7 +72,6 @@ Roadmap Document Format:
 
 Single file at `agent-output/roadmap/product-roadmap.md`:
 
-```markdown
 # Cognee Chat Memory - Product Roadmap
 
 **Last Updated**: YYYY-MM-DD
@@ -111,7 +110,6 @@ As a [user type], I want [capability/outcome], So that [business value/benefit].
 
 ## Active Release Tracker
 [Table and Matrix as defined in responsibilities]
-```
 
 ---
 
@@ -183,41 +181,18 @@ python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --ensure-tas
 python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation> --arg key=value
 ```
 
-# Obsidian Workflow Sync (Cross-Agent Baseline)
+# Obsidian Workflow Sync (Graph-Relational Baseline)
 
-**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
-**Canonical source rule**:
-1. `agent-output/*` remains authoritative.
-2. Obsidian stores concise operational context and handoff state.
+**Your Graph Role (The Hub):** You create the parent "Epic" nodes. 
+1. Create `workflows/WF-[ID]-[slug].md`.
+2. Set frontmatter: `type: Epic` and `parent: "none"`.
+3. Do NOT edit `ops/workflow-index.md` (it is auto-generated via Dataview).
+4. **CRITICAL HANDOFF**: Before concluding your turn, you MUST output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]." This ensures the handoff context passes to the next agent.
 
-**Required Obsidian paths**:
-- `ops/workflow-index.md`
-- `workflows/WF-[ID]-[slug].md`
-
-**Trigger conditions**:
-- Explicit user request for strategic Obsidian sync.
-- Major lifecycle/status transition requiring workflow handoff update.
-- Major scope/ownership/constraint change affecting downstream agents.
-- Terminal closure/release archival update that changes workflow state.
-
-**Operational sequence**:
-1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
-2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
-3. Patch concise deltas in relevant sections.
-4. Append one timestamped handoff block under `Handoffs`.
-5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
-
-**Token budget discipline**:
-- Max 1 targeted search.
-- Max 2 focused reads.
-- Max 2 writes.
-- One escalation read allowed only when required context is missing (must be noted in handoff).
-
-**Guardrails**:
-- Link-first only; never duplicate full sections from `agent-output` into Obsidian.
-- No broad vault scans.
-- No full-note rewrites for small updates.
+**Token budget discipline**: 0 searches, max 2 reads (active note), max 2 writes. Use wikilinks `[[WF-...]]` to reference other nodes.
 
 # Memory Contract
 

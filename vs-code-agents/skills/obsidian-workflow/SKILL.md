@@ -39,27 +39,43 @@ Use these stable paths in the Obsidian vault:
 - `ops/workflow-index.md` (global lookup table)
 - `workflows/WF-[ID]-[slug].md` (one workflow note per chain)
 
+Template sources (skill-owned):
+- `references/workflow-index-template.md`
+- `references/workflow-note-template.md`
+
 Each workflow note must contain:
 - Frontmatter fields: `workflow_id`, `status`, `owner`, `last_updated`
 - Headings: `Summary`, `Decisions`, `Constraints`, `Artifacts`, `Handoffs`, `Next`
 
 ---
 
-## Context Budget Contract
+## Context Budget Contract (Graph-Optimized)
 
 Default hard budget per agent turn:
-- **Searches**: max 1 targeted search (must include `WF-[ID]` or exact note path)
-- **Reads**: max 2 focused reads (index note + workflow note)
-- **Writes**: max 2 targeted writes (heading patch + handoff append)
+- **Searches**: 0 (Avoid `search_notes` unless recovering from a broken link).
+- **Reads**: max 2 focused reads (Read active `WF-[ID]` note + follow 1 graph link via `parent` or `Depends On`).
+- **Writes**: max 2 targeted writes (heading patch + handoff append).
 
 Escalation rule:
-- If information is missing, allow one extra read.
-- Record why escalation was needed in the handoff block.
+- If required context is not in the active note or its immediate parent, allow one extra read. Record why escalation was needed.
 
-Forbidden patterns:
-- Broad vault exploration without workflow ID.
-- Full-note rewrites for small updates.
-- Copying long markdown sections from `agent-output/` into Obsidian.
+## Synchronization Protocol
+*Use `#tool:mcp-obsidian/*` for all operations below.*
+
+### 1. Workflow bootstrap (Roadmap/Planner/Analyst)
+- Create `workflows/WF-[ID]-[slug].md` with required headings.
+- **CRITICAL**: Establish the graph edge. Inject `parent: "[[WF-Parent-ID]]"` into frontmatter (e.g., Plans link to Epics, Analysis links to Plans).
+- *Do NOT edit `ops/workflow-index.md` (it is automated).*
+
+### 2. Active execution & Traversal
+- Resolve active context by reading the assigned `WF-[ID]`.
+- If broader context is needed, use `read_note` strictly on the wikilink found in the `parent:` or `Relations` field.
+- Write concise updates to `Decisions` / `Artifacts` / `Next`.
+
+### 3. Ownership transition & Graph Patching
+- Update `owner` and `status` in frontmatter.
+- If delegating to a sub-agent (e.g., Planner -> Analyst), patch the `Relations` section with `**Blocks**: [[WF-Sub-ID]]`.
+- **CRITICAL HANDOFF**: In your final chat message to the user before they click a handoff button, explicitly state your `WF-[ID]` so the next agent inherits the graph context.
 
 ---
 

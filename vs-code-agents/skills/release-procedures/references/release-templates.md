@@ -4,102 +4,156 @@
 
 Use in `agent-output/deployment/[version].md`:
 
-```markdown
-# Deployment Report: v[X.Y.Z]
+Status guidance for document header:
+- `Active`: In progress
+- `Committed`: Stage 1 completed (local commit only)
+- `Released`: Stage 2 completed successfully
+- `Abandoned`: Release flow intentionally stopped
 
-**Plan Reference**: `agent-output/planning/[plan-name].md`
-**Release Date**: [YYYY-MM-DD]
-**Deployed By**: DevOps Agent
+````markdown
+---
+ID: [ID]
+Origin: [Origin]
+UUID: [UUID]
+Status: Active
+Type: Deployment
+Version: [Version]
+---
+
+# Deployment [Version]
+
+## Plan Reference
+
+- Included plans: [Plan IDs]
+- Primary release roadmap reference: `agent-output/roadmap/product-roadmap.md`
+
+## Release Date
+
+- Target: [YYYY-MM-DD]
+- Execution timestamp: [YYYY-MM-DD HH:MM TZ]
 
 ## Release Summary
 
 | Field | Value |
-|-------|-------|
-| Version | X.Y.Z |
-| Type | PATCH / MINOR / MAJOR |
-| Environment | Production / Staging |
-| Epic/Plan | [Reference] |
+|---|---|
+| Version | [Version] |
+| Release Type | [Patch/Minor/Major] |
+| Environment | [target environment] |
+| Branch | [branch name] |
+| Initiated By | [name/agent] |
+| Approved By | [name] |
+
+## Epic Readiness Matrix
+
+| Epic | Linked Plans | UAT Rollup | Roadmap Waiver/Deferred | Blockers |
+|---|---|---|---|---|
+| [Epic X.Y title] | [Plan IDs] | [EPIC APPROVED / PARTIAL / NOT APPROVED] | [None / Waived / Deferred] | [None / detail] |
 
 ## Pre-Release Verification
 
-### Approval Status
-- [ ] QA Status: [QA Complete / QA Failed]
-- [ ] UAT Status: [APPROVED FOR RELEASE / NOT APPROVED]
+### UAT/QA Approval
+
+- [ ] QA status verified as `QA Complete` for all included plans
+- [ ] UAT status verified as `APPROVED FOR RELEASE` for all included plans
 
 ### Version Consistency
-| File | Expected | Actual | Status |
-|------|----------|--------|--------|
-| package.json | X.Y.Z | | ✓/✗ |
-| CHANGELOG.md | X.Y.Z | | ✓/✗ |
-| [other] | X.Y.Z | | ✓/✗ |
+
+- [ ] `package.json` version matches target release
+- [ ] `CHANGELOG.md` latest release entry matches target version
+- [ ] README/config/version references checked
+- [ ] Git tag does not conflict with existing release tag
 
 ### Packaging Integrity
-- [ ] Build successful
-- [ ] Package created
-- [ ] All required assets included
-- [ ] No debug artifacts
+
+- [ ] Build completed successfully
+- [ ] Artifact/package scripts verified
+- [ ] Required assets included
+- [ ] No debug-only artifacts in release package
+
+### Gitignore Review
+
+- [ ] `git status` reviewed for sensitive/unexpected files
+- [ ] `.gitignore` changes approved if required
 
 ### Workspace Cleanliness
-- [ ] No uncommitted changes
-- [ ] All changes committed
-- [ ] Ready for tagging
+
+- [ ] No unintended uncommitted changes remain
+- [ ] All release-included plan commits are present locally
 
 ## User Confirmation
 
-**Confirmation Requested**: [timestamp]
-**Summary Presented**: [version, changes, target]
-**User Response**: [yes/no]
-**Confirmed By**: [user name]
-**Confirmed At**: [timestamp]
+| Field | Value |
+|---|---|
+| Summary Presented At | [timestamp] |
+| Presented Summary | [short summary of included plans + release scope] |
+| User Response | [Approved / Declined] |
+| User Name | [name] |
+| Response Timestamp | [timestamp] |
+| Decline Reason (if any) | [reason] |
 
 ## Release Execution
 
 ### Git Tagging
-- **Command**: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`
-- **Result**: [success/failure]
-- **Tag Pushed**: [yes/no]
+
+- Command: `[git tag command]`
+- Result: [success/fail + output]
+- Tag pushed: [yes/no]
+
+### Push
+
+- Command: `[git push command]`
+- Result: [success/fail + output]
 
 ### Package Publication
-- **Registry**: [VS Code Marketplace / npm / PyPI]
-- **Command**: [command executed]
-- **Result**: [success/failure]
-- **Published URL**: [link]
 
-### Verification
-- [ ] Version visible in registry
-- [ ] Package installable
-- [ ] Changelog visible
-- [ ] Functionality verified
+- Registry/Target: [npm/vsce/pypi/github/etc]
+- Command: `[publish command]`
+- Result: [success/fail + output]
+- URL: [release/package URL]
+
+### Publication Verification
+
+- [ ] Released version visible in target registry/marketplace
+- [ ] Install/consume check succeeded
+- [ ] Release notes/changelog visible and correct
+- [ ] No blocking publish errors/warnings
 
 ## Post-Release Status
 
-**Final Status**: Deployment Complete / Deployment Failed / Aborted
-**Completed At**: [timestamp]
-
-### Known Issues
-- [None / List issues]
-
-### Rollback Plan
-[If needed: steps to revert]
+| Field | Value |
+|---|---|
+| Final Status | [Deployment Complete / Deployment Failed / Aborted] |
+| Completed At | [timestamp] |
+| Known Issues | [none / list] |
+| Rollback Plan | [link or summary] |
 
 ## Deployment History Entry
 
 ```json
 {
-  "version": "X.Y.Z",
-  "date": "YYYY-MM-DD",
-  "type": "PATCH|MINOR|MAJOR",
-  "status": "success|failed|aborted",
-  "registry": "[registry name]",
-  "url": "[published URL]",
-  "authorizedBy": "[user]"
+  "version": "[Version]",
+  "timestamp": "[ISO-8601]",
+  "environment": "[target environment]",
+  "status": "[released|failed|aborted]",
+  "authorizer": "[name]",
+  "includedPlans": ["[Plan ID]"],
+  "tag": "[tag name]",
+  "releaseUrl": "[url]"
 }
 ```
 
 ## Next Actions
-- [If aborted: required fixes]
-- [If complete: none or hand off to retrospective]
-```
+
+- [ ] Update included plan statuses to `Released`
+- [ ] Hand off to Roadmap agent to update release tracker
+- [ ] Hand off to Retrospective agent
+
+## Changelog
+
+| Date | Agent | Change | Notes |
+|---|---|---|---|
+| [YYYY-MM-DD] | 11-DevOps | Deployment document created | Initialized from template |
+````
 
 ---
 

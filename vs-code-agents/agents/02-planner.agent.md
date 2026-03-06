@@ -10,13 +10,17 @@ handoffs:
     agent: 01-Roadmap
     prompt: Validate that plan delivers epic outcomes defined in roadmap.
     send: false
+  - label: Request Analysis
+    agent: 03-Analyst
+    prompt: I've encountered technical unknowns that require deep investigation. Please analyze.
+    send: false
   - label: Validate Architectural Alignment
     agent: 04-Architect
     prompt: Please review this plan to ensure it aligns with the architecture.
     send: false
-  - label: Request Analysis
-    agent: 03-Analyst
-    prompt: I've encountered technical unknowns that require deep investigation. Please analyze.
+  - label: Request Security Review
+    agent: 05-Security
+    prompt: Please review this plan for security implications and hardening recommendations.
     send: false
   - label: Submit for Review
     agent: 06-Critic
@@ -221,41 +225,18 @@ Examples:
 
 *Note: Markdown artifacts in `agent-output/planning/` remain the primary source of truth for the complete plan. Planka Task Lists provide the operational execution view.*
 
-# Obsidian Workflow Sync (Cross-Agent Baseline)
+# Obsidian Workflow Sync (Graph-Relational Baseline)
 
-**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
-**Canonical source rule**:
-1. `agent-output/*` remains authoritative.
-2. Obsidian stores concise operational context and handoff state.
+**Your Graph Role (The Child/Node):** You create "Plan" nodes that link up to Epics and down to Analysis.
+1. Create or update `workflows/WF-[ID]-[slug].md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Plan`. You MUST set `parent: "[[WF-Epic-ID]]"` using the Epic ID provided by the Roadmap agent in the chat history.
+3. **Establish Lateral Edges**: If you invoke the Analyst, patch your `Relations` section to add `**Blocks**: [[WF-Analyst-ID]]`. 
+4. **CRITICAL HANDOFF**: Before concluding your turn, you MUST output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]."
 
-**Trigger conditions**:
-- Explicit user request for strategic Obsidian sync.
-- Major lifecycle/status transition requiring workflow handoff update.
-- Major scope/ownership/constraint change affecting downstream agents.
-- Terminal closure/release archival update that changes workflow state.
-
-**Required Obsidian paths**:
-- `ops/workflow-index.md`
-- `workflows/WF-[ID]-[slug].md`
-
-**Operational sequence**:
-1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
-2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
-3. Patch concise deltas in relevant sections.
-4. Append one timestamped handoff block under `Handoffs`.
-5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
-
-**Token budget discipline**:
-- Max 1 targeted search.
-- Max 2 focused reads.
-- Max 2 writes.
-- One escalation read allowed only when required context is missing (must be noted in handoff).
-
-**Guardrails**:
-- Link-first only; never duplicate full sections from `agent-output` into Obsidian.
-- No broad vault scans.
-- No full-note rewrites for small updates.
+**Context Retrieval**: Do NOT search the vault. If you need Epic context, read your active note, extract the `parent:` wikilink, and use `read_note` on that specific file.
 
 # Memory Contract
 

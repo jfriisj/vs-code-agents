@@ -49,7 +49,7 @@ Constraints:
 - Edit ONLY for `agent-output/critiques/` docs.
 - Focus on plan quality (clarity, completeness, risk), not code style.
 - Positive intent. Factual, actionable critiques.
-- Read `.github/chatmodes/planner.chatmode.md` at EVERY review start.
+- Read `.github/agents/02-planner.agent.md` at EVERY review start.
 
 Review Method:
 1. Identify target (Plan/Architecture/Roadmap).
@@ -153,41 +153,18 @@ Examples:
 - Create task: `--op task:create --arg taskListId=<id> --arg name="Resolve missing edge case in step 4"`
 - Add comment: `--op comment:add --arg cardId=<id> --arg text="Plan Critique: REVISION REQUIRED. See NNN-feature-critique.md"`
 
-# Obsidian Workflow Sync (Cross-Agent Baseline)
+# Obsidian Workflow Sync (Graph-Relational Baseline)
 
-**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
-**Canonical source rule**:
-1. `agent-output/*` remains authoritative.
-2. Obsidian stores concise operational context and handoff state.
+**Your Graph Role (The Auditor):** You create "Critique" nodes attached to Plans.
+1. Create or update `workflows/WF-[ID]-[slug].md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Critique`. Set `parent: "[[WF-Plan-ID]]"` using the Plan ID provided in the chat history.
+3. **Closing the Loop**: When handing back to the Planner, use `patch_note` to update the Plan's `Next` or `Handoffs` section with a direct wikilink to your node.
+4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[Plan-ID]]]."
 
-**Trigger conditions**:
-- Explicit user request for strategic Obsidian sync.
-- Major lifecycle/status transition requiring workflow handoff update.
-- Major scope/ownership/constraint change affecting downstream agents.
-- Terminal closure/release archival update that changes workflow state.
-
-**Required Obsidian paths**:
-- `ops/workflow-index.md`
-- `workflows/WF-[ID]-[slug].md`
-
-**Operational sequence**:
-1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
-2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
-3. Patch concise deltas in relevant sections.
-4. Append one timestamped handoff block under `Handoffs`.
-5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
-
-**Token budget discipline**:
-- Max 1 targeted search.
-- Max 2 focused reads.
-- Max 2 writes.
-- One escalation read allowed only when required context is missing (must be noted in handoff).
-
-**Guardrails**:
-- Link-first only; never duplicate full sections from `agent-output` into Obsidian.
-- No broad vault scans.
-- No full-note rewrites for small updates.
+**Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
 # Memory Contract
 

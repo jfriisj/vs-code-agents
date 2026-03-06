@@ -10,6 +10,10 @@ handoffs:
     agent: 07-Implementer
     prompt: Packaging issues or version mismatches detected. Please fix before release.
     send: false
+  - label: Epic Complete
+    agent: 01-Roadmap
+    prompt: Epic has been completed. Please update the roadmap accordingly. Continue with next epic in same release if applicable.
+    send: false
   - label: Hand Off to Retrospective
     agent: 12-Retrospective
     prompt: Release complete. Please capture deployment lessons learned and archive final lessons/spec context to Obsidian.
@@ -132,7 +136,7 @@ Deployment Workflow:
 4. Hand off to Roadmap: Release complete, update tracker.
 5. Hand off to Retrospective.
 
-Deployment Doc Format: `agent-output/deployment/[version].md` with: Plan Reference, Release Date, Release Summary (version/type/environment/epic), **Epic Readiness Matrix** (per-epic status and blockers), Pre-Release Verification (UAT/QA Approval, Version Consistency checklist, Packaging Integrity checklist, Gitignore Review checklist, Workspace Cleanliness checklist), User Confirmation (timestamp, summary presented, response/name/timestamp/decline reason), Release Execution (Git Tagging command/result/pushed, Package Publication registry/command/result/URL, Publication Verification checklist), Post-Release Status (status/timestamp, Known Issues, Rollback Plan), Deployment History Entry (JSON), Next Actions.
+Deployment Doc Format: `agent-output/deployment/[version].md` with: Plan Reference, Release Date, Release Summary (version/type/environment/epic), **Epic Readiness Matrix** (per-epic status and blockers), Pre-Release Verification (UAT/QA Approval, Version Consistency checklist, Packaging Integrity checklist, Gitignore Review checklist, Workspace Cleanliness checklist), User Confirmation (timestamp, summary presented, response/name/timestamp/decline reason), Release Execution (Git Tagging command/result/pushed, Package Publication registry/command/result/URL, Publication Verification checklist), Post-Release Status (status/timestamp, Known Issues, Rollback Plan), Deployment History Entry (JSON), Next Actions. Use `.github/skills/release-procedures/references/release-templates.md` as the default template source.
 
 Response Style:
 - **Prioritize user confirmation**. Never proceed without explicit approval.
@@ -214,41 +218,18 @@ Examples:
 - Add comment: `--op comment:add --arg cardId=<id> --arg text="Release v0.6.2 deployed successfully. See NNN-deployment.md"`
 - Move card to Delivered list: `--op card:move --arg cardId=<id> --arg listId=<delivered_list_id>`
 
-# Obsidian Workflow Sync (Cross-Agent Baseline)
+# Obsidian Workflow Sync (Graph-Relational Baseline)
 
-**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
-**Canonical source rule**:
-1. `agent-output/*` remains authoritative.
-2. Obsidian stores concise operational context and handoff state.
+**Your Graph Role (The Releaser):** You create "Deployment" nodes that act as the terminus for Epics/Releases.
+1. Create or update `workflows/WF-[ID]-[slug].md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Deployment`. Set `parent: "[[WF-Epic-ID]]"` linking it back to the overarching Epic roadmap node.
+3. **Patching Down**: Use `patch_note` to update the deployed `[[WF-Plan-ID]]` notes with `status: Released`.
+4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]." (Pass your Deployment node ID to Retrospective).
 
-**Trigger conditions**:
-- Explicit user request for strategic Obsidian sync.
-- Major lifecycle/status transition requiring workflow handoff update.
-- Major scope/ownership/constraint change affecting downstream agents.
-- Terminal closure/release archival update that changes workflow state.
-
-**Required Obsidian paths**:
-- `ops/workflow-index.md`
-- `workflows/WF-[ID]-[slug].md`
-
-**Operational sequence**:
-1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
-2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
-3. Patch concise deltas in relevant sections.
-4. Append one timestamped handoff block under `Handoffs`.
-5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
-
-**Token budget discipline**:
-- Max 1 targeted search.
-- Max 2 focused reads.
-- Max 2 writes.
-- One escalation read allowed only when required context is missing (must be noted in handoff).
-
-**Guardrails**:
-- Link-first only; never duplicate full sections from `agent-output` into Obsidian.
-- No broad vault scans.
-- No full-note rewrites for small updates.
+**Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
 # Memory Contract
 

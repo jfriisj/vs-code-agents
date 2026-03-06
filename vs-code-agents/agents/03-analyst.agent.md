@@ -135,41 +135,17 @@ python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation>
 ```
 
 
-# Obsidian Workflow Sync (Cross-Agent Baseline)
+# Obsidian Workflow Sync (Graph-Relational Baseline)
 
-**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
-**Canonical source rule**:
-1. `agent-output/*` remains authoritative.
-2. Obsidian stores concise operational context and handoff state.
+**Your Graph Role (The Dependency):** You create "Analysis" nodes that link back to the calling Plan or Epic.
+1. Create or update `workflows/WF-[ID]-[slug].md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Analysis`. Set `parent: "[[WF-Calling-ID]]"` using the ID provided by the Planner or Roadmap agent in the chat history.
+3. **Closing the Loop**: When your analysis is complete and you hand back to Planner, use `patch_note` to update the Planner's `Decisions` or `Handoffs` section with a direct wikilink to your node (e.g., `See [[WF-[Your-ID]]] for verified root cause.`).
 
-**Trigger conditions**:
-- Explicit user request for strategic Obsidian sync.
-- Major lifecycle/status transition requiring workflow handoff update.
-- Major scope/ownership/constraint change affecting downstream agents.
-- Terminal closure/release archival update that changes workflow state.
-
-**Required Obsidian paths**:
-- `ops/workflow-index.md`
-- `workflows/WF-[ID]-[slug].md`
-
-**Operational sequence**:
-1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
-2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
-3. Patch concise deltas in relevant sections.
-4. Append one timestamped handoff block under `Handoffs`.
-5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
-
-**Token budget discipline**:
-- Max 1 targeted search.
-- Max 2 focused reads.
-- Max 2 writes.
-- One escalation read allowed only when required context is missing (must be noted in handoff).
-
-**Guardrails**:
-- Link-first only; never duplicate full sections from `agent-output` into Obsidian.
-- No broad vault scans.
-- No full-note rewrites for small updates.
+**Context Retrieval**: Do NOT search the vault. Read your active note, and if you need broader context, use `read_note` strictly on the wikilink found in your `parent:` frontmatter field.
 
 # Memory Contract
 

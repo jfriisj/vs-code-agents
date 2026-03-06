@@ -61,42 +61,6 @@ Process:
 12. Create retrospective document in `agent-output/retrospectives/`
 13. For terminally closed workflows, synchronize a concise archive update in the mapped workflow note (link-first) instead of creating verbose duplicate notes.
 
-# Obsidian Workflow Sync (Cross-Agent Baseline)
-
-**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill for workflow-context synchronization.
-
-**Canonical source rule**:
-1. `agent-output/*` remains authoritative.
-2. Obsidian stores concise operational context and handoff state.
-
-**Trigger conditions**:
-- Explicit user request for strategic Obsidian sync.
-- Major lifecycle/status transition requiring workflow handoff update.
-- Major scope/ownership/constraint change affecting downstream agents.
-- Terminal closure/release archival update that changes workflow state.
-
-**Required Obsidian paths**:
-- `ops/workflow-index.md`
-- `workflows/WF-[ID]-[slug].md`
-
-**Operational sequence**:
-1. Resolve `WF-[ID]` mapping via `ops/workflow-index.md`.
-2. Read only required sections in `workflows/WF-[ID]-[slug].md` (`Next`, latest `Handoffs`, relevant `Constraints`/`Decisions`).
-3. Patch concise deltas in relevant sections.
-4. Append one timestamped handoff block under `Handoffs`.
-5. Update frontmatter fields (`owner`, `status`, `last_updated`) when ownership/status changes.
-
-**Token budget discipline**:
-- Max 1 targeted search.
-- Max 2 focused reads.
-- Max 2 writes.
-- One escalation read allowed only when required context is missing (must be noted in handoff).
-
-**Guardrails**:
-- Link-first only; never copy full retrospective sections into Obsidian.
-- No broad vault scans.
-- No full-note rewrites for small updates.
-
 Retrospective Document Format:
 
 Create markdown in `agent-output/retrospectives/`:
@@ -184,7 +148,7 @@ Create markdown in `agent-output/retrospectives/`:
 
 ### Changes to Output Files
 **Artifact Update Frequency**:
-
+```
 ---
 
 # Document Lifecycle
@@ -234,6 +198,18 @@ Examples:
 - Create task list: `--op tasklist:create --arg cardId=<id> --arg name="Retrospective & Learnings"`
 - Create task: `--op task:create --arg taskListId=<id> --arg name="Analyze QA-to-UAT handoff delays"`
 - Add comment: `--op comment:add --arg cardId=<id> --arg text="Retrospective complete. Key learning: enforce TDD earlier. See NNN-retrospective.md"`
+
+# Obsidian Workflow Sync (Graph-Relational Baseline)
+
+**MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
+
+**Your Graph Role (The Historian):** You create "Retrospective" nodes attached to Deployments.
+1. Create or update `workflows/WF-[ID]-[slug].md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Retrospective`. Set `parent: "[[WF-Deployment-ID]]"` using the ID provided by DevOps.
+3. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]." (Pass your Retro node ID to PI).
+
+**Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
 # Memory Contract
 

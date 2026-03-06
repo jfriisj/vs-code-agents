@@ -131,6 +131,8 @@ python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --ensure-tas
 
 By default, `sync_roadmap_epics.py` also writes `CardID` and `BoardID` into each epic's roadmap `**Status**` line for downstream agent traceability.
 
+For cross-instance mapping, keep `agent-output/planka/workflow-index.md` aligned to `references/workflow-index-template.md`.
+
 **Usage Example:**
 ```bash
 # Create Task List
