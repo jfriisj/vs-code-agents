@@ -112,6 +112,31 @@ Document Naming: `NNN-plan-name-analysis.md` (or `NNN-topic-analysis.md` for sta
 
 ---
 
+## Universal Tri-Tool Start Gate (Hard Block)
+
+Before any substantive work, you MUST pass this preflight gate. You are not allowed to continue until Planka, Obsidian, and Memory are all valid and reconciled for the current workflow context.
+
+1. **Planka Preflight (Required)**:
+   - Resolve the active project/board/card for the current epic/plan.
+   - Verify your phase task list and task baseline exist; create/update as needed.
+   - Verify prior handoff state is present and current status is synchronized.
+   - Run a final `card:get` validation after reconciliation.
+
+2. **Obsidian Preflight (Required)**:
+   - Resolve the active `WF-*` node from handoff context.
+   - Verify required frontmatter and parent linkage are valid.
+   - If structural fields/links changed, run graph verification before proceeding.
+
+3. **Memory Preflight (Required)**:
+   - Read graph state and verify roadmap/epic/plan relations are queryable.
+   - If missing/stale, create or patch entities/relations first, then re-check.
+
+4. **Hard Block Rule (No Bypass)**:
+   - If any preflight check fails and cannot be reconciled immediately, STOP and report `SYNC_PREREQ_BLOCKED`.
+   - Do not start analysis/planning/implementation/review/testing/release actions while blocked.
+   - Do not downgrade this to a warning.
+
+
 # Planka Agile Analyst Sync
 
 **MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent. Do NOT use the old `bootstrap_workflow_board.py` script.
@@ -128,6 +153,12 @@ When you perform technical research or analysis for an Epic or Plan, you MUST tr
    - Once your analysis is complete, add a comment to the Epic card (`comment:add`) summarizing the root cause or key findings.
    - Include a reference/link to your detailed markdown artifact (`agent-output/analysis/NNN-topic-analysis.md`) in the comment.
 
+4. **Mandatory Planka Exit Gate (Analyst)**:
+  - Mark your analysis tasks complete using `task:update --arg taskId=<id> --arg isCompleted=true`.
+  - Never encode completion in task names (do not append `(Complete)`).
+  - Run `card:get` and verify your phase comment exists and your `Analysis & Spikes` tasks are closed.
+  - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED` and the failing operation.
+
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations:
 ```bash
@@ -140,10 +171,12 @@ python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation>
 **MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
+**ID Integrity Rule**: Use the exact upstream workflow ID from handoff context (example `[[WF-123]]`). Never emit placeholder IDs in wikilinks.
+
 **Your Graph Role (The Dependency):** You create "Analysis" nodes that link back to the calling Plan or Epic.
 1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Analysis`. Set `parent: "[[WF-Calling-ID]]"` using the ID provided by the Planner or Roadmap agent in the chat history.
-3. **Closing the Loop**: When your analysis is complete and you hand back to Planner, use `patch_note` to update the Planner's `Decisions` or `Handoffs` section with a direct wikilink to your node (e.g., `See [[WF-[Your-ID]]] for verified root cause.`).
+2. **Establish the Upward Edge**: Set frontmatter `type: Analysis`. Set `parent` to the exact upstream workflow link from chat history (example `[[WF-123]]`, replacing `WF-123` with the real upstream ID).
+3. **Closing the Loop**: When your analysis is complete and you hand back to Planner, use `patch_note` to update the Planner's `Decisions` or `Handoffs` section with a direct wikilink to your node (e.g., `See [[WF-123]] for verified root cause.`).
 
 **Context Retrieval**: Do NOT search the vault. Read your active note, and if you need broader context, use `read_note` strictly on the wikilink found in your `parent:` frontmatter field.
 
@@ -155,7 +188,7 @@ python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation>
 
 * Retrieve at decision points (2–5 times per task)
 * Store at value boundaries (decisions, findings, constraints)
-* If tools fail, announce no-memory mode immediately
+* If tools fail, stop immediately with SYNC_PREREQ_BLOCKED; no no-memory execution mode is allowed.
 
 **Quick reference:**
 

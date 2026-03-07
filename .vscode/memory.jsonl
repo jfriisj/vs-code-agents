@@ -1,0 +1,21 @@
+{"type":"entity","name":"roadmap://v0.2.0","entityType":"roadmap","observations":["Release v0.2.0 is active for cross-tool workflow assurance.","Canonical roadmap source: agent-output/roadmap/product-roadmap.md."]}
+{"type":"entity","name":"epic://2.1","entityType":"epic","observations":["Epic 2.1 tracks end-to-end workflow confidence across Planka, Obsidian, and Memory.","Current lifecycle target is In Progress."]}
+{"type":"entity","name":"plan://2","entityType":"plan","observations":["Plan-2 is workflow rehearsal and analysis for Epic 2.1.","Plan artifact: agent-output/planning/002-workflow-rehearsal-plan.md."]}
+{"type":"entity","name":"obsidian://WF-21-cross-tool-workflow-confidence","entityType":"obsidian-node","observations":["WF-21 is the active epic workflow node for cross-tool assurance.","Parent linkage is none (epic root node)."]}
+{"type":"entity","name":"planka://1725309812348028678","entityType":"planka-card","observations":["Epics board card for Epic 2.1 in Agent System project.","Reconciled to In Progress list during preflight."]}
+{"type":"entity","name":"Roadmap Agent System v0.2.0","entityType":"roadmap-alias","observations":["Legacy human-readable alias retained for backward relation compatibility."]}
+{"type":"entity","name":"Epic 2.1 End-to-End Workflow Confidence Across Planka, Obsidian, and Memory","entityType":"epic-alias","observations":["Legacy human-readable alias retained for backward relation compatibility."]}
+{"type":"entity","name":"Obsidian WF-21-cross-tool-workflow-confidence","entityType":"obsidian-alias","observations":["Legacy human-readable alias retained for backward relation compatibility."]}
+{"type":"entity","name":"Planka Card 1725312215600334607","entityType":"planka-alias","observations":["Legacy card reference preserved; canonical card is planka://1725309812348028678."]}
+{"type":"entity","name":"planka://1725312215600334607","entityType":"planka-card-legacy","observations":["Legacy Planka URI retained for historical relation compatibility.","Superseded by planka://1725309812348028678."]}
+{"type":"entity","name":"Planka Card 1725309812348028678","entityType":"planka-alias","observations":["Human-readable alias for the current Epic 2.1 Planka card."]}
+{"type":"entity","name":"Cross-tool workflow assurance decision 2026-03-07","entityType":"decision","observations":["Captured decision node for Epic 2.1 workflow assurance outcomes."]}
+{"type":"relation","from":"Roadmap Agent System v0.2.0","to":"Epic 2.1 End-to-End Workflow Confidence Across Planka, Obsidian, and Memory","relationType":"includes"}
+{"type":"relation","from":"Epic 2.1 End-to-End Workflow Confidence Across Planka, Obsidian, and Memory","to":"Planka Card 1725309812348028678","relationType":"tracks"}
+{"type":"relation","from":"Epic 2.1 End-to-End Workflow Confidence Across Planka, Obsidian, and Memory","to":"Obsidian WF-21-cross-tool-workflow-confidence","relationType":"documents"}
+{"type":"relation","from":"Epic 2.1 End-to-End Workflow Confidence Across Planka, Obsidian, and Memory","to":"Cross-tool workflow assurance decision 2026-03-07","relationType":"records"}
+{"type":"relation","from":"roadmap://v0.2.0","to":"epic://2.1","relationType":"targets_epic"}
+{"type":"relation","from":"epic://2.1","to":"planka://1725312215600334607","relationType":"represented_by_planka_card"}
+{"type":"relation","from":"epic://2.1","to":"obsidian://WF-21-cross-tool-workflow-confidence","relationType":"documented_in_obsidian_node"}
+{"type":"relation","from":"epic://2.1","to":"plan://2","relationType":"governed_by_plan"}
+{"type":"relation","from":"epic://2.1","to":"planka://1725309812348028678","relationType":"represented_by_planka_card"}

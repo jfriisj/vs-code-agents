@@ -170,6 +170,31 @@ Escalation:
 
 ---
 
+## Universal Tri-Tool Start Gate (Hard Block)
+
+Before any substantive work, you MUST pass this preflight gate. You are not allowed to continue until Planka, Obsidian, and Memory are all valid and reconciled for the current workflow context.
+
+1. **Planka Preflight (Required)**:
+   - Resolve the active project/board/card for the current epic/plan.
+   - Verify your phase task list and task baseline exist; create/update as needed.
+   - Verify prior handoff state is present and current status is synchronized.
+   - Run a final `card:get` validation after reconciliation.
+
+2. **Obsidian Preflight (Required)**:
+   - Resolve the active `WF-*` node from handoff context.
+   - Verify required frontmatter and parent linkage are valid.
+   - If structural fields/links changed, run graph verification before proceeding.
+
+3. **Memory Preflight (Required)**:
+   - Read graph state and verify roadmap/epic/plan relations are queryable.
+   - If missing/stale, create or patch entities/relations first, then re-check.
+
+4. **Hard Block Rule (No Bypass)**:
+   - If any preflight check fails and cannot be reconciled immediately, STOP and report `SYNC_PREREQ_BLOCKED`.
+   - Do not start analysis/planning/implementation/review/testing/release actions while blocked.
+   - Do not downgrade this to a warning.
+
+
 # Planka Agile Architect Sync
 
 **MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent. Do NOT use the old `bootstrap_workflow_board.py` script.
@@ -186,6 +211,12 @@ When you perform architectural reviews, define constraints, or audit a plan for 
    - Once your review is complete, add a comment to the Epic card (`comment:add`) summarizing your verdict (APPROVED / APPROVED_WITH_CHANGES / REJECTED) and key architectural decisions.
    - Include a reference/link to your findings artifact (`agent-output/architecture/NNN-[topic]-architecture-findings.md`) and remind the team to check `system-architecture.md` for the current state.
 
+4. **Mandatory Planka Exit Gate (Architect)**:
+   - Mark architecture tasks owned by this phase complete using `task:update --arg taskId=<id> --arg isCompleted=true`.
+   - Never encode completion in task names (do not append `(Complete)`).
+   - Run `card:get` and verify your verdict comment exists and your `Architecture & Design` tasks are closed.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED` and the failing operation.
+
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations:
 ```bash
@@ -197,11 +228,13 @@ python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation>
 **MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
+**ID Integrity Rule**: Use the exact upstream workflow ID from handoff context (example `[[WF-123]]`). Never emit placeholder IDs in wikilinks.
+
 **Your Graph Role (The Design Authority):** You create "Architecture" nodes that evaluate Epics or Plans.
 1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Architecture`. Set `parent: "[[WF-Calling-ID]]"` using the Epic or Plan ID provided by the calling agent in the chat history.
-3. **Closing the Loop**: When your review is complete, use `patch_note` to update the calling agent's `Constraints` or `Decisions` section with a direct wikilink to your node (e.g., `See [[WF-[Your-ID]]] for architectural invariants.`).
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[Calling-ID]]]."
+2. **Establish the Upward Edge**: Set frontmatter `type: Architecture`. Set `parent` to the exact upstream workflow link from chat history (example `[[WF-123]]`, replacing `WF-123` with the real upstream ID).
+3. **Closing the Loop**: When your review is complete, use `patch_note` to update the calling agent's `Constraints` or `Decisions` section with a direct wikilink to your node (e.g., `See [[WF-123]] for architectural invariants.`).
+4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-123]]."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
@@ -213,7 +246,7 @@ python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation>
 
 * Retrieve at decision points (2–5 times per task)
 * Store at value boundaries (decisions, findings, constraints)
-* If tools fail, announce no-memory mode immediately
+* If tools fail, stop immediately with SYNC_PREREQ_BLOCKED; no no-memory execution mode is allowed.
 
 **Quick reference:**
 

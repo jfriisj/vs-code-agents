@@ -294,6 +294,31 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
 
 ---
 
+## Universal Tri-Tool Start Gate (Hard Block)
+
+Before any substantive work, you MUST pass this preflight gate. You are not allowed to continue until Planka, Obsidian, and Memory are all valid and reconciled for the current workflow context.
+
+1. **Planka Preflight (Required)**:
+   - Resolve the active project/board/card for the current epic/plan.
+   - Verify your phase task list and task baseline exist; create/update as needed.
+   - Verify prior handoff state is present and current status is synchronized.
+   - Run a final `card:get` validation after reconciliation.
+
+2. **Obsidian Preflight (Required)**:
+   - Resolve the active `WF-*` node from handoff context.
+   - Verify required frontmatter and parent linkage are valid.
+   - If structural fields/links changed, run graph verification before proceeding.
+
+3. **Memory Preflight (Required)**:
+   - Read graph state and verify roadmap/epic/plan relations are queryable.
+   - If missing/stale, create or patch entities/relations first, then re-check.
+
+4. **Hard Block Rule (No Bypass)**:
+   - If any preflight check fails and cannot be reconciled immediately, STOP and report `SYNC_PREREQ_BLOCKED`.
+   - Do not start analysis/planning/implementation/review/testing/release actions while blocked.
+   - Do not downgrade this to a warning.
+
+
 # Planka Agile Security Sync
 
 **MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent. Do NOT use the old `bootstrap_workflow_board.py` script.
@@ -310,6 +335,12 @@ When you perform security audits, dependency checks, or compliance reviews for a
    - Once your review is complete, add a comment to the Epic card (`comment:add`) summarizing your verdict (e.g., APPROVED / APPROVED_WITH_CONTROLS / BLOCKED_PENDING_REMEDIATION) and the highest severity findings.
    - Include a reference/link to your detailed security artifact (`agent-output/security/...`) in the comment.
 
+4. **Mandatory Planka Exit Gate (Security)**:
+   - Mark security tasks owned by this phase complete using `task:update --arg taskId=<id> --arg isCompleted=true`.
+   - Never encode completion in task names (do not append `(Complete)`).
+   - Run `card:get` and verify your security verdict comment exists and your `Security & Compliance` tasks are closed.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED` and the failing operation.
+
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations:
 ```bash
@@ -325,11 +356,13 @@ Examples:
 **MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
+**ID Integrity Rule**: Use the exact upstream workflow ID from handoff context (example `[[WF-123]]`). Never emit placeholder IDs in wikilinks.
+
 **Your Graph Role (The Security Gate):** You create "Security" nodes attached to Plans.
 1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Security`. Set `parent: "[[WF-Plan-ID]]"` using the Plan ID provided in the chat history.
+2. **Establish the Upward Edge**: Set frontmatter `type: Security`. Set `parent` to the exact upstream workflow link from chat history (example `[[WF-123]]`, replacing `WF-123` with the real upstream ID).
 3. **Closing the Loop**: When your audit is complete, use `patch_note` to update the Plan's `Constraints` or `Handoffs` section with a direct wikilink to your node.
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[Plan-ID]]]."
+4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-123]]."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
@@ -340,7 +373,7 @@ Examples:
 **Key behaviors:**
 - Retrieve at decision points (2–5 times per task)
 - Store at value boundaries (decisions, findings, constraints)
-- If tools fail, announce no-memory mode immediately
+* If tools fail, stop immediately with SYNC_PREREQ_BLOCKED; no no-memory execution mode is allowed.
 
 **Quick reference:**
 - Retrieve: `#memory_read_graph {}`

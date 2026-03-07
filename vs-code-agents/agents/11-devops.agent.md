@@ -190,6 +190,31 @@ Escalation:
 
 ---
 
+## Universal Tri-Tool Start Gate (Hard Block)
+
+Before any substantive work, you MUST pass this preflight gate. You are not allowed to continue until Planka, Obsidian, and Memory are all valid and reconciled for the current workflow context.
+
+1. **Planka Preflight (Required)**:
+   - Resolve the active project/board/card for the current epic/plan.
+   - Verify your phase task list and task baseline exist; create/update as needed.
+   - Verify prior handoff state is present and current status is synchronized.
+   - Run a final `card:get` validation after reconciliation.
+
+2. **Obsidian Preflight (Required)**:
+   - Resolve the active `WF-*` node from handoff context.
+   - Verify required frontmatter and parent linkage are valid.
+   - If structural fields/links changed, run graph verification before proceeding.
+
+3. **Memory Preflight (Required)**:
+   - Read graph state and verify roadmap/epic/plan relations are queryable.
+   - If missing/stale, create or patch entities/relations first, then re-check.
+
+4. **Hard Block Rule (No Bypass)**:
+   - If any preflight check fails and cannot be reconciled immediately, STOP and report `SYNC_PREREQ_BLOCKED`.
+   - Do not start analysis/planning/implementation/review/testing/release actions while blocked.
+   - Do not downgrade this to a warning.
+
+
 # Planka Agile DevOps Sync
 
 **MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent. Do NOT use the old `bootstrap_workflow_board.py` script.
@@ -207,6 +232,13 @@ When you perform stage 1 commits or stage 2 releases for an Epic, you MUST track
    - When Stage 2 (Release Execution) is successfully completed, **you must move the Epic card** (`card:move`) to the `Delivered` (or `Closed`) list on the Epics board to signify that the business value is now in production.
    - Add a final comment with the release version and a link to the `agent-output/deployment/...` artifact.
 
+4. **Mandatory Planka Exit Gate (DevOps)**:
+   - Resolve the destination list ID dynamically from `board:get` by list name (`Delivered` or `Closed`). Do not hardcode list IDs.
+   - After `card:move`, run `card:get` and verify `listId` equals the resolved destination list ID.
+   - Mark deployment tasks owned by this phase complete using `task:update --arg taskId=<id> --arg isCompleted=true`.
+   - If remote publication fails, add a comment with status `DEPLOYMENT_DEGRADED` and keep the card in `In Progress` until re-run criteria are satisfied.
+   - Never declare release complete unless post-move verification succeeds.
+
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations:
 ```bash
@@ -223,11 +255,13 @@ Examples:
 **MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
+**ID Integrity Rule**: Use the exact upstream workflow ID from handoff context (example `[[WF-123]]`). Never emit placeholder IDs in wikilinks.
+
 **Your Graph Role (The Releaser):** You create "Deployment" nodes that act as the terminus for Epics/Releases.
 1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Deployment`. Set `parent: "[[WF-Epic-ID]]"` linking it back to the overarching Epic roadmap node.
-3. **Patching Down**: Use `patch_note` to update the deployed `[[WF-Plan-ID]]` notes with `status: Released`.
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]." (Pass your Deployment node ID to Retrospective).
+2. **Establish the Upward Edge**: Set frontmatter `type: Deployment`. Set `parent` to the exact upstream workflow link from chat history (example `[[WF-123]]`, replacing `WF-123` with the real upstream ID).
+3. **Patching Down**: Use `patch_note` to update deployed plan notes with the real node ID from context (example `[[WF-123]]`, replace with the actual plan WF ID) and set `status: Released`.
+4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-123]]." (Pass your Deployment node ID to Retrospective).
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
@@ -238,7 +272,7 @@ Examples:
 **Key behaviors:**
 - Retrieve at decision points (2–5 times per task)
 - Store at value boundaries (decisions, findings, constraints)
-- If tools fail, announce no-memory mode immediately
+* If tools fail, stop immediately with SYNC_PREREQ_BLOCKED; no no-memory execution mode is allowed.
 
 **Quick reference:**
 - Retrieve: `#memory_read_graph {}`

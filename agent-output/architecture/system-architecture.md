@@ -8,6 +8,7 @@
 | Date       | Change                                      | Rationale                                     | Plan/Epic |
 |------------|---------------------------------------------|-----------------------------------------------|-----------|
 | 2026-03-06 | Initial Baseline established during Plan-1 review | Live test of optimized agent ecosystem. | Plan-1 / Epic 1.1 |
+| 2026-03-07 | v0.2.0 Workflow Rehearsal baseline established | Cross-tool consistency and graph verification. | Plan-2 / Epic 2.1 |
 
 ---
 
@@ -52,6 +53,7 @@ The system follows a **Pipelined Agent Workflow** where each agent acts as a spe
 ## 6. Problem Areas & Design Debt
 - **[DD-001] Script Type Validation**: `planka_ops.py` currently fails on numeric string IDs due to incorrect integer casting in `parse_value`.
 - **[DD-002] Path Hardcoding**: Historical use of `vs-code-agents/` prefix in agent instructions (fixed in v0.1.0).
+- **[DD-003] Roadmap Dual-State Inconsistency**: Physical decoupling of Epic headers and "Active Release Tracker" table status leads to manual desynchronization risk.
 
 ## 7. Decisions (ADRs)
 ### ADR-001: Standardized Agent Root Variables
@@ -59,6 +61,12 @@ The system follows a **Pipelined Agent Workflow** where each agent acts as a spe
 - **Context**: Agents were using hardcoded relative paths, making the system brittle to directory moves.
 - **Decision**: All agents resolve `*_ROOT` and `*_PATH` variables at runtime based on workspace structure.
 - **Consequences**: (+) Improved portability; (-) Slight increase in agent instruction complexity.
+
+### ADR-002: Zero-Dependency Graph Verification Gate
+- **Status**: Accepted
+- **Context**: Artifact linkage was becoming opaque in large Obsidian vaults.
+- **Decision**: Integrate `verify-obsidian-graph.mjs` as a mandatory validation gate for all SDLC phases and CI pipelines.
+- **Consequences**: (+) Early detection of orphaned artifacts; (+) Zero runtime dependencies.
 
 ---
 

@@ -1,10 +1,10 @@
-.flowbaby/
 #.github/
-agent-output/
+!agent-output/
 *.env
 *.local 
 .DS_Store
 **.mardownlint.json
-.vscode/
-.github/
+!.vscode/
+!.github/*
 !.github/workflows/
+!.github/workflows/**

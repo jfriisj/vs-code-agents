@@ -188,6 +188,31 @@ Status: Active
 
 ---
 
+## Universal Tri-Tool Start Gate (Hard Block)
+
+Before any substantive work, you MUST pass this preflight gate. You are not allowed to continue until Planka, Obsidian, and Memory are all valid and reconciled for the current workflow context.
+
+1. **Planka Preflight (Required)**:
+   - Resolve the active project/board/card for the current epic/plan.
+   - Verify your phase task list and task baseline exist; create/update as needed.
+   - Verify prior handoff state is present and current status is synchronized.
+   - Run a final `card:get` validation after reconciliation.
+
+2. **Obsidian Preflight (Required)**:
+   - Resolve the active `WF-*` node from handoff context.
+   - Verify required frontmatter and parent linkage are valid.
+   - If structural fields/links changed, run graph verification before proceeding.
+
+3. **Memory Preflight (Required)**:
+   - Read graph state and verify roadmap/epic/plan relations are queryable.
+   - If missing/stale, create or patch entities/relations first, then re-check.
+
+4. **Hard Block Rule (No Bypass)**:
+   - If any preflight check fails and cannot be reconciled immediately, STOP and report `SYNC_PREREQ_BLOCKED`.
+   - Do not start analysis/planning/implementation/review/testing/release actions while blocked.
+   - Do not downgrade this to a warning.
+
+
 # Planka Agile Planner Sync
 
 **MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent. Do NOT use the old `bootstrap_workflow_board.py` script.
@@ -207,6 +232,15 @@ When you create a plan for an Epic, you MUST translate your plan's milestones in
 3. **Populate Tasks**:
 * Based on your detailed planning milestones (`agent-output/planning/*.md`), create individual Tasks inside the corresponding Task Lists (`task:create`).
 * Each Task should represent a concrete, actionable implementation step for the Implementer.
+
+4. **Mandatory Planka Exit Gate (Planner)**:
+* Add one structured handoff comment (`comment:add`) that includes: `Agent=Planner`, `PlanID`, `Artifact`, and `Next`.
+* Run a final `card:get` verification and confirm:
+  - Required acceptance-criteria task lists exist.
+  - Each required list contains at least one task.
+  - The planner handoff comment is present.
+* Do not mark downstream implementation tasks as completed.
+* If verification fails, do not declare planning complete. Report `PLANKA_SYNC_BLOCKED` with the failed operation.
 
 
 
@@ -230,11 +264,13 @@ Examples:
 **MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
+**ID Integrity Rule**: Use the exact upstream workflow ID from handoff context (example `[[WF-123]]`). Never emit placeholder IDs in wikilinks.
+
 **Your Graph Role (The Child/Node):** You create "Plan" nodes that link up to Epics and down to Analysis.
 1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Plan`. You MUST set `parent: "[[WF-Epic-ID]]"` using the Epic ID provided by the Roadmap agent in the chat history.
-3. **Establish Lateral Edges**: If you invoke the Analyst, patch your `Relations` section to add `**Blocks**: [[WF-Analyst-ID]]`. 
-4. **CRITICAL HANDOFF**: Before concluding your turn, you MUST output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]."
+2. **Establish the Upward Edge**: Set frontmatter `type: Plan`. Set `parent` to the exact upstream workflow link from chat history (example `[[WF-123]]`, replacing `WF-123` with the real upstream ID).
+3. **Establish Lateral Edges**: If you invoke the Analyst, patch your `Relations` section to add `**Blocks**` with the Analyst's real node (example `[[WF-123]]`, replace with the actual Analyst WF ID). 
+4. **CRITICAL HANDOFF**: Before concluding your turn, you MUST output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-123]]."
 
 **Context Retrieval**: Do NOT search the vault. If you need Epic context, read your active note, extract the `parent:` wikilink, and use `read_note` on that specific file.
 
@@ -246,7 +282,7 @@ Examples:
 
 * Retrieve at decision points (2–5 times per task)
 * Store at value boundaries (decisions, findings, constraints)
-* If tools fail, announce no-memory mode immediately
+* If tools fail, stop immediately with SYNC_PREREQ_BLOCKED; no no-memory execution mode is allowed.
 
 **Quick reference:**
 

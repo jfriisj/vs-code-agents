@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "7ea19ce75efb7264",
+        "id": "c363405d37721834",
         "type": "tabs",
         "children": [
           {
-            "id": "e1462557d442be0c",
+            "id": "5598090e4ee17064",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "planning/001-initial-test-plan.md",
+                "file": "Plan-1.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "001-initial-test-plan"
+              "title": "Plan-1"
             }
           }
         ]
@@ -94,7 +94,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "planning/001-initial-test-plan.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +103,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 001-initial-test-plan"
+              "title": "Backlinks"
             }
           },
           {
@@ -113,12 +112,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "planning/001-initial-test-plan.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from 001-initial-test-plan"
+              "title": "Outgoing links"
             }
           },
           {
@@ -156,13 +154,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "planning/001-initial-test-plan.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 001-initial-test-plan"
+              "title": "Outline"
             }
           }
         ]
@@ -183,36 +180,43 @@
       "bases:Create new base": false
     }
   },
-  "active": "e1462557d442be0c",
+  "active": "df9d78bc496e4955",
   "lastOpenFiles": [
-    "deployment/v0.1.0.md",
-    "deployment",
-    "workflows/WF-7.md",
+    "uat/002-workflow-rehearsal-uat.md",
+    "documentation/v0.2.0-release-readiness-rule.md",
+    "documentation",
+    "analysis/WF-ANALYSIS-001-cross-tool-consistency.md",
+    "qa/010-workflow-rehearsal-qa.md",
+    "code-review/009-workflow-rehearsal-code-review.md",
+    "code-review/closed",
+    "implementation/008-workflow-rehearsal-implementation.md",
+    "critiques/007-workflow-rehearsal-critique.md",
+    "critiques/006-workflow-rehearsal-critique.md",
+    "security/005-workflow-rehearsal-security-review.md",
+    "architecture/004-workflow-rehearsal-architecture-findings.md",
+    "analysis/002-workflow-rehearsal-analysis.md",
+    "planning/002-workflow-rehearsal-plan.md",
+    "planning/002-workflow-rehearsal.md",
+    "plans/021-rehearsal-plan.md",
+    "plans",
+    "workflows/WF-21-cross-tool-workflow-confidence.md",
+    "analysis/closed/001-initial-test-analysis.md",
+    "analysis/closed",
+    "ops/003-obsidian-workflow-hardening-brief.md",
+    "ops/002-obsidian-workflow-migration-report.md",
+    "ops/workflow-index.md",
+    "analysis/004-planka-card-sync-gap-analysis.md",
+    "Plan-1.md",
+    "ops/001-agent-ecosystem-optimization-checklist.md",
+    "pi/001-lifecycle-hardening.md",
     "uat/001-core-handoff-lifecycle-uat.md",
-    "uat",
-    "workflows/WF-6.md",
-    "qa/001-core-handoff-lifecycle-qa.md",
-    "qa",
-    "workflows/WF-5.md",
-    "code-review/002-planka-ops-final-review.md",
-    "workflows/WF-4.md",
-    "code-review/001-planka-ops-fix-review.md",
-    "code-review",
-    "workflows/WF-3.md",
-    "critiques/001-core-handoff-critique.md",
-    "critiques",
-    "implementation/001-core-handoff-implementation.md",
-    "implementation",
-    "analysis/003-planka-move-failure-analysis.md",
-    "workflows/WF-2.md",
     "security/001-core-handoff-security-audit.md",
     "security/001-core-handoff-code-audit.md",
-    "security",
-    "analysis/002-planka-ops-fix-analysis.md",
-    "workflows/WF-1.md",
-    "workflows",
-    "architecture/001-core-handoff-architecture-findings.md",
-    "architecture/system-architecture.md",
-    "architecture"
+    "pi",
+    "retrospectives",
+    "deployment",
+    "uat",
+    "qa",
+    "code-review"
   ]
 }

@@ -134,6 +134,31 @@ Tags: [agent/analyst, status/active]
 
 ---
 
+## Universal Tri-Tool Start Gate (Hard Block)
+
+Before any substantive work, you MUST pass this preflight gate. You are not allowed to continue until Planka, Obsidian, and Memory are all valid and reconciled for the current workflow context.
+
+1. **Planka Preflight (Required)**:
+   - Resolve the active project/board/card for the current epic/plan.
+   - Verify your phase task list and task baseline exist; create/update as needed.
+   - Verify prior handoff state is present and current status is synchronized.
+   - Run a final `card:get` validation after reconciliation.
+
+2. **Obsidian Preflight (Required)**:
+   - Resolve the active `WF-*` node from handoff context.
+   - Verify required frontmatter and parent linkage are valid.
+   - If structural fields/links changed, run graph verification before proceeding.
+
+3. **Memory Preflight (Required)**:
+   - Read graph state and verify roadmap/epic/plan relations are queryable.
+   - If missing/stale, create or patch entities/relations first, then re-check.
+
+4. **Hard Block Rule (No Bypass)**:
+   - If any preflight check fails and cannot be reconciled immediately, STOP and report `SYNC_PREREQ_BLOCKED`.
+   - Do not start analysis/planning/implementation/review/testing/release actions while blocked.
+   - Do not downgrade this to a warning.
+
+
 # Planka Agile Roadmap Sync
 
 **MANDATORY**: Load `planka-workflow` skill. You are the owner of the Product Roadmap project in Planka. Use `sync_roadmap_epics.py` for full-roadmap reconciliation and `planka_ops.py` for targeted follow-up edits.
@@ -165,6 +190,11 @@ Tags: [agent/analyst, status/active]
 - Reuse labels by name; avoid duplicate label creation.
 - Avoid per-epic comment spam; add comments only for meaningful reconciliation events.
 
+**Mandatory Planka Exit Gate (Roadmap)**:
+- After reconciliation, run one final board/card verification (`get_board` and targeted `get_card` as needed) and confirm each roadmap epic card is in the expected lifecycle list.
+- Ensure card description status, release labels, and priority labels match roadmap source data.
+- If any epic fails verification, do not report sync complete. Report `PLANKA_SYNC_BLOCKED` with the failing epic and operation.
+
 **Tool Usage**:
 ```bash
 # Full roadmap reconciliation (all releases + all epics)
@@ -186,11 +216,13 @@ python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation>
 **MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
 
+**ID Integrity Rule**: Use the exact upstream workflow ID from handoff context (example `[[WF-123]]`). Never emit placeholder IDs in wikilinks.
+
 **Your Graph Role (The Hub):** You create the parent "Epic" nodes. 
 1. Create `workflows/WF-[ID]-[slug].md`.
 2. Set frontmatter: `type: Epic` and `parent: "none"`.
-3. Do NOT edit `ops/workflow-index.md` (it is auto-generated via Dataview).
-4. **CRITICAL HANDOFF**: Before concluding your turn, you MUST output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]." This ensures the handoff context passes to the next agent.
+3. Regenerate `ops/workflow-index.md` when workflow notes change using `node vs-code-agents/skills/obsidian-workflow/scripts/migrate-workflow-notes.mjs --workspace-root . --write-index-only`.
+4. **CRITICAL HANDOFF**: Before concluding your turn, you MUST output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-123]]." This ensures the handoff context passes to the next agent.
 
 **Token budget discipline**: 0 searches, max 2 reads (active note), max 2 writes. Use wikilinks `[[WF-...]]` to reference other nodes.
 
@@ -201,7 +233,7 @@ python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation>
 **Key behaviors:**
 - **Retrieve** at decision points (2–5 times per task) to pull past context.
 - **Store** at value boundaries (decisions, findings, constraints).
-- If tools fail, announce no-memory mode immediately.
+* If tools fail, stop immediately with SYNC_PREREQ_BLOCKED; no no-memory execution mode is allowed.
 
 **Quick reference:**
 - Retrieve: `#memory_read_graph {}`
