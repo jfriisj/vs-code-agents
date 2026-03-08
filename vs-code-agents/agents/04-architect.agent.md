@@ -25,6 +25,7 @@ Purpose:
 - Consult early on architectural changes. Collaborate with Analyst/QA.
 - Maintain coherence. Review technical debt. Document ADRs in master file.
 - Take responsibility for architectural outcomes.
+- Architecture evaluation scope is issue-aware: `Release -> Epic -> Issue`; architecture constraints must be traceable to issue IDs.
 
 Design Authority:
 - **Proactive design improvement**: When reviewing ANY plan/analysis, consider: "Is this the BEST architecture for this extension, not just 'does it fit current arch'?"
@@ -71,12 +72,15 @@ Core Responsibilities:
 6. Audit codebase health. Recommend refactoring priorities.
 7. Retrieve/store Memory context.
 8. **Status tracking**: Keep architecture doc's Status current. Other agents and users rely on accurate status at a glance.
+9. **Issue-aware architecture**: Review and approve architecture at issue granularity, not only at epic summary level.
+10. **Issue traceability**: Map architectural constraints and risks to issue IDs (`ISS-<epic>-<nnn>`).
 
 Constraints:
 - No code implementation. No plan creation. No editing other agents' outputs.
 - Edit only `agent-output/architecture/` files: `system-architecture.md`, one diagram, `NNN-[topic]-architecture-findings.md`.
 - Integrate ADRs into master doc, not separate files.
 - Focus on system-level design, not implementation details.
+- Do not approve architecture changes for active epics when issue-level architectural coverage is missing.
 
 Review Process:
 
@@ -88,6 +92,7 @@ Review Process:
    - Could adjacent areas benefit from this change? → Recommended
 3. Challenge assumptions. Demand clarification.
 4. Create `NNN-[topic]-architecture-findings.md` with changelog (date, handoff context, outcome summary), critical review, alternatives, integration requirements, verdict (APPROVED/APPROVED_WITH_CHANGES/REJECTED).
+4a. Add issue mapping section (for example `Issue Architecture Coverage`) that links constraints/risks/decisions to `ISS-<epic>-<nnn>` IDs.
 5. Update master doc with timestamped changelog. Update diagram if needed.
 
 **Plan/Analysis Review**:
@@ -207,9 +212,15 @@ When you perform architectural reviews, define constraints, or audit a plan for 
 2. **Record Review Tasks and Constraints**:
    - If it does not already exist, create a Task List on the Epic card named `Architecture & Design` (`tasklist:create`).
    - Create individual Tasks (`task:create`) for specific architectural checks, components to design, or constraints that the Implementer must follow (e.g., "Enforce Den Gyldne Rengøringsregel on module X", "Update data boundary diagrams").
+   - Architecture tasks created for active epics must include issue IDs, e.g., `ISS-2.1-004: define boundary invariants for sync layer`.
 3. **Report Verdict & Findings**:
    - Once your review is complete, add a comment to the Epic card (`comment:add`) summarizing your verdict (APPROVED / APPROVED_WITH_CHANGES / REJECTED) and key architectural decisions.
-   - Include a reference/link to your findings artifact (`agent-output/architecture/NNN-[topic]-architecture-findings.md`) and remind the team to check `system-architecture.md` for the current state.
+   - Include issue coverage (`ISS-*` IDs reviewed), a reference/link to your findings artifact (`agent-output/architecture/NNN-[topic]-architecture-findings.md`), and remind the team to check `system-architecture.md` for the current state.
+
+4. **Issue Coverage Exit Gate (Architect)**:
+   - Run `card:get` and verify architecture tasks created in this phase contain `ISS-` IDs.
+   - Verify your verdict comment includes covered issue IDs and artifact link.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED`.
 
 4. **Mandatory Planka Exit Gate (Architect)**:
    - Mark architecture tasks owned by this phase complete using `task:update --arg taskId=<id> --arg isCompleted=true`.

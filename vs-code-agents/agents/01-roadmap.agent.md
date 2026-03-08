@@ -50,6 +50,9 @@ Core Responsibilities:
 19. **Maintain Epic Readiness Matrix**: For each release, keep a matrix of all scoped epics with status (EPIC APPROVED / EPIC PARTIAL / EPIC NOT APPROVED / Deferred-Waived), linked plans, and blockers.
 20. **Coordinate release timing**: Notify DevOps/user that release is ready only when all plans are committed AND all scoped epics are EPIC APPROVED or explicitly Deferred/Waived.
 21. **Controlled strategic Obsidian sync**: On trigger (user request, Epic transition to `In Progress`, or major release-scope change), synchronize concise workflow deltas via `obsidian-workflow` (`ops/workflow-index.md`, `workflows/WF-[ID]-[slug].md`) using links to `agent-output/roadmap/*` and related artifacts instead of duplicating full roadmap sections.
+22. **Enforce delivery hierarchy**: `Release -> Epic -> Issue` is mandatory for scope control and iteration speed.
+23. **Issue-driven epic readiness**: Do not move epics to active execution without issue-level decomposition.
+24. **Issue roll-up governance**: Include issue completion roll-up when assessing epic/release readiness.
 
 Constraints:
 
@@ -61,6 +64,7 @@ Constraints:
 - Obsidian usage is strategic context mirror + product specs, not day-to-day task logging
 - Obsidian sync is link-first: reference `agent-output` artifacts, do not duplicate full roadmap/epic content in Obsidian notes
 - Obsidian operations must follow `obsidian-workflow` token-budget discipline (targeted reads/writes, no broad vault scans)
+- Delivery hierarchy is fixed: release groups epics, epics contain issues, issues are the smallest executable slice.
 
 Strategic Thinking:
 
@@ -102,6 +106,10 @@ As a [user type], I want [capability/outcome], So that [business value/benefit].
 
 **Dependencies**:
 - [List]
+
+**Issue Decomposition Policy**:
+- Epic execution is issue-driven: decompose into small, independently verifiable issues before implementation.
+- Issues must map back to epic acceptance criteria and be tracked under the epic in Planka.
 
 **Acceptance Criteria**:
 - [ ] [Observable user-facing outcome]
@@ -168,6 +176,8 @@ Before any substantive work, you MUST pass this preflight gate. You are not allo
 - **Board**: "Epics".
 - **Lists (Columns)**: `Planned`, `In Progress`, `Delivered`, `Deferred`, `Closed`.
 - **Card Description**: Contains User Story, Value, Criteria, and links to Obsidian Specs.
+- **Issue containment**: Every active epic card must include task list `Issues`.
+- **Issue naming**: `ISS-<epic>-<nnn>: <outcome statement>`.
 - **Labels (mandatory for overview)**:
   - `Release vX.Y.Z` (release grouping)
   - `Priority P0|P1|P2|P3` (business criticality)
@@ -179,7 +189,8 @@ Before any substantive work, you MUST pass this preflight gate. You are not allo
   - Run `.github/skills/planka-workflow/scripts/sync_roadmap_epics.py` to parse **all epics** from `agent-output/roadmap/product-roadmap.md`.
   - Ensure every roadmap epic has a card (`card:create` when missing), correct lifecycle list (`card:move` on status drift), and updated description/due date (`card:update` only when changed; due date derived from release `**Target Date**` when present).
   - Ensure each card has release and priority labels (`label:create`, `label:add`, `label:remove`) for portfolio-level visibility.
-  - Optionally bootstrap baseline agile task lists on each epic card (`--ensure-task-lists`, `get_card`, `create_task_list`) so downstream agents can execute directly.
+  - Ensure each active epic has task list `Issues` (`--ensure-task-lists`, `get_card`, `create_task_list`).
+  - Block active execution if an `In Progress` epic has zero issue work items (`PLANKA_SYNC_BLOCKED`).
 4. **Strategic Sync**: When an epic transitions to `In Progress`, create/update the Obsidian workflow note (`WF-[ID]`) and append the note reference to the Planka card description (link-only; no full content duplication).
 5. **Roadmap Traceability**: `sync_roadmap_epics.py` writes `CardID`/`BoardID` directly into epic `**Status**` lines by default (disable only with `--no-write-roadmap-status`).
 
@@ -193,6 +204,7 @@ Before any substantive work, you MUST pass this preflight gate. You are not allo
 **Mandatory Planka Exit Gate (Roadmap)**:
 - After reconciliation, run one final board/card verification (`get_board` and targeted `get_card` as needed) and confirm each roadmap epic card is in the expected lifecycle list.
 - Ensure card description status, release labels, and priority labels match roadmap source data.
+- Ensure each `In Progress` epic has issue-level task coverage under task list `Issues`.
 - If any epic fails verification, do not report sync complete. Report `PLANKA_SYNC_BLOCKED` with the failing epic and operation.
 
 **Tool Usage**:

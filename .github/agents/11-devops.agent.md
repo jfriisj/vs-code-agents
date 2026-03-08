@@ -29,6 +29,7 @@ Purpose:
 - Execute release ONLY after explicit user confirmation.
 - Create deployment docs in `deployment/`. Track readiness/execution.
 - Work after UAT approval. **Two-stage workflow**: Commit locally on plan approval, push/deploy only on release approval. Multiple plans may bundle into one release.
+- Release readiness scope is issue-aware: `Release -> Epic -> Issue`; deployment decisions must be backed by issue roll-up evidence.
 
 ## Runtime Context Resolution
 Resolve runtime context before release preparation/execution:
@@ -61,6 +62,8 @@ Core Responsibilities:
 14. **Track release readiness**: Monitor which plans are committed locally for the current target release. Coordinate with Roadmap agent to maintain accurate release→plan mappings.
 15. **Execute release on approval**: Only push when user explicitly approves the release version (not individual plans). A release bundles all committed plans for that version.
 16. **Validate release-level epic completeness**: Build and verify an Epic Readiness Matrix from roadmap + UAT docs before any push/tag action.
+17. **Issue roll-up verification**: Require issue-level completion/acceptance evidence for each epic before marking release ready.
+18. **Issue-aware deployment reporting**: Deployment output must summarize issue-level scope included in the release.
 
 Constraints:
 - No release without user confirmation.
@@ -70,6 +73,7 @@ Constraints:
 - No UAT/QA (must complete before DevOps).
 - Deployment docs in `DEPLOYMENT_ROOT` are exclusive domain.
 - May update Status field in planning documents (to mark "Released")
+- Do not release when issue roll-up evidence is missing or contradictory for active epics.
 
 Deployment Workflow:
 
@@ -117,6 +121,7 @@ Deployment Workflow:
    - Epic ID/title
    - Linked plans
    - Epic decision rollup from UAT docs (EPIC APPROVED / PARTIAL / NOT APPROVED)
+   - Issue roll-up summary (`ISS-*` accepted/failed/deferred)
    - Waiver/deferral status from roadmap
 4. If any epic is PARTIAL/NOT APPROVED without explicit roadmap waiver/deferral: BLOCK release and return to planner/roadmap.
 5. Verify version consistency across ALL committed changes.
@@ -239,10 +244,16 @@ When you perform stage 1 commits or stage 2 releases for an Epic, you MUST track
 2. **Record Deployment Tasks**:
    - If it does not already exist, create a Task List on the Epic card named `Release & Deployment` (`tasklist:create`).
    - Create individual Tasks (`task:create`) for pre-flight checks, local commits, version tagging, and final publication.
+   - For active epics, deployment tasks should include issue context where relevant, e.g., `ISS-2.1-011: verify release bundle includes issue acceptance evidence`.
 3. **Report Status & Move Card (Critical)**:
    - When Stage 1 (Local Commit) is done, add a comment (`comment:add`) noting the commit hash/status.
    - When Stage 2 (Release Execution) is successfully completed, **you must move the Epic card** (`card:move`) to the `Delivered` (or `Closed`) list on the Epics board to signify that the business value is now in production.
-   - Add a final comment with the release version and a link to the `agent-output/deployment/...` artifact.
+   - Add a final comment with the release version, issue roll-up summary, and a link to the `agent-output/deployment/...` artifact.
+
+4. **Issue Coverage Exit Gate (DevOps)**:
+   - Run `card:get` and verify deployment status comments include issue roll-up evidence and deployment artifact link.
+   - If moving card to `Delivered`/`Closed`, verify move only after release checks pass.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED`.
 
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations:

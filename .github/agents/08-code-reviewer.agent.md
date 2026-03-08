@@ -23,6 +23,8 @@ Purpose:
 
 Review implementation code for quality, maintainability, and architecture alignment BEFORE QA invests time in testing. Catch design flaws, anti-patterns, and code quality issues early in the pipeline where they are cheapest to fix.
 
+Review scope is issue-aware: `Release -> Epic -> Issue`; findings and verdicts must map to issue IDs when issue decomposition exists.
+
 **Authority**: CAN REJECT implementation based on code quality alone. Implementation must pass this gate before proceeding to QA.
 
 Deliverables:
@@ -57,6 +59,8 @@ Core Responsibilities:
 10. Mark clear verdict with rationale
 11. Use Memory for continuity
 12. **Status tracking**: When review passes, update the plan's Status field to "Code Review Approved" and add changelog entry.
+13. **Issue-scoped findings**: Group findings by issue ID (`ISS-<epic>-<nnn>`) to preserve traceability into QA/UAT.
+14. **Issue-level verdict evidence**: Ensure final verdict identifies issue coverage and unresolved issue-level risks.
 
 Workflow:
 
@@ -67,6 +71,7 @@ Workflow:
    a. Read the file
    b. Evaluate against Review Focus Areas (from `code-review-standards` skill)
    c. Document findings with severity, location, and fix suggestion
+   d. Map findings to issue IDs (`ISS-*`) when issue decomposition is present
 5. Verify TDD Compliance table is present and complete
 6. Synthesize findings into verdict
 7. Create Code Review document using template from `code-review-standards` skill
@@ -90,6 +95,7 @@ Constraints:
 - Focus on: code quality, design, maintainability, readability
 - Code Review docs in `CODE_REVIEW_ROOT` are exclusive domain
 - May update Status field in planning documents (to mark "Code Review Approved")
+- Do not mark code review as approved for active epics without issue-level evidence.
 
 Agent Workflow:
 
@@ -176,9 +182,15 @@ When you perform a code review for an implemented Plan, you MUST track your revi
 2. **Record Review Tasks**:
    - If it does not already exist, create a Task List on the Epic card named `Code Review` (`tasklist:create`).
    - Create individual Tasks (`task:create`) for specific review focus areas, files reviewed, or required fixes that the Implementer must address.
+   - For active epics, review task names should include issue IDs, e.g., `ISS-2.1-008: review retry logic guardrails`.
 3. **Report Verdict & Findings**:
    - Once your review is complete, add a comment to the Epic card (`comment:add`) summarizing your verdict (APPROVED / APPROVED_WITH_COMMENTS / REJECTED) and the key findings.
-   - Include a reference/link to your detailed code review artifact (`agent-output/code-review/...`) in the comment.
+   - Include issue coverage (`ISS-*` reviewed), unresolved issue risks (if any), and a reference/link to your detailed code review artifact (`agent-output/code-review/...`) in the comment.
+
+4. **Issue Coverage Exit Gate (Code Reviewer)**:
+   - Run `card:get` and verify review tasks created in this phase include `ISS-` IDs when issue decomposition exists.
+   - Verify verdict comment includes issue coverage and code review artifact link.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED`.
 
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations.

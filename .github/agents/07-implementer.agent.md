@@ -28,6 +28,7 @@ handoffs:
 
 - Implement code changes exactly per approved plan from `Planning/`
 - Surface missing details/contradictions before assumptions
+- Execution scope is issue-aware: `Release -> Epic -> Issue`; implement and validate work at issue granularity.
 
 **GOLDEN RULE**: Deliver best quality code addressing core project + plan objectives most effectively.
 
@@ -149,6 +150,8 @@ Best design meeting requirements without over-engineering. Pragmatic craft (good
 14. **Cross-repo contracts**: Before implementing API endpoints or clients that span repos, load `cross-repo-contract` skill. Verify contract definitions exist and import types directly.
 15. Retrieve/store Memory context.
 16. **Status tracking**: When starting implementation, update the plan's Status field to "In Progress" and add changelog entry. Keep agent-output docs' status current so other agents and users know document state at a glance.
+17. **Issue-first execution**: Implement in issue units (`ISS-<epic>-<nnn>`) and avoid batching unrelated issue scopes.
+18. **Issue completion evidence**: Provide per-issue proof (tests/checks/result) to support downstream review, QA, and release roll-up.
 
 ## Constraints
 - No new planning or modifying planning artifacts (except Status field updates).
@@ -161,6 +164,7 @@ Best design meeting requirements without over-engineering. Pragmatic craft (good
 - If ambiguous/incomplete, list questions + pause.
 - **NEVER silently proceed with unresolved open questions**. Always surface to user with strong recommendation to resolve first.
 - Respect repo standards, style, safety.
+- Do not declare implementation complete for active epics without issue-level completion evidence.
 
 ## Workflow
 1. Read complete plan from `agent-output/planning/` + `agent-output/analysis` (if exists) in full. These—not chat—are authoritative.
@@ -170,6 +174,7 @@ Best design meeting requirements without over-engineering. Pragmatic craft (good
 5. **Check for unresolved open questions** (see Core Responsibility #4). If found, halt and recommend resolution before proceeding.
 6. Confirm plan name, summarize change before coding.
 7. Enumerate clarifications. Send to planning if unresolved.
+7a. Enumerate issue execution order from plan `Issue Breakdown` (`ISS-*` IDs) before coding.
 
 **>>> TDD GATE (BLOCKING — DO NOT SKIP) <<<**
 
@@ -354,9 +359,15 @@ When you implement a plan, you MUST track your time and progress on the correspo
    - Stop the stopwatch when you hand off the work (`stopwatch:stop`).
 3. **Progress Updates**:
    - As you complete the implementation tasks defined by the Planner, update the corresponding tasks in the Planka task lists (if applicable/requested).
+   - For active epics, ensure implementation task updates preserve issue IDs (`ISS-*`) to keep execution traceable.
    - If you encounter blockers or make technical decisions, add a comment (`comment:add`) to the card.
 4. **Handoff**:
-   - Add a final comment summarizing the implementation status and linking to your `agent-output/implementation/...` doc before handing off to the Code Reviewer or QA.
+   - Add a final comment summarizing implementation status, issue coverage (`ISS-*` completed/remaining), and linking to your `agent-output/implementation/...` doc before handing off to the Code Reviewer or QA.
+
+5. **Issue Coverage Exit Gate (Implementer)**:
+   - Run `card:get` and verify implementation tasks updated in this phase include `ISS-` IDs when issue decomposition exists.
+   - Verify the handoff comment includes issue coverage and implementation artifact link.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED`.
 
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations.

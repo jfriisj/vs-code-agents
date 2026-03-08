@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Plan-1.md",
+                "file": "workflows/WF-21-cross-tool-workflow-confidence.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Plan-1"
+              "title": "WF-21-cross-tool-workflow-confidence"
             }
           }
         ]
@@ -180,8 +180,19 @@
       "bases:Create new base": false
     }
   },
-  "active": "df9d78bc496e4955",
+  "active": "5598090e4ee17064",
   "lastOpenFiles": [
+    "workflows/WF-7.md",
+    "workflows/WF-6.md",
+    "ops/004-release-epic-issue-migration-brief.md",
+    "workflows/WF-5.md",
+    "workflows/WF-4.md",
+    "workflows/WF-3.md",
+    "workflows/WF-2.md",
+    "workflows/WF-1-retrospective.md",
+    "workflows/WF-1-process-improvement.md",
+    "workflows/WF-1.md",
+    "Plan-1.md",
     "uat/002-workflow-rehearsal-uat.md",
     "documentation/v0.2.0-release-readiness-rule.md",
     "documentation",
@@ -200,18 +211,7 @@
     "plans/021-rehearsal-plan.md",
     "plans",
     "workflows/WF-21-cross-tool-workflow-confidence.md",
-    "analysis/closed/001-initial-test-analysis.md",
     "analysis/closed",
-    "ops/003-obsidian-workflow-hardening-brief.md",
-    "ops/002-obsidian-workflow-migration-report.md",
-    "ops/workflow-index.md",
-    "analysis/004-planka-card-sync-gap-analysis.md",
-    "Plan-1.md",
-    "ops/001-agent-ecosystem-optimization-checklist.md",
-    "pi/001-lifecycle-hardening.md",
-    "uat/001-core-handoff-lifecycle-uat.md",
-    "security/001-core-handoff-security-audit.md",
-    "security/001-core-handoff-code-audit.md",
     "pi",
     "retrospectives",
     "deployment",

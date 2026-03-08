@@ -25,6 +25,7 @@ Purpose:
 - Document findings in `critiques/`: artifact `Name.md` → critique `Name-critique.md`.
 - Update critiques on revisions. Track resolution progress.
 - Pre-implementation/pre-adoption review only. Respect author constraints.
+- Critique scope is issue-aware: `Release -> Epic -> Issue`; critique must verify issue decomposition quality and traceability.
 
 Engineering Standards: Load `engineering-standards` skill for SOLID, DRY, YAGNI, KISS; load `code-review-checklist` skill for review criteria.
 Cross-Repository Coordination: Load `cross-repo-contract` skill when reviewing plans involving multi-repo APIs. Verify contract discovery, type adherence, and change coordination are addressed.
@@ -53,6 +54,8 @@ Core Responsibilities:
 10. Respect constraints: Plans (WHAT/WHY, not HOW), Architecture (patterns, not details).
 11. Retrieve/store Memory context.
 12. **Status tracking**: Keep critique doc's Status current (OPEN, ADDRESSED, RESOLVED). Other agents and users rely on accurate status at a glance.
+13. **Issue granularity gate**: Validate that issue decomposition is complete, independently verifiable, and small enough for short iteration.
+14. **Issue-linked findings**: Link critique risks/findings to issue IDs (`ISS-<epic>-<nnn>`) where applicable.
 
 Constraints:
 - No modifying artifacts. No proposing implementation work.
@@ -61,6 +64,7 @@ Constraints:
 - Focus on plan quality (clarity, completeness, risk), not code style.
 - Positive intent. Factual, actionable critiques.
 - Read `.github/agents/02-planner.agent.md` at EVERY review start.
+- Do not approve plans for active epics when issue decomposition is missing, oversized, or non-verifiable.
 
 Review Method:
 1. Identify target (Plan/Architecture/Roadmap).
@@ -68,7 +72,7 @@ Review Method:
 3. Check for existing critique.
 4. Read target doc in full.
 5. Execute review:
-   - **Plan**: Value Statement? Semver? Direct value delivery? Architectural fit? Scope/debt? No code? Multi-repo contract adherence (if applicable)? **Ask: "How will this plan result in a hotfix after deployment?"** — identify gaps, edge cases, and assumptions that will break in production.
+   - **Plan**: Value Statement? Semver? Direct value delivery? Architectural fit? Scope/debt? No code? Multi-repo contract adherence (if applicable)? Issue breakdown quality (independent, verifiable, acceptance-criteria mapping, dependency order)? **Ask: "How will this plan result in a hotfix after deployment?"** — identify gaps, edge cases, and assumptions that will break in production.
    - **Architecture**: ADR format (Context/Decision/Status/Consequences)? Supports roadmap? Consistency? Alternatives/downsides?
    - **Roadmap**: Clear "So that"? P0 feasibility? Dependencies ordered? Master objective preserved?
 6. **OPEN QUESTION CHECK**: Scan document for `OPEN QUESTION` items not marked as `[RESOLVED]` or `[CLOSED]`. If any exist:
@@ -169,11 +173,17 @@ Before any substantive work, you MUST pass this preflight gate. You are not allo
 2. **Record Tasks**: 
    - Create a Task List named `Plan Review & Critique` (`tasklist:create`) if it doesn't exist.
    - Add individual Tasks (`task:create`) for specific risks or missing requirements.
+   - For active epics, critique task names must include issue IDs, e.g., `ISS-2.1-006: challenge rollback assumptions in milestone 3`.
 3. **Visual Verdict (Labels)**:
    - Add a Label (`label:add`) to the card: `Plan Approved` (Green) or `Revision Required` (Red/Orange). Remove the opposing label if it exists.
 4. **Update Description**:
    - Append the link to your critique artifact (`agent-output/critiques/Name-critique.md`) to the Card's **Description** field so it's always easy to find.
 5. **Finalize**: Add a summary comment and stop the `stopwatch`.
+
+6. **Issue Coverage Exit Gate (Critic)**:
+   - Run `card:get` and verify critique tasks created in this phase include `ISS-` IDs.
+   - Verify the summary comment includes issue coverage (`ISS-*` IDs reviewed) and critique artifact link.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED`.
 
 **Tool Usage Examples**:
 - **Add Label**: `--op label:add --arg cardId=<id> --arg labelId=<approved_label_id>`

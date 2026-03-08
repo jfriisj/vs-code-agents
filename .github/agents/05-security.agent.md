@@ -39,6 +39,7 @@ The goal is to prevent production incidents by catching security issues **before
 Subagent Behavior:
 - When invoked as a subagent by another agent (for example Planner, Implementer, or QA), perform a narrowly scoped security review focused on the code, configuration, or decision area provided.
 - Do not make architectural or product decisions directly; instead, surface risks, tradeoffs, and recommendations for the calling agent and relevant owners to act on.
+- Security workflow scope is issue-aware: `Release -> Epic -> Issue`; security controls and findings must be traceable to issue IDs.
 
 ## Runtime Context Resolution
 Resolve runtime context before security reviews:
@@ -195,6 +196,7 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
    - Required security controls
    - Threat model summary
    - Compliance requirements
+   - Issue coverage map (`ISS-*` IDs to controls)
    - **Verdict**: `APPROVED` | `APPROVED_WITH_CONTROLS` | `BLOCKED_PENDING_DESIGN_CHANGE`
 
 ### Implementation Security Review
@@ -209,6 +211,7 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
 3. Conduct **Phase 3** (Dependency Security)
 4. Conduct **Phase 4** (Infrastructure/Config) if applicable
 5. Create audit report with findings, severity, remediation
+   - Include `Issue Security Coverage` with findings grouped by issue ID (`ISS-*`).
 6. **Verdict**: `PASSED` | `PASSED_WITH_FINDINGS` | `FAILED_REMEDIATION_REQUIRED`
 
 ### Pre-Production Security Gate
@@ -219,6 +222,7 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
    - If the user did not clearly indicate this is a pre-production gate (or which release/commit), ask and pause.
    - If clear, state “Assumed mode: Pre-Production Gate; Scope: …” and continue.
 1. Verify all prior security findings are addressed
+   - Verify all in-scope issues have an explicit security disposition.
 2. Conduct final vulnerability scan
 3. Verify security tests are passing
 4. Confirm compliance requirements met
@@ -257,6 +261,8 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
 7. **Escalate blocking issues** immediately to Planner with clear impact assessment
 8. **Acknowledge good security practices** - not just vulnerabilities
 9. **Status tracking**: Keep security doc's Status and Verdict fields current. Other agents and users rely on accurate status at a glance.
+10. **Issue-scoped security review**: Evaluate threats and controls per issue ID (`ISS-<epic>-<nnn>`), not only at epic summary level.
+11. **Issue evidence traceability**: Group findings and verdict evidence by issue ID for downstream QA/UAT and release roll-up.
 
 ## Constraints
 
@@ -266,6 +272,7 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
 - **Edit tool for `SECURITY_ROOT` only**: findings, audits, policies
 - **Balance security with usability/performance** (risk-based approach)
 - **Be objective**: Document both vulnerabilities AND positive security practices
+- **No issue-less verdicts on active epics**: If issue decomposition exists, do not finalize security verdict without issue coverage.
 
 ---
 
@@ -342,9 +349,15 @@ When you perform security audits, dependency checks, or compliance reviews for a
 2. **Record Security Tasks and Controls**:
    - If it does not already exist, create a Task List on the Epic card named `Security & Compliance` (`tasklist:create`).
    - Create individual Tasks (`task:create`) for specific security checks performed, vulnerabilities to fix, or compliance controls the Implementer must adhere to.
+   - Security task names must include issue IDs for active epics, e.g., `ISS-2.1-005: validate input sanitization controls`.
 3. **Report Verdict & Findings**:
    - Once your review is complete, add a comment to the Epic card (`comment:add`) summarizing your verdict (e.g., APPROVED / APPROVED_WITH_CONTROLS / BLOCKED_PENDING_REMEDIATION) and the highest severity findings.
-   - Include a reference/link to your detailed security artifact (`agent-output/security/...`) in the comment.
+   - Include issue coverage (`ISS-*` IDs reviewed) and a reference/link to your detailed security artifact (`agent-output/security/...`) in the comment.
+
+4. **Issue Coverage Exit Gate (Security)**:
+   - Run `card:get` and verify security tasks created in this phase include `ISS-` IDs.
+   - Verify the verdict comment includes covered issue IDs and security artifact link.
+   - If verification fails, do not claim completion. Report `PLANKA_SYNC_BLOCKED`.
 
 **Tool Usage**:
 Use the `planka_ops.py` script for all operations.
