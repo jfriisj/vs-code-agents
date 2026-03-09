@@ -46,3 +46,16 @@
 {"type":"relation","from":"workflow://release-epic-issue-model","to":"agent://11-devops-issue-contract","relationType":"defines_contract_for"}
 {"type":"relation","from":"workflow://release-epic-issue-model","to":"agent://12-retrospective-issue-contract","relationType":"defines_contract_for"}
 {"type":"relation","from":"workflow://release-epic-issue-model","to":"agent://13-pi-issue-contract","relationType":"defines_contract_for"}
+{"type":"relation","from":"agent://01-roadmap-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://02-planner-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://03-analyst-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://04-architect-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://05-security-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://06-critic-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://07-implementer-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://08-code-reviewer-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://09-qa-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://10-uat-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://11-devops-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://12-retrospective-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}
+{"type":"relation","from":"agent://13-pi-issue-contract","to":"workflow://release-epic-issue-model","relationType":"supports"}

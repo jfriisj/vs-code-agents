@@ -9,6 +9,7 @@
 |------------|---------------------------------------------|-----------------------------------------------|-----------|
 | 2026-03-06 | Initial Baseline established during Plan-1 review | Live test of optimized agent ecosystem. | Plan-1 / Epic 1.1 |
 | 2026-03-07 | v0.2.0 Workflow Rehearsal baseline established | Cross-tool consistency and graph verification. | Plan-2 / Epic 2.1 |
+| 2026-03-08 | Reconciled from Plan-3 implementation | Detailed execution and issue-level hierarchy assurance. | Plan-3 / Epic 2.1 |
 
 ---
 
@@ -54,6 +55,7 @@ The system follows a **Pipelined Agent Workflow** where each agent acts as a spe
 - **[DD-001] Script Type Validation**: `planka_ops.py` currently fails on numeric string IDs due to incorrect integer casting in `parse_value`.
 - **[DD-002] Path Hardcoding**: Historical use of `vs-code-agents/` prefix in agent instructions (fixed in v0.1.0).
 - **[DD-003] Roadmap Dual-State Inconsistency**: Physical decoupling of Epic headers and "Active Release Tracker" table status leads to manual desynchronization risk.
+- **[DD-004] CWD Drift Risk**: Scripts sensitivity to current working directory (e.g., `verify-obsidian-graph.mjs`) during multi-root agent execution.
 
 ## 7. Decisions (ADRs)
 ### ADR-001: Standardized Agent Root Variables
@@ -67,6 +69,12 @@ The system follows a **Pipelined Agent Workflow** where each agent acts as a spe
 - **Context**: Artifact linkage was becoming opaque in large Obsidian vaults.
 - **Decision**: Integrate `verify-obsidian-graph.mjs` as a mandatory validation gate for all SDLC phases and CI pipelines.
 - **Consequences**: (+) Early detection of orphaned artifacts; (+) Zero runtime dependencies.
+
+### ADR-003: Deterministic Workspace Root Resolution
+- **Status**: Proposed (Plan-3)
+- **Context**: Pathing drift in `verify-obsidian-graph.mjs` and related scripts identified during v0.2.0 rollout.
+- **Decision**: All internal validation scripts MUST resolve absolute roots from environment variables or a bootstrap layer, failing fast if executed outside a valid workspace boundary.
+- **Consequences**: (+) Deterministic pathing; (+) Robustness for multi-root agent execution; (-) Refactoring effort for existing scripts.
 
 ---
 
