@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import time
 import urllib.error
 import urllib.request
 from typing import Any
@@ -32,17 +31,9 @@ def _parse_mcp_payload(body: str) -> dict[str, Any]:
 
 
 class MCPClient:
-    def __init__(
-        self,
-        url: str,
-        timeout_seconds: int = 20,
-        max_retries: int = 2,
-        backoff_seconds: float = 0.25,
-    ) -> None:
+    def __init__(self, url: str, timeout_seconds: int = 20) -> None:
         self.url = url
         self.timeout_seconds = timeout_seconds
-        self.max_retries = max(0, int(max_retries))
-        self.backoff_seconds = max(0.0, float(backoff_seconds))
         self.session_id: str | None = None
         self.request_id = 1
 
@@ -109,45 +100,33 @@ class MCPClient:
         if self.session_id:
             headers["mcp-session-id"] = self.session_id
 
-        retryable_http_codes = {408, 429, 500, 502, 503, 504}
-        max_attempts = self.max_retries + 1
+        request = urllib.request.Request(
+            url=self.url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
 
-        for attempt in range(max_attempts):
-            request = urllib.request.Request(
-                url=self.url,
-                data=json.dumps(payload).encode("utf-8"),
-                headers=headers,
-                method="POST",
-            )
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
+                raw_body = response.read().decode("utf-8", errors="replace")
+                returned_session = response.headers.get("mcp-session-id")
+                if returned_session:
+                    self.session_id = returned_session
+        except urllib.error.HTTPError as error:
+            error_body = error.read().decode("utf-8", errors="replace")
+            raise MCPError(
+                f"HTTP {error.code} from MCP endpoint: {error_body[:400]}"
+            ) from error
+        except urllib.error.URLError as error:
+            raise MCPError(f"Unable to reach MCP endpoint {self.url}: {error}") from error
 
-            try:
-                with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
-                    raw_body = response.read().decode("utf-8", errors="replace")
-                    returned_session = response.headers.get("mcp-session-id")
-                    if returned_session:
-                        self.session_id = returned_session
-            except urllib.error.HTTPError as error:
-                error_body = error.read().decode("utf-8", errors="replace")
-                if error.code in retryable_http_codes and attempt < self.max_retries:
-                    time.sleep(self.backoff_seconds * (2 ** attempt))
-                    continue
-                raise MCPError(
-                    f"HTTP {error.code} from MCP endpoint: {error_body[:400]}"
-                ) from error
-            except urllib.error.URLError as error:
-                if attempt < self.max_retries:
-                    time.sleep(self.backoff_seconds * (2 ** attempt))
-                    continue
-                raise MCPError(f"Unable to reach MCP endpoint {self.url}: {error}") from error
+        parsed = _parse_mcp_payload(raw_body)
+        if "error" in parsed:
+            raise MCPError(f"MCP error: {parsed['error']}")
 
-            parsed = _parse_mcp_payload(raw_body)
-            if "error" in parsed:
-                raise MCPError(f"MCP error: {parsed['error']}")
+        result = parsed.get("result")
+        if result is None:
+            raise MCPError(f"MCP response missing result: {parsed}")
 
-            result = parsed.get("result")
-            if result is None:
-                raise MCPError(f"MCP response missing result: {parsed}")
-
-            return result
-
-        raise MCPError("MCP transport retry loop exited unexpectedly")
+        return result

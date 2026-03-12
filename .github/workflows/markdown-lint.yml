@@ -19,27 +19,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Find changed markdown files
-        id: changed
-        uses: tj-actions/changed-files@v45
+      - name: Run markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v19
         with:
-          files: |
+          globs: |
             **/*.md
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Lint changed markdown files
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ "${{ steps.changed.outputs.any_changed }}" != "true" ]]; then
-            echo "No changed markdown files to lint."
-            exit 0
-          fi
-
-          npm install -g markdownlint-cli2
-          echo "${{ steps.changed.outputs.all_changed_files }}" | tr ' ' '\n' | sed '/^$/d' > changed-md.txt
-          xargs -a changed-md.txt npx markdownlint-cli2 --config .markdownlint.json
+          config: .markdownlint.json

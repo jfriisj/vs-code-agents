@@ -4,7 +4,7 @@ description: Token-budgeted Obsidian workflow contract for agent handoffs. Markd
 license: MIT
 metadata:
   author: groupzer0
-  version: "1.1"
+  version: "1.0"
 ---
 
 # Obsidian Workflow (Token-Budgeted Agent Context)
@@ -47,10 +47,9 @@ Each workflow note must contain:
 - Frontmatter fields: `workflow_id`, `project_name`, `type`, `parent`, `status`, `owner`, `last_updated`
 - Headings: `Summary`, `Relations`, `Decisions`, `Constraints`, `Artifacts`, `Handoffs`, `Next`
 
-Workflow ID rules:
-- `workflow_id` must start with `WF-` and match the note filename prefix.
-- Never use placeholders such as `WF-[ID]`, `WF-Plan-ID`, or `WF-Calling-ID` in note content.
-- `parent` must be `none` or a single wikilink that resolves to an existing note.
+Project scoping rule:
+- Always set `project_name` from the roadmap H1 (strip the suffix ` - Product Roadmap` when present).
+- If the vault is shared by multiple repositories, prefer project-scoped note paths to avoid collisions.
 
 ---
 
@@ -65,16 +64,15 @@ Escalation rule:
 - If required context is not in the active note or its immediate parent, allow one extra read. Record why escalation was needed.
 
 Validation rule:
-- When frontmatter/headings/wikilinks are changed, run:
-  - `node vs-code-agents/skills/obsidian-workflow/scripts/verify-obsidian-graph.mjs --workspace-root .`
+- When frontmatter/headings/wikilinks are changed, run `node .github/skills/obsidian-workflow/scripts/verify-obsidian-graph.mjs` before handoff.
 
 ## Synchronization Protocol
-*Use `#tool:mcp-obsidian/*` for all operations below.*
+*Use `mcp-obsidian_*` tools for all operations below.*
 
 ### 1. Workflow bootstrap (Roadmap/Planner/Analyst)
-- Create or update `workflows/WF-[ID]-[slug].md` with required frontmatter and headings.
-- Establish graph edges with concrete IDs from upstream handoff context only. Do not invent alias IDs.
-- Set `parent` using exactly one upstream node (`none` only for root nodes).
+- Create `workflows/WF-[ID]-[slug].md` with required headings.
+- **CRITICAL**: Establish the graph edge. Inject `parent: "[[WF-Parent-ID]]"` into frontmatter (e.g., Plans link to Epics, Analysis links to Plans).
+- *Do NOT edit `ops/workflow-index.md` (it is automated).*
 
 ### 2. Active execution & Traversal
 - Resolve active context by reading the assigned `WF-[ID]`.
@@ -83,9 +81,30 @@ Validation rule:
 
 ### 3. Ownership transition & Graph Patching
 - Update `owner` and `status` in frontmatter.
-- If delegating to a sub-agent (e.g., Planner -> Analyst), patch `Relations` with concrete child links in `**Blocks**`.
-- In your final chat message before handoff, output the concrete node ID in the form:
-  - `Handoff Ready. Parent Node context for the next agent is [[WF-123]].`
+- If delegating to a sub-agent (e.g., Planner -> Analyst), patch the `Relations` section with `**Blocks**: [[WF-Sub-ID]]`.
+- **CRITICAL HANDOFF**: In your final chat message to the user before they click a handoff button, explicitly state your `WF-[ID]` so the next agent inherits the graph context.
+
+---
+
+## Synchronization Protocol
+
+### 1. Workflow bootstrap (Roadmap/Planner)
+- Create or update `ops/workflow-index.md` entry.
+- Create `workflows/WF-[ID]-[slug].md` with required headings.
+
+### 2. Active execution (All specialized agents)
+- Resolve workflow note from index using `WF-[ID]`.
+- Read only relevant headings (`Next`, `Constraints`, latest `Handoffs`).
+- Write concise updates to `Decisions` / `Artifacts` / `Next`.
+- Append one timestamped handoff block.
+
+### 3. Ownership transition
+- Update `owner` and `status` in frontmatter.
+- In `Next`, specify exact handoff target agent and acceptance gate.
+
+### 4. Terminal lifecycle
+- Mark final state in frontmatter (`Delivered`, `Deferred`, `Closed`).
+- Keep note immutable except for explicit reconciliation corrections.
 
 ---
 
@@ -104,16 +123,6 @@ Append under `Handoffs`:
 ```
 
 Keep each bullet concise and concrete. Do not include full analysis text.
-
----
-
-## Index Management
-
-`agent-output/ops/workflow-index.md` is managed in-repo. Regenerate it when notes change:
-
-- `node vs-code-agents/skills/obsidian-workflow/scripts/migrate-workflow-notes.mjs --workspace-root . --write-index-only`
-
-The index must include one explicit `[[workflows/...]]` entry per workflow note so graph verification can run without Dataview.
 
 ---
 

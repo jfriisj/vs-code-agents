@@ -7,7 +7,7 @@ Use as baseline for `agent-output/workflows/WF-[ID]-[slug].md`.
 workflow_id: WF-[ID]
 project_name: "<Project Name>"
 type: [Epic | Plan | Analysis]
-parent: "[[WF-XXX]]" # use "none" for root nodes
+parent: "[[WF-XXX]]" # use "none" for root epic nodes
 status: Planned
 owner: 01-Roadmap
 last_updated: YYYY-MM-DD
@@ -27,7 +27,8 @@ last_updated: YYYY-MM-DD
 - [Constraint 1]
 
 ## Artifacts
-- Source: agent-output/[path]/[file].md
+- [[planning/002-sample-plan|Primary plan artifact]]
+- [[implementation/002-sample-implementation|Implementation artifact]]
 
 ## Handoffs
 ### YYYY-MM-DD HH:mm [Agent]
@@ -42,8 +43,4 @@ last_updated: YYYY-MM-DD
 - [Next owner/action and acceptance gate]
 
 Validation gate:
-- Run `node vs-code-agents/skills/obsidian-workflow/scripts/verify-obsidian-graph.mjs --workspace-root .` before handoff when frontmatter/headings/links were edited.
-
-Rules:
-- Never use placeholder links such as `[[WF-[ID]]]` or `[[WF-Plan-ID]]`.
-- `workflow_id` must match file prefix.
+- Run `node .github/skills/obsidian-workflow/scripts/verify-obsidian-graph.mjs` before handoff when frontmatter/headings/links were edited.

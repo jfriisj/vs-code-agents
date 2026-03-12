@@ -5,7 +5,6 @@ import argparse
 import base64
 import json
 import mimetypes
-import os
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -17,8 +16,6 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.append(str(SCRIPT_DIR))
 
 from mcp_client import MCPClient
-
-PHASE_CLOSE_MARKER = "[PHASE_CLOSE]"
 
 
 @dataclass(frozen=True)
@@ -60,18 +57,13 @@ OPS: dict[str, OperationSpec] = {
     "tasklist:create": OperationSpec("create_task_list", ("cardId", "name"), "Task lists & tasks", description="Create checklist"),
     "tasklist:update": OperationSpec("update_task_list", ("taskListId",), "Task lists & tasks", description="Update checklist"),
     "tasklist:delete": OperationSpec("delete_task_list", ("taskListId",), "Task lists & tasks", description="Delete checklist"),
-    "tasklist:ensure": OperationSpec("get_card", ("cardId", "name"), "Task lists & tasks", adapter="tasklist_ensure", description="Ensure checklist exists by name"),
     "task:create": OperationSpec("create_task", ("taskListId", "name"), "Task lists & tasks", description="Create task"),
     "task:update": OperationSpec("update_task", ("taskId",), "Task lists & tasks", description="Update task"),
     "task:delete": OperationSpec("delete_task", ("taskId",), "Task lists & tasks", description="Delete task"),
-    "task:ensure": OperationSpec("get_card", ("cardId", "taskListId", "name"), "Task lists & tasks", adapter="task_ensure", description="Ensure task exists by name"),
 
     "comments:get": OperationSpec("get_comments", ("cardId",), "Comments", description="Get comments"),
     "comment:add": OperationSpec("add_comment", ("cardId", "text"), "Comments", description="Add comment"),
-    "comment:ensure-phase": OperationSpec("get_comments", ("cardId", "phase", "agent", "artifact"), "Comments", adapter="comment_ensure_phase", description="Ensure a single structured phase comment"),
     "comment:delete": OperationSpec("delete_comment", ("commentId",), "Comments", description="Delete comment"),
-
-    "phase:close": OperationSpec("get_card", ("cardId", "phase", "agent", "artifact"), "Workflow", adapter="phase_close", description="Complete tasks, add structured comment, and verify phase close"),
 
     "attachment:upload": OperationSpec("upload_attachment", ("cardId", "filename", "fileContent"), "Attachments", description="Upload attachment from base64 content"),
     "attachment:upload-file": OperationSpec("upload_attachment", ("cardId", "path"), "Attachments", adapter="attachment_upload_file", description="Upload attachment from local file path"),
@@ -96,12 +88,7 @@ OPS: dict[str, OperationSpec] = {
 }
 
 
-def parse_value(raw: str, key: str | None = None) -> Any:
-    # Planka IDs are numeric strings: cardId, projectId, boardId, etc.
-    # We MUST NOT convert them to int/float.
-    if key and (key.endswith("Id") or key in {"groupId", "fieldId", "userId", "attachmentId"}):
-        return raw
-
+def parse_value(raw: str) -> Any:
     lowered = raw.lower()
     if lowered == "true":
         return True
@@ -116,14 +103,9 @@ def parse_value(raw: str, key: str | None = None) -> Any:
         except json.JSONDecodeError:
             pass
 
-    # Numeric conversion if not an ID
-    if raw.isdigit() or (raw.startswith("-") and raw[1:].isdigit()):
-        try:
-            return int(raw)
-        except ValueError:
-            pass
-
     try:
+        if raw.isdigit() or (raw.startswith("-") and raw[1:].isdigit()):
+            return int(raw)
         return float(raw)
     except ValueError:
         return raw
@@ -135,7 +117,7 @@ def parse_key_value_args(entries: list[str]) -> dict[str, Any]:
         if "=" not in entry:
             raise ValueError(f"Invalid --arg '{entry}'. Expected key=value")
         key, value = entry.split("=", 1)
-        parsed[key] = parse_value(value, key.strip())
+        parsed[key] = parse_value(value)
     return parsed
 
 
@@ -160,321 +142,6 @@ def load_args(raw_json: str | None, json_file: str | None, kv_entries: list[str]
 
 def now_iso() -> str:
     return datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat()
-
-
-def _safe_id(payload: Any) -> str | None:
-    if isinstance(payload, dict):
-        value = payload.get("id")
-        if value is not None:
-            return str(value)
-    return None
-
-
-def _to_list(payload: Any) -> list[Any]:
-    if isinstance(payload, list):
-        return payload
-    if isinstance(payload, dict):
-        for key in ("items", "data", "cards", "taskLists", "task_lists", "tasks", "comments"):
-            value = payload.get(key)
-            if isinstance(value, list):
-                return value
-    return []
-
-
-def _normalize_name(value: str) -> str:
-    return " ".join(value.strip().lower().split())
-
-
-def _as_bool(value: Any, default: bool = False) -> bool:
-    if isinstance(value, bool):
-        return value
-    if value is None:
-        return default
-    if isinstance(value, str):
-        lowered = value.strip().lower()
-        if lowered in {"true", "1", "yes", "y", "on"}:
-            return True
-        if lowered in {"false", "0", "no", "n", "off"}:
-            return False
-        return default
-    return bool(value)
-
-
-def _parse_task_ids(raw: Any) -> list[str]:
-    if raw is None:
-        return []
-    if isinstance(raw, list):
-        return [str(item).strip() for item in raw if str(item).strip()]
-    if isinstance(raw, (int, float)):
-        return [str(raw)]
-    if isinstance(raw, str):
-        text = raw.strip()
-        if not text:
-            return []
-        if "," in text:
-            return [part.strip() for part in text.split(",") if part.strip()]
-        return [text]
-    raise ValueError("taskIds must be a list, comma-separated string, or scalar")
-
-
-def _task_lists_from_card(card: dict[str, Any]) -> list[dict[str, Any]]:
-    direct = card.get("taskLists")
-    if isinstance(direct, list):
-        return [item for item in direct if isinstance(item, dict)]
-
-    snake = card.get("task_lists")
-    if isinstance(snake, list):
-        return [item for item in snake if isinstance(item, dict)]
-
-    return []
-
-
-def _tasks_from_task_list(task_list: dict[str, Any]) -> list[dict[str, Any]]:
-    tasks = task_list.get("tasks")
-    if isinstance(tasks, list):
-        return [item for item in tasks if isinstance(item, dict)]
-    return []
-
-
-def _find_task_list(card: dict[str, Any], name: str) -> dict[str, Any] | None:
-    wanted = _normalize_name(name)
-    for task_list in _task_lists_from_card(card):
-        current_name = str(task_list.get("name") or "")
-        if _normalize_name(current_name) == wanted:
-            return task_list
-    return None
-
-
-def _find_task(card: dict[str, Any], task_list_id: str, name: str) -> dict[str, Any] | None:
-    wanted = _normalize_name(name)
-    wanted_list_id = str(task_list_id)
-
-    for task in _to_list(card.get("tasks")):
-        if not isinstance(task, dict):
-            continue
-        current_list_id = task.get("taskListId")
-        if current_list_id is None:
-            continue
-        if str(current_list_id) != wanted_list_id:
-            continue
-        task_name = str(task.get("name") or "")
-        if _normalize_name(task_name) == wanted:
-            return task
-
-    for task_list in _task_lists_from_card(card):
-        current_list_id = _safe_id(task_list)
-        if current_list_id != wanted_list_id:
-            continue
-        for task in _tasks_from_task_list(task_list):
-            task_name = str(task.get("name") or "")
-            if _normalize_name(task_name) == wanted:
-                return task
-    return None
-
-
-def _collect_tasks(card: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    tasks_by_id: dict[str, dict[str, Any]] = {}
-
-    for task in _to_list(card.get("tasks")):
-        if not isinstance(task, dict):
-            continue
-        task_id = _safe_id(task)
-        if task_id:
-            tasks_by_id[task_id] = task
-
-    for task_list in _task_lists_from_card(card):
-        for task in _tasks_from_task_list(task_list):
-            task_id = _safe_id(task)
-            if task_id:
-                tasks_by_id[task_id] = task
-
-    return tasks_by_id
-
-
-def _phase_comment_key(args: dict[str, Any]) -> str:
-    explicit = str(args.get("key") or "").strip()
-    if explicit:
-        return explicit
-    agent = str(args.get("agent") or "").strip()
-    phase = str(args.get("phase") or "").strip()
-    artifact = str(args.get("artifact") or "").strip()
-    return f"{agent}|{phase}|{artifact}"
-
-
-def _build_phase_comment(args: dict[str, Any]) -> str:
-    key = _phase_comment_key(args)
-    agent = str(args.get("agent") or "").strip()
-    phase = str(args.get("phase") or "").strip()
-    status = str(args.get("status") or "COMPLETE").strip()
-    verdict = str(args.get("verdict") or "COMPLETE").strip()
-    artifact = str(args.get("artifact") or "").strip()
-    next_owner = str(args.get("next") or "n/a").strip() or "n/a"
-    summary = str(args.get("summary") or "").strip()
-
-    lines = [
-        PHASE_CLOSE_MARKER,
-        f"Key: {key}",
-        f"Agent: {agent}",
-        f"Phase: {phase}",
-        f"Status: {status}",
-        f"Verdict: {verdict}",
-        f"Artifact: {artifact}",
-        f"Next: {next_owner}",
-    ]
-    if summary:
-        lines.append(f"Summary: {summary}")
-    return "\n".join(lines)
-
-
-def _ensure_task_list(args: dict[str, Any], client: MCPClient) -> dict[str, Any]:
-    card_id = str(args["cardId"])
-    name = str(args["name"]).strip()
-    if not name:
-        raise ValueError("tasklist:ensure requires a non-empty name")
-
-    card = client.call_tool("get_card", {"cardId": card_id})
-    if not isinstance(card, dict):
-        raise ValueError("tasklist:ensure expected get_card to return an object")
-
-    task_lists = _task_lists_from_card(card)
-    existing = _find_task_list(card, name)
-    if existing:
-        return {
-            "id": _safe_id(existing),
-            "cardId": card_id,
-            "name": str(existing.get("name") or name),
-            "created": False,
-            "verification": "name-matched",
-        }
-
-    explicit_task_list_id = str(args.get("taskListId") or "").strip()
-    if explicit_task_list_id:
-        return {
-            "id": explicit_task_list_id,
-            "cardId": card_id,
-            "name": name,
-            "created": False,
-            "verification": "explicit-taskListId",
-        }
-
-    if not task_lists:
-        raise RuntimeError(
-            "PLANKA_SYNC_BLOCKED: tasklist:ensure cannot verify checklist names because get_card payload "
-            "does not include taskLists for this board. Use tasklist:create, or pass --arg taskListId=<known_id>."
-        )
-
-    created = client.call_tool("create_task_list", {"cardId": card_id, "name": name})
-    return {
-        "id": _safe_id(created),
-        "cardId": card_id,
-        "name": name,
-        "created": True,
-        "verification": "created",
-    }
-
-
-def _ensure_task(args: dict[str, Any], client: MCPClient) -> dict[str, Any]:
-    card_id = str(args["cardId"])
-    task_list_id = str(args["taskListId"])
-    name = str(args["name"]).strip()
-    if not name:
-        raise ValueError("task:ensure requires a non-empty name")
-
-    card = client.call_tool("get_card", {"cardId": card_id})
-    if not isinstance(card, dict):
-        raise ValueError("task:ensure expected get_card to return an object")
-
-    existing = _find_task(card, task_list_id, name)
-    if existing:
-        return {
-            "id": _safe_id(existing),
-            "taskListId": task_list_id,
-            "name": str(existing.get("name") or name),
-            "created": False,
-        }
-
-    payload: dict[str, Any] = {"taskListId": task_list_id, "name": name}
-    if "position" in args:
-        payload["position"] = args["position"]
-    created = client.call_tool("create_task", payload)
-    return {
-        "id": _safe_id(created),
-        "taskListId": task_list_id,
-        "name": name,
-        "created": True,
-    }
-
-
-def _ensure_phase_comment(args: dict[str, Any], client: MCPClient) -> dict[str, Any]:
-    card_id = str(args["cardId"])
-    key = _phase_comment_key(args)
-    comment_text = str(args.get("text") or "").strip() or _build_phase_comment(args)
-
-    comments = client.call_tool("get_comments", {"cardId": card_id})
-    for comment in _to_list(comments):
-        if not isinstance(comment, dict):
-            continue
-        text = str(comment.get("text") or "")
-        if PHASE_CLOSE_MARKER in text and f"Key: {key}" in text:
-            return {
-                "id": _safe_id(comment),
-                "cardId": card_id,
-                "key": key,
-                "created": False,
-            }
-
-    created = client.call_tool("add_comment", {"cardId": card_id, "text": comment_text})
-    return {
-        "id": _safe_id(created),
-        "cardId": card_id,
-        "key": key,
-        "created": True,
-    }
-
-
-def _phase_close(args: dict[str, Any], client: MCPClient) -> dict[str, Any]:
-    card_id = str(args["cardId"])
-    task_ids = _parse_task_ids(args.get("taskIds"))
-    strict = _as_bool(args.get("strict"), default=True)
-
-    updated_task_ids: list[str] = []
-    for task_id in task_ids:
-        client.call_tool("update_task", {"taskId": task_id, "isCompleted": True})
-        updated_task_ids.append(task_id)
-
-    comment_info = _ensure_phase_comment(args, client)
-    card = client.call_tool("get_card", {"cardId": card_id})
-    if not isinstance(card, dict):
-        raise ValueError("phase:close expected get_card to return an object")
-
-    task_map = _collect_tasks(card)
-    missing_task_ids = [task_id for task_id in updated_task_ids if task_id not in task_map]
-    incomplete_task_ids = [
-        task_id
-        for task_id in updated_task_ids
-        if task_id in task_map and not _as_bool(task_map[task_id].get("isCompleted"), default=False)
-    ]
-
-    verification_ok = not missing_task_ids and not incomplete_task_ids
-    if strict and not verification_ok:
-        raise RuntimeError(
-            "PLANKA_SYNC_BLOCKED: phase close verification failed "
-            f"(missing={missing_task_ids}, incomplete={incomplete_task_ids})"
-        )
-
-    return {
-        "cardId": card_id,
-        "agent": str(args.get("agent") or "").strip(),
-        "phase": str(args.get("phase") or "").strip(),
-        "updatedTaskIds": updated_task_ids,
-        "comment": comment_info,
-        "verification": {
-            "ok": verification_ok,
-            "missingTaskIds": missing_task_ids,
-            "incompleteTaskIds": incomplete_task_ids,
-            "listId": str(card.get("listId")) if card.get("listId") is not None else None,
-        },
-    }
 
 
 def _require(args: dict[str, Any], fields: tuple[str, ...], op: str) -> None:
@@ -576,22 +243,6 @@ def build_payload(op: str, args: dict[str, Any], client: MCPClient) -> dict[str,
     return args
 
 
-def execute_operation(op: str, spec: OperationSpec, args: dict[str, Any], client: MCPClient) -> Any:
-    _require(args, spec.required, op)
-
-    if spec.adapter == "tasklist_ensure":
-        return _ensure_task_list(args, client)
-    if spec.adapter == "task_ensure":
-        return _ensure_task(args, client)
-    if spec.adapter == "comment_ensure_phase":
-        return _ensure_phase_comment(args, client)
-    if spec.adapter == "phase_close":
-        return _phase_close(args, client)
-
-    payload = build_payload(op, args, client)
-    return client.call_tool(spec.tool, payload)
-
-
 def catalog_payload() -> dict[str, Any]:
     grouped: dict[str, list[dict[str, Any]]] = {}
     for op, spec in OPS.items():
@@ -648,28 +299,18 @@ def main() -> None:
         op = args.op
         spec = OPS[op]
         loaded_args = load_args(args.args_json, args.args_file, args.arg)
-        _require(loaded_args, spec.required, op)
+        payload = build_payload(op, loaded_args, client)
 
         if args.dry_run:
-            if spec.adapter in {"tasklist_ensure", "task_ensure", "comment_ensure_phase", "phase_close"}:
-                preview_payload = dict(loaded_args)
-                if spec.adapter in {"comment_ensure_phase", "phase_close"} and "text" not in preview_payload:
-                    preview_payload["text"] = _build_phase_comment(loaded_args)
-                if spec.adapter == "phase_close":
-                    preview_payload["taskIds"] = _parse_task_ids(loaded_args.get("taskIds"))
-            else:
-                preview_payload = build_payload(op, loaded_args, client)
-
             preview = {
                 "operation": op,
                 "tool": spec.tool,
-                "adapter": spec.adapter,
-                "payload": preview_payload,
+                "payload": payload,
             }
             print(json.dumps(preview, indent=2))
             return
 
-        result = execute_operation(op, spec, loaded_args, client)
+        result = client.call_tool(spec.tool, payload)
         print(json.dumps(result, indent=2))
         return
 
@@ -677,16 +318,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        # SEC-001: Redact sensitive environment variables from error logs
-        msg = str(e)
-        sensitive_keys = ["PLANKA_TOKEN", "ACCESS_KEY", "SECRET_KEY", "API_KEY"]
-        for key in sensitive_keys:
-            val = os.environ.get(key)
-            if val and len(val) > 4:
-                msg = msg.replace(val, "[REDACTED]")
-        
-        print(json.dumps({"error": msg}, indent=2), file=sys.stderr)
-        sys.exit(1)
+    main()

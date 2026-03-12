@@ -2,10 +2,13 @@ services:
   planka:
     image: ghcr.io/plankanban/planka:latest
     restart: always
+    ports:
+      - "${PLANKA_PORT}:1337"
     volumes:
       - data:/app/data
     environment:
-      - BASE_URL=${BASE_URL}
+      # Planka SKAL kende sin offentlige adresse for at UI'et virker
+      - BASE_URL=${PLANKA_URL}:${PLANKA_PORT}
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres/${DB_NAME}
       - SECRET_KEY=${SECRET_KEY}
       - TRUST_PROXY=true
@@ -14,7 +17,7 @@ services:
       - DEFAULT_ADMIN_NAME=${ADMIN_NAME}
       - DEFAULT_ADMIN_USERNAME=${ADMIN_USERNAME}
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:1337/"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${PLANKA_PORT}/"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,9 +31,10 @@ services:
     ports:
       - "${MCP_PORT}:25478"
     environment:
-      - PLANKA_URL=http://planka:1337
-      - PLANKA_EMAIL=${ADMIN_EMAIL}
-      - PLANKA_PASSWORD=${ADMIN_PASSWORD}
+      # MCP bruger den interne Docker-rute for at undgå timeouts
+      - PLANKA_URL=http://planka:${PLANKA_PORT}
+      - PLANKA_EMAIL=${MCP_PLANKA_EMAIL}
+      - PLANKA_PASSWORD=${MCP_PLANKA_PASSWORD}
     depends_on:
       planka:
         condition: service_healthy
@@ -54,29 +58,20 @@ services:
     image: lscr.io/linuxserver/obsidian:latest
     container_name: obsidian
     environment:
-      - PUID=1000 
-      - PGID=1000
-      - TZ=Europe/Copenhagen
-      - DOCKER_MODS=linuxserver/mods:universal-package-install # Valgfrit: til ekstra pakker
+      - PUID=${PUID} 
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=${DOCKER_MODS} 
     volumes:
-      - ./obsidian-config:/config 
-      - ../:/vault               # Mounter repository root (inkl. agent-output)
+      - ./obsidian-config:/config
+      - ./agent-output:/vaults/agent # Mount agent-output to a vault for easy access
     ports:
-      - 3000:3000   # HTTP GUI
-      - 3001:3001   # HTTPS GUI
-      - 27124:27124 # Obsidian Local REST API (VIGTIG for MCP)
+      - "${HTTP_PORT}:3000"         # HTTP GUI (Styres nu fra .env)
+      - "${HTTPS_PORT}:3001"        # HTTPS GUI
+      - "${API_PORT}:27124"         # Obsidian Local REST API (VIGTIG for MCP)
     shm_size: "1gb"
     restart: unless-stopped
     
-  tunnel:
-    container_name: cloudflared-tunnel
-    image: cloudflare/cloudflared:latest
-    restart: always
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
-    depends_on:
-      - planka
 
 volumes:
   data:

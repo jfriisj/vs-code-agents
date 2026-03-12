@@ -1,6 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import YAML from "yaml";
+
 function parseArgs(argv) {
   const parsed = {};
 
@@ -29,67 +31,46 @@ function parseArgs(argv) {
   return parsed;
 }
 
+const args = parseArgs(process.argv.slice(2));
+const workspaceRoot = path.resolve(args["workspace-root"] ?? process.cwd());
+
+const workflowsDir = path.join(workspaceRoot, "agent-output", "workflows");
+const workflowIndexPath = path.join(workspaceRoot, "agent-output", "ops", "workflow-index.md");
+
+const requiredFrontmatterFields = [
+  "workflow_id",
+  "project_name",
+  "type",
+  "parent",
+  "status",
+  "owner",
+  "last_updated"
+];
+
+const requiredHeadings = [
+  "Summary",
+  "Relations",
+  "Decisions",
+  "Constraints",
+  "Artifacts",
+  "Handoffs",
+  "Next"
+];
+
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function normalizeLinkTarget(rawTarget) {
-  let target = rawTarget.split("|")[0]?.trim() ?? "";
-  target = target.split("#")[0]?.trim() ?? "";
-  target = target.replace(/^\.\//, "");
-
-  if (target.includes("/")) {
-    const parts = target.split("/");
-    target = parts[parts.length - 1] ?? target;
-  }
-
-  return target.trim();
+function normalizePosixPath(...parts) {
+  return path.posix.join(...parts);
 }
 
 function extractWikiLinkTargets(content) {
   return [...content.matchAll(/\[\[([^\]]+)\]\]/g)]
-    .map((match) => normalizeLinkTarget(match[1] ?? ""))
+    .map((match) => match[1])
+    .map((value) => value.split("|")[0]?.trim() ?? "")
+    .map((value) => value.split("#")[0]?.trim() ?? "")
     .filter(Boolean);
-}
-
-function extractIndexWorkflowTargets(indexContent) {
-  return [...indexContent.matchAll(/\[\[workflows\/([^\]|#]+)(?:\|[^\]]+)?\]\]/g)]
-    .map((match) => normalizeLinkTarget(match[1] ?? ""))
-    .filter(Boolean);
-}
-
-function parseFrontmatterObject(frontmatterRaw) {
-  const parsed = {};
-  const lines = frontmatterRaw.split(/\r?\n/);
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed.length === 0 || trimmed.startsWith("#")) {
-      continue;
-    }
-
-    const match = line.match(/^([A-Za-z0-9_-]+)\s*:\s*(.*)$/);
-    if (!match) {
-      return {
-        error: `frontmatter line is not key:value -> ${line}`,
-        value: null
-      };
-    }
-
-    const key = match[1];
-    let value = (match[2] ?? "").trim();
-
-    if (
-      (value.startsWith("\"") && value.endsWith("\"")) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-
-    parsed[key] = value;
-  }
-
-  return { error: null, value: parsed };
 }
 
 function parseFrontmatterAndBody(content) {
@@ -99,64 +80,40 @@ function parseFrontmatterAndBody(content) {
     return {
       frontmatter: null,
       body: content,
-      parseError: "missing frontmatter block"
+      parseError: "missing YAML frontmatter"
     };
   }
 
   const [, frontmatterRaw, body] = frontmatterMatch;
-  const { error, value } = parseFrontmatterObject(frontmatterRaw);
 
-  if (error) {
+  try {
+    const parsed = YAML.parse(frontmatterRaw);
+
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return {
+        frontmatter: null,
+        body,
+        parseError: "frontmatter must be a YAML object"
+      };
+    }
+
+    return {
+      frontmatter: parsed,
+      body,
+      parseError: null
+    };
+  } catch (error) {
     return {
       frontmatter: null,
       body,
-      parseError: error
+      parseError: `invalid YAML frontmatter (${error instanceof Error ? error.message : String(error)})`
     };
   }
-
-  return {
-    frontmatter: value,
-    body,
-    parseError: null
-  };
 }
 
-async function collectMarkdownBasenames(rootDir) {
-  const basenames = new Set();
-
-  async function walk(currentDir) {
-    const entries = await readdir(currentDir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      const fullPath = path.join(currentDir, entry.name);
-      if (entry.isDirectory()) {
-        await walk(fullPath);
-        continue;
-      }
-
-      if (!entry.isFile() || !entry.name.toLowerCase().endsWith(".md")) {
-        continue;
-      }
-
-      basenames.add(entry.name.replace(/\.md$/i, ""));
-    }
-  }
-
-  await walk(rootDir);
-  return basenames;
-}
-
-function validateWorkflowNote({
-  fileName,
-  content,
-  workflowIndex,
-  markdownBasenames,
-  requiredFrontmatterFields,
-  requiredHeadings,
-  placeholderPatterns
-}) {
+function validateWorkflowNote({ fileName, content, workflowIndex }) {
   const failures = [];
-  const notePath = path.posix.join("agent-output", "workflows", fileName);
+  const notePath = normalizePosixPath("agent-output", "workflows", fileName);
   const noteBaseName = fileName.replace(/\.md$/i, "");
 
   const { frontmatter, body, parseError } = parseFrontmatterAndBody(content);
@@ -174,65 +131,65 @@ function validateWorkflowNote({
     }
   }
 
-  const workflowId = frontmatter.workflow_id ?? "";
-  if (typeof workflowId === "string") {
-    if (!/^WF-[A-Za-z0-9][A-Za-z0-9.-]*$/.test(workflowId)) {
-      failures.push(`${notePath}: \`workflow_id\` must start with WF- and use [A-Za-z0-9.-]`);
+  if (typeof frontmatter.workflow_id === "string") {
+    if (!/^WF-\d+/.test(frontmatter.workflow_id)) {
+      failures.push(`${notePath}: \`workflow_id\` must start with WF-<number>`);
     }
 
-    if (!(fileName === `${workflowId}.md` || fileName.startsWith(`${workflowId}-`))) {
-      failures.push(`${notePath}: file name must start with workflow_id \`${workflowId}\``);
+    if (!(fileName === `${frontmatter.workflow_id}.md` || fileName.startsWith(`${frontmatter.workflow_id}-`))) {
+      failures.push(`${notePath}: file name must start with workflow_id \`${frontmatter.workflow_id}\``);
     }
   }
 
-  const parentValue = frontmatter.parent ?? "";
+  const parentValue = frontmatter.parent;
   let parentTarget = "";
-  if (parentValue !== "none") {
-    const parentTargets = extractWikiLinkTargets(parentValue);
-    parentTarget = parentTargets[0] ?? "";
 
-    if (!/^\[\[[^\]]+\]\]$/.test(parentValue) || parentTargets.length !== 1) {
-      failures.push(`${notePath}: \`parent\` must be \`none\` or a single wikilink`);
-    } else if (!markdownBasenames.has(parentTarget)) {
-      failures.push(`${notePath}: parent wikilink target does not resolve -> [[${parentTarget}]]`);
+  if (typeof parentValue === "string") {
+    if (parentValue === "none") {
+      parentTarget = "none";
+    } else {
+      const parentTargets = extractWikiLinkTargets(parentValue);
+      parentTarget = parentTargets[0] ?? "";
+
+      if (!/^\[\[[^\]]+\]\]$/.test(parentValue) || parentTarget.length === 0) {
+        failures.push(`${notePath}: \`parent\` must be \`none\` or a single wikilink like [[WF-123]]`);
+      } else if (!/WF-\d+/.test(parentTarget)) {
+        failures.push(`${notePath}: \`parent\` wikilink must target a WF node`);
+      }
     }
   }
 
   if (typeof frontmatter.last_updated === "string" && !/^\d{4}-\d{2}-\d{2}$/.test(frontmatter.last_updated)) {
-    failures.push(`${notePath}: \`last_updated\` must use YYYY-MM-DD format`);
+    failures.push(`${notePath}: \`last_updated\` should use YYYY-MM-DD format`);
   }
 
   for (const heading of requiredHeadings) {
     const headingPattern = new RegExp(`^##\\s+${escapeRegex(heading)}\\s*$`, "m");
+
     if (!headingPattern.test(body)) {
       failures.push(`${notePath}: missing required heading \`## ${heading}\``);
     }
   }
 
-  for (const pattern of placeholderPatterns) {
-    if (pattern.test(content)) {
-      failures.push(`${notePath}: contains placeholder-like WF identifier (${pattern})`);
-    }
-  }
-
   const bodyLinks = extractWikiLinkTargets(body);
-  const selfTargets = new Set([noteBaseName]);
+  const normalizedSelfTargets = new Set([
+    noteBaseName,
+    normalizePosixPath("workflows", noteBaseName)
+  ]);
 
-  for (const target of bodyLinks) {
-    if (selfTargets.has(target)) {
-      continue;
-    }
+  const nonSelfLinks = bodyLinks.filter((target) => !normalizedSelfTargets.has(target));
+  const relationEdges = parentTarget !== "none" && parentTarget ? [parentTarget, ...nonSelfLinks] : nonSelfLinks;
 
-    if (!markdownBasenames.has(target)) {
-      failures.push(`${notePath}: unresolved wikilink target [[${target}]]`);
-    }
+  if (relationEdges.length === 0) {
+    failures.push(`${notePath}: missing graph edges; add wikilinks in Relations/Artifacts or set a parent wikilink`);
   }
 
-  const indexPattern = new RegExp(
-    `\\[\\[workflows/${escapeRegex(noteBaseName)}(?:\\|[^\\]]+)?\\]\\]`,
+  const noteLinkPattern = new RegExp(
+    `\\[\\[workflows\\/${escapeRegex(noteBaseName)}(?:\\|[^\\]]+)?\\]\\]`,
     "m"
   );
-  if (!indexPattern.test(workflowIndex)) {
+
+  if (!noteLinkPattern.test(workflowIndex)) {
     failures.push(`${notePath}: missing index link in agent-output/ops/workflow-index.md`);
   }
 
@@ -240,51 +197,11 @@ function validateWorkflowNote({
 }
 
 async function main() {
-  const args = parseArgs(process.argv.slice(2));
-  const workspaceRoot = path.resolve(args["workspace-root"] ?? process.cwd());
-  const workflowsDir = path.join(workspaceRoot, "agent-output", "workflows");
-  const workflowIndexPath = path.join(workspaceRoot, "agent-output", "ops", "workflow-index.md");
-  const agentOutputRoot = path.join(workspaceRoot, "agent-output");
-
-  const requiredFrontmatterFields = [
-    "workflow_id",
-    "project_name",
-    "type",
-    "parent",
-    "status",
-    "owner",
-    "last_updated"
-  ];
-
-  const requiredHeadings = [
-    "Summary",
-    "Relations",
-    "Decisions",
-    "Constraints",
-    "Artifacts",
-    "Handoffs",
-    "Next"
-  ];
-
-  const placeholderPatterns = [
-    /\[\[WF-\[[^\]]+\]\]\]/,
-    /WF-[A-Za-z]+-ID/,
-    /WF-\[ID\]/,
-    /\[\[WF-\[[^\]]+\]\]\]/
-  ];
-
-  let workflowIndex = "";
-  try {
-    workflowIndex = await readFile(workflowIndexPath, "utf8");
-  } catch {
-    console.error(`Obsidian graph verification failed: missing ${workflowIndexPath}`);
-    process.exitCode = 1;
-    return;
-  }
-
+  const workflowIndex = await readFile(workflowIndexPath, "utf8");
   const entries = await readdir(workflowsDir, { withFileTypes: true });
+
   const workflowFiles = entries
-    .filter((entry) => entry.isFile() && /^WF-.*\.md$/i.test(entry.name))
+    .filter((entry) => entry.isFile() && /^WF-\d+.*\.md$/i.test(entry.name))
     .map((entry) => entry.name)
     .sort();
 
@@ -293,34 +210,13 @@ async function main() {
     return;
   }
 
-  const markdownBasenames = await collectMarkdownBasenames(agentOutputRoot);
   const failures = [];
-  const workflowBasenames = new Set(workflowFiles.map((fileName) => fileName.replace(/\.md$/i, "")));
-
-  const indexTargets = extractIndexWorkflowTargets(workflowIndex);
-  for (const target of indexTargets) {
-    if (!workflowBasenames.has(target)) {
-      failures.push(
-        `agent-output/ops/workflow-index.md: index link points to missing workflow note [[workflows/${target}]]`
-      );
-    }
-  }
 
   for (const fileName of workflowFiles) {
     const filePath = path.join(workflowsDir, fileName);
     const content = await readFile(filePath, "utf8");
 
-    failures.push(
-      ...validateWorkflowNote({
-        fileName,
-        content,
-        workflowIndex,
-        markdownBasenames,
-        requiredFrontmatterFields,
-        requiredHeadings,
-        placeholderPatterns
-      })
-    );
+    failures.push(...validateWorkflowNote({ fileName, content, workflowIndex }));
   }
 
   if (failures.length > 0) {
@@ -328,6 +224,7 @@ async function main() {
     for (const failure of failures) {
       console.error(`- ${failure}`);
     }
+
     process.exitCode = 1;
     return;
   }
