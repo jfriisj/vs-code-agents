@@ -22,13 +22,9 @@
     "planka": {
       "url": "http://localhost:25478/mcp"
     },
-    "mcp-obsidian": {
+     "obsidian": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@mauricio.wolff/mcp-obsidian@0.8.1",
-        "${workspaceFolder}/agent-output"
-      ]
+      "args": ["@bitbonsai/mcpvault@latest", "${workspaceFolder}/agent-output"]
     }
   }
 }

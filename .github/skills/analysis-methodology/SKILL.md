@@ -1,10 +1,10 @@
 ---
 name: analysis-methodology
-description: A structured approach to investigating unknowns, classifying findings by confidence level, and tracking remaining gaps. Integrates with Obsidian for memory and Planka for task tracking.
+description: A structured approach to investigating unknowns, classifying findings by confidence level, and tracking remaining gaps. Integrates strictly with Obsidian (Native MCP) for memory and Planka (Native MCP) for task tracking.
 license: MIT
 metadata:
   author: groupzer0
-  version: "1.1"
+  version: "1.2"
 ---
 
 # Analysis Methodology
@@ -96,25 +96,24 @@ Recommended sections for your full markdown artifact:
 
 ## The Triad Handoff Protocol
 
-Before handing off to the Planner or Implementer, you must align the three sources of truth:
+Before handing off to the Planner or Implementer, you must align the three sources of truth using **Native MCP Tools** (No terminal scripts):
 
 1. **The Artifact (`agent-output/`)**:
+
 * Ensure the markdown document is saved and status is set.
 
-
 2. **The Execution (Planka Board)**:
-* Use `planka-workflow` tools to check off the specific "Analysis & Spikes" tasks assigned to you.
-* Leave a brief comment on the Epic card summarizing the Confidence Level 1 findings.
 
+* Use native Planka tools (e.g., `update_task`) to check off the specific "Analysis & Spikes" tasks assigned to you.
+* Use `add_comment` to leave a brief comment on the Epic card summarizing the Confidence Level 1 findings.
 
 3. **The Memory (Obsidian Graph)**:
-* Create or update your `WF-[ID]` node in Obsidian.
+
+* Use native Obsidian tools (`write_note` or `patch_note`) to create or update your `WF-[ID]` node.
 * Set `type: Analysis` and `parent: "[[WF-Calling-ID]]"`.
-* Write a strict 3-bullet TL;DR summary in the note.
+* Write a strict 3-bullet TL;DR summary in the note (The 10-Line Rule).
 * Link to your `agent-output/` artifact.
-* If handing back to a Planner, patch their node to link to yours (`See [[WF-[Your-ID]]]`).
-
-
+* If handing back to a Planner, use `patch_note` to update their node to link to yours (`See [[WF-[Your-ID]]]`).
 
 **Final Chat Message**:
 Always conclude your turn in the chat with:

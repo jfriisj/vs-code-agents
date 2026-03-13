@@ -1,3 +1,10 @@
+Det er en rigtig god idé! For at undgå copy-paste fejl og sikre, at alt hænger 100% sammen, får du her den fulde og komplette version af `AGENTS-DEEP-DIVE.md`.
+
+Jeg har indarbejdet alle ændringerne: fjernelse af Python-scripts, fjernelse af terminalvalidering for Obsidian, rensning af Obsidian frontmatter (så kun Planka styrer status) og sikring af "Native MCP" over hele linjen.
+
+Du kan kopiere hele koden herunder og overskrive din nuværende `AGENTS-DEEP-DIVE.md` fil:
+
+```markdown
 # VS Code Agents - Deep Dive Documentation
 
 > This comprehensive guide covers advanced usage patterns, agent collaboration, Obsidian graph integration, Planka Agile tracking, and the design philosophy behind this multi-agent workflow.
@@ -63,7 +70,6 @@ agent-output/
 ├── retrospectives/     # Lessons learned
 └── releases/           # Release documentation
 
-
 ```
 
 **Why documents?**
@@ -91,7 +97,6 @@ agent-output/
                                                │ (approved)   │
                                                └──────────────┘
 
-
 ```
 
 **When to use**: Starting a new feature from scratch.
@@ -117,7 +122,6 @@ agent-output/
        └───────────────┴───────────────┴───────────┘
               (fix issues)
 
-
 ```
 
 **When to use**: Plan is approved, coding phase.
@@ -141,7 +145,6 @@ agent-output/
 │ hits unknown│    │(research)    │ calling agent
 └─────────────┘    └─────────┘    └─────────────┘
 
-
 ```
 
 **When to use**: Hit technical uncertainty during any phase.
@@ -164,7 +167,6 @@ agent-output/
 │ (sensitive) │    │ (audit)  │    │ Block       │
 └─────────────┘    └──────────┘    └─────────────┘
 
-
 ```
 
 **When to use**: Feature touches auth, sensitive data, external interfaces.
@@ -182,7 +184,6 @@ agent-output/
 │ Delivery │───▶│ Retrospective │───▶│ Process Improvement│
 │ complete │    │ (lessons)     │    │ (evolve agents)    │
 └──────────┘    └───────────────┘    └────────────────────┘
-
 
 ```
 
@@ -202,7 +203,6 @@ agent-output/
 
 ```text
 NNN-feature-name-type.md
-
 
 ```
 
@@ -261,7 +261,6 @@ agent-output/
 │   └── closed/
 └── ...
 
-
 ```
 
 **Key concepts:**
@@ -304,7 +303,6 @@ When handing off between agents, we rely on **Obsidian Workflow Notes** (`WF-[ID
 ## Handoff Ready
 Parent Node context for the next agent is [[WF-NNN-feature-type]]
 
-
 ```
 
 ---
@@ -328,29 +326,28 @@ To prevent context window bloat, agents do not dump massive contents into Obsidi
 
 **The 10-Line Rule for `WF-` Notes**:
 
-1. **Frontmatter**: Graph relations (Type, Status, Parent/Child links).
-2. **TL;DR**: Maximum 3 bullet points summarizing the decision, constraint, or verdict.
-3. **Artifact Link**: A direct path to the full markdown file in `agent-output/`.
+1. **Frontmatter**: Graph relations (Type, Parent links, and Planka Card ID). *Note: Status and Owner are tracked in Planka, not Obsidian.*
+2. **TL;DR**: Maximum 3 bullet points summarizing the core decision, constraint, or verdict.
+3. **Artifact Link**: A direct wikilink to the full markdown file in `agent-output/`.
 
 *Example of a Workflow Node (`workflows/WF-002-Auth-Plan.md`):*
 
 ```markdown
 ---
-ID: 002
-Type: Plan
-Status: Active
+type: Plan
 parent: "[[WF-001-Auth-Epic]]"
-Blocks: "[[WF-004-Security-Audit]]"
+Planka-Card: "[cardId]"
 ---
 ### Summary
 * Decided to use JWT tokens over session cookies.
 * Defined 4 implementation milestones.
 * See artifact for exact file paths.
 
-**Artifact**: `agent-output/planning/002-auth-plan.md`
-
+**Artifact**: [[agent-output/planning/002-auth-plan.md]]
 
 ```
+
+**Validation Constraint**: Agents MUST use native `mcp-obsidian/*` tools (like `write_note`, `read_note`, `patch_note`) for all vault operations. Terminal validation scripts are strictly forbidden to save token overhead.
 
 ### Retrieval and Storage Patterns
 
@@ -369,7 +366,7 @@ Agents update the graph when:
 * Making a significant decision.
 * Handing off to another agent.
 
-They use `#mcp-obsidian/patch_note` to update the Status, append a quick summary bullet, or link to a new downstream node.
+They use `#mcp-obsidian/patch_note` to update the summary bullet, or link to a new downstream node.
 
 ### Memory Enables Agent Collaboration
 
@@ -396,10 +393,10 @@ While Obsidian acts as the relational memory graph and `agent-output/` serves as
 
 ### Agent Roles in Planka
 
-Agents use the `planka-workflow` skill to keep the board synchronized:
+Agents use the `planka-workflow` skill to keep the board synchronized using **100% Native MCP Tools** (Python/CLI scripts are strictly forbidden):
 
-* **01-Roadmap**: The owner of the Planka board. Uses the Python CLI script `sync_roadmap_epics.py` to bulk-reconcile `product-roadmap.md` with Planka, ensuring every Epic has a corresponding card, correct release/priority labels, and lifecycle columns (`Planned`, `In Progress`, `Delivered`).
-* **02-Planner**: Reads the Epic card and uses **native MCP tools** (`create_task_list`, `create_task`) to translate plan milestones into actionable Tasks on the card. Appends handoff comments linking back to Obsidian.
+* **01-Roadmap**: The owner of the Planka board. Uses native tools (`list_projects`, `get_board`, `create_card`, `update_card`) to iteratively reconcile `product-roadmap.md` with Planka, ensuring every Epic has a corresponding card, correct release/priority labels, and lifecycle columns (`Planned`, `In Progress`, `Delivered`).
+* **02-Planner**: Reads the Epic card and uses native MCP tools (`create_task_list`, `create_task`) to translate plan milestones into actionable Tasks on the card. Appends handoff comments linking back to Obsidian.
 * **03-Analyst**: Creates an "Analysis & Spikes" Task List via MCP tools and leaves a comment with findings when research is done.
 * **04-Architect**: Creates an "Architecture & Design" Task List via MCP tools for design constraints and leaves an Approved/Rejected verdict comment.
 * **05-Security**: Tracks required controls and vulnerabilities via MCP tasks.
@@ -422,7 +419,7 @@ When an agent finishes its work, it updates the Obsidian graph, updates the Plan
 * Translate business needs into epics
 * Validate that plans deliver stated value
 * Guard the "Master Product Objective"
-* Bulk-synchronize the master roadmap with the Planka board using `sync_roadmap_epics.py`
+* Synchronize the master roadmap with the Planka board using native MCP tools (ensuring all Epics have cards and correct statuses).
 
 **When NOT to use**:
 
@@ -675,7 +672,6 @@ vs-code-agents/skills/
     └── scripts/           # Optional: automation
         └── check.sh
 
-
 ```
 
 **SKILL.md format:**
@@ -693,7 +689,6 @@ metadata:
 # Skill Title
 
 Detailed instructions, tables, code examples...
-
 
 ```
 
@@ -718,7 +713,6 @@ handoffs:
     prompt: Suggested prompt
     send: false
 ---
-
 
 ```
 
@@ -792,8 +786,8 @@ You can have project-specific agent variants:
 **Q: Cards aren't updating or syncing natively**
 
 * Ensure the `mcp-planka` server is running (e.g., via Docker on port 25478) and connected in your VS Code MCP tool settings.
-* Verify agents have permission to call tools like `add_comment` or `create_task_list`.
-* For the **Roadmap agent only**: Check if the Planka URL and API tokens are correctly set in your `.env` for the `sync_roadmap_epics.py` bulk script.
+* Verify agents have permission to call tools like `add_comment`, `create_task_list`, or `create_card`.
+* Remind the agent strictly to use native Planka MCP tools and NOT to attempt running bash or python terminal scripts.
 
 ### Workflow Issues
 
@@ -880,7 +874,6 @@ User selects Roadmap agent → "Define epic for X"
      selects Architect agent → "Review architectural fit"
      selects Critic agent → "Review plan 002"
 
-
 ```
 
 > [!NOTE]
@@ -906,7 +899,6 @@ User selects Roadmap agent → "Define epic for X"
 Planner (plan approved) ──▶ Background: Implementer in worktree
                             Background: QA test strategy
                             Background: Security code audit
-
 
 ```
 
@@ -940,7 +932,6 @@ Background results ──▶ Local: @QA verify tests
                        Local: @UAT validate value
                        Local: @Security final gate
                        Local: @DevOps release (user approval required)
-
 
 ```
 
@@ -981,7 +972,6 @@ Implementer working on feature
 ├── Invokes Analyst as subagent: "How does API X handle pagination?"
 ├── Analyst returns findings
 └── Implementer continues with answer
-
 
 ```
 
@@ -1066,7 +1056,6 @@ Implementer working on feature
 │                              [USER APPROVAL REQUIRED]               │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
-
 
 ```
 

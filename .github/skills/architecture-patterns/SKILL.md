@@ -1,10 +1,10 @@
 ---
 name: architecture-patterns
-description: Common software architecture patterns, ADR templates, and anti-pattern detection. Integrates with Obsidian for architectural memory graphs and Planka for design constraints tracking.
+description: Common software architecture patterns, ADR templates, diagram templates, and anti-pattern detection. Integrates strictly with Obsidian (Native MCP) for memory graphs and Planka (Native MCP) for design constraints tracking.
 license: MIT
 metadata:
   author: groupzer0
-  version: "1.1"
+  version: "1.3"
 ---
 
 # Architecture Patterns
@@ -19,8 +19,8 @@ Reference for architectural design and documentation. Use this skill when:
 
 Every architectural decision must be reflected across three systems:
 1. **Markdown (`agent-output/architecture/`)**: The detailed ADRs, master architecture doc, and findings.
-2. **Obsidian Graph (`workflows/`)**: The `WF-` nodes linking architecture decisions to specific Epics and Plans.
-3. **Planka Board**: The "Architecture & Design" Task List on the relevant Epic card to enforce implementation constraints.
+2. **Obsidian Graph (`workflows/`)**: The lightweight `WF-` nodes linking architecture decisions to specific Epics and Plans (using the 10-Line Rule).
+3. **Planka Board**: The "Architecture & Design" Task List on the relevant Epic card to enforce implementation constraints via Native MCP.
 
 ---
 
@@ -28,13 +28,13 @@ Every architectural decision must be reflected across three systems:
 
 ### ADR Format
 
-Every significant architectural decision should be documented. All ADRs and Findings documents MUST include this standard YAML frontmatter for Obsidian indexing:
+Every significant architectural decision should be documented in `agent-output/architecture/`. All ADRs and Findings documents MUST include this standard YAML frontmatter for artifact indexing:
 
 ```markdown
 ---
 ID: [NNN]
 Type: Architecture
-Status: [Proposed | Accepted | Deprecated]
+Status: [Proposed | Accepted | Deprecated]  # This is the decision status, not execution status
 Epic: "[[WF-Epic-ID]]"
 Planka-Card: "[cardId]"
 ---
@@ -49,22 +49,19 @@ Planka-Card: "[cardId]"
 ## Consequences
 ### Positive
 - [Benefit 1]
-- [Benefit 2]
 
 ### Negative
 - [Tradeoff 1]
-- [Tradeoff 2]
 
 ### Neutral
 - [Side effect]
 
 ## Alternatives Considered
 1. [Alternative 1]: [Why rejected]
-2. [Alternative 2]: [Why rejected]
 
 ## Related
 - ADR-XXX: [Related decision]
-- [External reference]
+
 ```
 
 ### When to Write ADRs
@@ -95,113 +92,26 @@ Planka-Card: "[cardId]"
 ├─────────────────────────────────┤
 │        Infrastructure           │  DB, external services
 └─────────────────────────────────┘
+
 ```
 
-**Rules:**
-
-* Dependencies point downward only
-* Lower layers never import from higher
-* Domain has no external dependencies
-
-**Use when:** Enterprise apps, clear separation needed
+**Rules:** Dependencies point downward only. Lower layers never import from higher. Domain has no external dependencies.
 
 ### Repository Pattern
 
-**Purpose:** Abstract data access, enable testability
-
-```typescript
-// Interface in domain layer
-interface UserRepository {
-  findById(id: string): Promise<User | null>;
-  save(user: User): Promise<void>;
-}
-
-// Implementation in infrastructure layer
-class PostgresUserRepository implements UserRepository {
-  async findById(id: string): Promise<User | null> {
-    const row = await db.query('SELECT * FROM users WHERE id = $1', [id]);
-    return row ? mapToUser(row) : null;
-  }
-}
-```
-
-**Use when:** - Need to swap data stores
-
-* Testing without real database
-* Multiple data sources
+**Purpose:** Abstract data access, enable testability without real databases.
 
 ### Service Layer
 
-**Purpose:** Encapsulate business operations
-
-```typescript
-class OrderService {
-  constructor(
-    private orderRepo: OrderRepository,
-    private paymentGateway: PaymentGateway,
-    private notifier: Notifier
-  ) {}
-
-  async placeOrder(cart: Cart, payment: PaymentInfo): Promise<Order> {
-    const order = Order.fromCart(cart);
-    await this.paymentGateway.charge(payment, order.total);
-    await this.orderRepo.save(order);
-    await this.notifier.sendConfirmation(order);
-    return order;
-  }
-}
-```
-
-**Use when:**
-
-* Multiple steps in operation
-* Transaction coordination
-* Cross-cutting concerns
+**Purpose:** Encapsulate business operations, transaction coordination, and cross-cutting concerns.
 
 ### Event-Driven Architecture
 
-```
-┌─────────┐    Event    ┌─────────┐
-│ Service │───────────► │  Queue  │
-│    A    │             │         │
-└─────────┘             └────┬────┘
-                             │
-              ┌──────────────┼──────────────┐
-              ▼              ▼              ▼
-         ┌─────────┐   ┌─────────┐   ┌─────────┐
-         │ Handler │   │ Handler │   │ Handler │
-         │    1    │   │    2    │   │    3    │
-         └─────────┘   └─────────┘   └─────────┘
-```
-
-**Use when:**
-
-* Loose coupling between components
-* Asynchronous processing
-* Multiple consumers of same event
-* Audit trail needed
+**Purpose:** Loose coupling, asynchronous processing, audit trails.
 
 ### Dependency Injection
 
-**Purpose:** Invert control, enable testing
-
-```typescript
-// Without DI (hard to test)
-class OrderService {
-  private db = new PostgresDatabase();
-}
-
-// With DI (testable)
-class OrderService {
-  constructor(private db: Database) {}
-}
-
-// Production
-new OrderService(new PostgresDatabase());
-
-// Test
-new OrderService(new MockDatabase());
-```
+**Purpose:** Invert control to easily swap implementations (e.g., MockDatabase for testing).
 
 ---
 
@@ -213,29 +123,14 @@ new OrderService(new MockDatabase());
 | **Circular Dependencies** | A→B→C→A | Introduce interface |
 | **Big Ball of Mud** | No clear structure | Define boundaries |
 | **Spaghetti Code** | Tangled control flow | Refactor, add layers |
-| **Golden Hammer** | Same pattern everywhere | Choose appropriate |
 | **Anemic Domain** | Data classes + procedure classes | Move logic to domain |
 | **Leaky Abstraction** | Implementation details exposed | Hide behind interface |
-| **Premature Optimization** | Complex code for speed | Measure first |
 
-### Detection Commands
-
-```bash
-# Find large files (potential God objects)
-find . -name "*.ts" -exec wc -l {} \; | sort -rn | head -10
-
-# Find circular dependencies (TypeScript)
-npx madge --circular src/
-
-# Find files with many imports
-grep -c "^import" src/**/*.ts | sort -t: -k2 -rn | head -10
-```
+*(Note: The Architect may use safe terminal read commands like `grep`, `find`, or `madge` exclusively for codebase analysis to detect these patterns).*
 
 ---
 
 ## System Architecture Documentation
-
-### Required Sections
 
 For `system-architecture.md` (Must also contain Dataview YAML header):
 
@@ -248,38 +143,188 @@ For `system-architecture.md` (Must also contain Dataview YAML header):
 7. **Decisions**: ADRs or decision log
 8. **Known Issues**: Technical debt, problem areas
 
-### Diagram Standards
+### Reconciliation Changelog Template
 
-Use Mermaid for version-controlled diagrams. See `references/diagram-templates.md` for full templates.
+When reconciling architecture docs after implementations, use this format:
+
+| Date | Change | Rationale | Source |
+| --- | --- | --- | --- |
+| YYYY-MM-DD | Added caching layer | Reconciled from Plan-015 | Plan-015 |
+
+### Design Debt Registry Template
+
+Track architectural improvements in the **Problem Areas** section:
+
+| ID | Area | Current State | Optimal State | Priority | Discovered |
+| --- | --- | --- | --- | --- | --- |
+| DD-001 | Memory | Direct calls scattered | Unified facade | Medium | 2024-12-15 |
 
 ---
 
-## Reconciliation Changelog Template
+## Diagram Templates (Mermaid)
 
-When the Architect reconciles architecture docs after implementations, use this format in the `system-architecture.md` changelog:
+Always use Mermaid for version-controlled diagrams. Here are baseline templates to ensure correct syntax and structure.
 
-```markdown
-| Date | Change | Rationale | Source |
-|------|--------|-----------|--------|
-| 2024-12-20 | Added memory retrieval caching layer | Reconciled from Plan-015 implementation | Plan-015-memory-caching |
-| 2024-12-18 | Updated API boundary diagram | Implementation added new endpoint | Post-implementation audit |
+**Component Diagram:**
+
+```mermaid
+graph TB
+    subgraph "System Name"
+        subgraph "Layer 1"
+            A[Component A]
+            B[Component B]
+        end
+        
+        subgraph "Layer 2"
+            C[Component C]
+            D[Component D]
+        end
+    end
+    
+    External[External Service]
+    
+    A --> C
+    B --> C
+    B --> D
+    C --> External
 
 ```
 
----
+**Sequence Diagram:**
 
-## Design Debt Registry Template
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as API
+    participant S as Service
+    participant D as Database
+    
+    U->>A: Request
+    A->>S: Process
+    S->>D: Query
+    D-->>S: Result
+    S-->>A: Response
+    A-->>U: Response
 
-Track architectural improvements in the **Problem Areas** section of `system-architecture.md`:
+```
 
-```markdown
-## Problem Areas / Design Debt Registry
+**Data Flow Diagram:**
 
-### Active Design Debt
+```mermaid
+flowchart LR
+    subgraph Input
+        I1[User Input]
+        I2[API Request]
+    end
+    
+    subgraph Processing
+        P1[Validation]
+        P2[Business Logic]
+        P3[Transformation]
+    end
+    
+    subgraph Output
+        O1[Database]
+        O2[Response]
+        O3[Queue]
+    end
+    
+    I1 --> P1
+    I2 --> P1
+    P1 --> P2
+    P2 --> P3
+    P3 --> O1
+    P3 --> O2
+    P3 --> O3
 
-| ID | Area | Current State | Optimal State | Priority | Discovered | Last Reviewed |
-|----|------|---------------|---------------|----------|------------|---------------|
-| DD-001 | Memory Subsystem | Direct Cognee calls scattered | Unified memory service facade | Medium | 2024-12-15 | 2024-12-20 |
+```
+
+**Entity Relationship (Simple):**
+
+```mermaid
+erDiagram
+    USER ||--o{ ORDER : places
+    ORDER ||--|{ ORDER_ITEM : contains
+    ORDER_ITEM }|--|| PRODUCT : references
+    
+    USER {
+        int id PK
+        string email
+        string name
+    }
+    
+    ORDER {
+        int id PK
+        int user_id FK
+        date created_at
+    }
+
+```
+
+**State Diagram:**
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Pending: submit
+    Pending --> Approved: approve
+    Pending --> Rejected: reject
+    Approved --> [*]
+    Rejected --> Draft: revise
+
+```
+
+**C4 Context (Simplified):**
+
+```mermaid
+graph TB
+    subgraph "Users"
+        User[User]
+        Admin[Admin]
+    end
+    
+    subgraph "System"
+        App[Application]
+    end
+    
+    subgraph "External"
+        Email[Email Service]
+        Payment[Payment Gateway]
+    end
+    
+    User --> App
+    Admin --> App
+    App --> Email
+    App --> Payment
+
+```
+
+**Deployment Diagram:**
+
+```mermaid
+graph TB
+    subgraph "Production"
+        subgraph "Load Balancer"
+            LB[nginx]
+        end
+        
+        subgraph "App Servers"
+            A1[App 1]
+            A2[App 2]
+        end
+        
+        subgraph "Data"
+            DB[(PostgreSQL)]
+            Cache[(Redis)]
+        end
+    end
+    
+    LB --> A1
+    LB --> A2
+    A1 --> DB
+    A2 --> DB
+    A1 --> Cache
+    A2 --> Cache
 
 ```
 
@@ -289,36 +334,28 @@ Track architectural improvements in the **Problem Areas** section of `system-arc
 
 ### 04-Architect (Execution & Handoff)
 
-Before handing off, the Architect MUST align the triad:
+Before handing off, the Architect MUST align the triad using **Native MCP Tools**:
 
 1. **The Artifact (`agent-output/`)**: Document ADRs and update `system-architecture.md`.
 2. **The Execution (Planka Board)**:
-* Ensure an "Architecture & Design" Task List exists on the Epic card.
-* Add Tasks for specific constraints the Implementer must follow.
-* Leave a comment with the final verdict (`APPROVED`, `APPROVED_WITH_CHANGES`, `REJECTED`) and link to the findings document.
 
+* Use native tools (`create_task_list`, `create_task`) to ensure an "Architecture & Design" Task List exists on the Epic card.
+* Add Tasks for specific constraints the Implementer must follow.
+* Use `add_comment` to leave the final verdict (`APPROVED`, `APPROVED_WITH_CHANGES`, `REJECTED`) and link to the findings document and Obsidian node.
 
 3. **The Memory (Obsidian Graph)**:
-* Create/Update `workflows/WF-[ID]-[slug].md`.
-* Set `type: Architecture` and `parent: "[[WF-[Calling-ID]]]"`.
-* Summarize the architectural invariant/constraint in max 3 bullets.
-* Patch the calling agent's node to link back to the Architect node.
 
+* Use native tools (`write_note`, `patch_note`) to create/update `workflows/WF-[ID]-[slug].md`.
+* Strictly follow the **10-Line Rule** (`type`, `parent`, `Planka-Card`, max 3-bullet summary, and Artifact link).
+* Patch the calling agent's node to link back to your new Architect node.
 
+**Final Chat Message**:
+Always conclude your turn in the chat with:
 
-### Analyst Agent
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*
 
-* Reference architecture when investigating integration points.
-* Consult Architect for systemic pattern questions.
-* Link findings nodes to architecture nodes in Obsidian if proposing new dependencies.
+### Other Agents
 
-### Planner Agent
-
-* Read the active `WF-Architecture` notes and `system-architecture.md` before planning.
-* Ensure plans respect documented patterns.
-
-### Critic Agent
-
-* Reference `system-architecture.md` during plan review.
-* Verify architectural alignment.
-* Flag plans that violate documented decisions.
+* **Analyst**: Consult Architect for systemic pattern questions.
+* **Planner**: Read active `WF-Architecture` notes before planning.
+* **Critic**: Verify architectural alignment against `system-architecture.md`.
