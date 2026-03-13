@@ -3,7 +3,7 @@ description: DevOps specialist responsible for packaging, versioning, deployment
 name: 11-DevOps
 target: vscode
 argument-hint: Specify the version to release or deployment task to perform
-tools: [execute/getTerminalOutput, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, search, 'github/*', 'mcp-obsidian/*', 'memory/*', 'planka/*', todo]
+tools: [execute/getTerminalOutput, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, search, 'filesystem/*', 'github/*', 'obsidian/*', 'planka/*', todo]
 model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Request Implementation Fixes
@@ -43,7 +43,7 @@ Core Responsibilities:
 8. Execute release (tag, push, publish, update log).
 9. Document in `agent-output/deployment/` (checklist, confirmation, execution, validation).
 10. Maintain deployment history.
-11. Retrieve/store Memory context.
+11. Maintain continuity through Obsidian `WF-*` context.
 12. **Status tracking**: After successful git push, update all included plans' Status field to "Released" and add changelog entry. Keep agent-output docs' status current so other agents and users know document state at a glance.
 13. **Commit on plan approval**: After UAT approves a plan, commit all plan changes locally with detailed message referencing plan ID and target release. Do NOT push yet.
 14. **Track release readiness**: Monitor which plans are committed locally for the current target release. Coordinate with Roadmap agent to maintain accurate release→plan mappings.
@@ -186,62 +186,54 @@ Escalation:
 
 **Self-check on start**: Before starting work, scan `agent-output/deployment/` for docs with terminal Status outside `closed/`. Move them to `closed/` first.
 
+Use native `filesystem/*` operations for lifecycle file moves; never shell commands.
+
 **Note**: Deployment docs (`deployment/`) may stay open for rollback reference; close only after release is stable.
 
 ---
 
 # Planka Agile DevOps Sync
 
-**MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent. Do NOT use the old `bootstrap_workflow_board.py` script.
+**MANDATORY**: Load `planka-workflow` skill. You work within the Agile Epic framework established by the Roadmap agent, using native `planka/*` MCP tools only.
 
 **Your Synchronization Process**:
 When you perform stage 1 commits or stage 2 releases for an Epic, you MUST track your deployment tasks and update the final Epic status in Planka.
 
 1. **Locate the Epic Card**:
-   - Find the appropriate Epic card on the "Epics" board using `projects:list`, `boards:list`, and fetching the board's cards.
+   - Find the appropriate Epic card on the "Epics" board using `list_projects`, `get_board`, and targeted card reads when needed.
 2. **Record Deployment Tasks**:
-   - If it does not already exist, create a Task List on the Epic card named `Release & Deployment` (`tasklist:create`).
-   - Create individual Tasks (`task:create`) for pre-flight checks, local commits, version tagging, and final publication.
+   - If it does not already exist, create a Task List on the Epic card named `Release & Deployment` (`create_task_list`).
+   - Create individual Tasks (`create_task`) for pre-flight checks, local commits, version tagging, and final publication.
 3. **Report Status & Move Card (Critical)**:
-   - When Stage 1 (Local Commit) is done, add a comment (`comment:add`) noting the commit hash/status.
-   - When Stage 2 (Release Execution) is successfully completed, **you must move the Epic card** (`card:move`) to the `Delivered` (or `Closed`) list on the Epics board to signify that the business value is now in production.
+   - When Stage 1 (Local Commit) is done, add a comment (`add_comment`) noting the commit hash/status.
+   - When Stage 2 (Release Execution) is successfully completed, **you must move the Epic card** (`move_card`) to the `Delivered` (or `Closed`) list on the Epics board to signify that the business value is now in production.
    - Add a final comment with the release version and a link to the `agent-output/deployment/...` artifact.
 
 **Tool Usage**:
-Use the `planka_ops.py` script for all operations:
-```bash
-python .github/skills/planka-workflow/scripts/planka_ops.py run --op <operation> --arg key=value
-```
+Use native `planka/*` MCP tools for all operations.
 Examples:
-- Create task list: `--op tasklist:create --arg cardId=<id> --arg name="Release & Deployment"`
-- Create task: `--op task:create --arg taskListId=<id> --arg name="Verify version consistency"`
-- Add comment: `--op comment:add --arg cardId=<id> --arg text="Release v0.6.2 deployed successfully. See NNN-deployment.md"`
-- Move card to Delivered list: `--op card:move --arg cardId=<id> --arg listId=<delivered_list_id>`
+- Create task list: `create_task_list`
+- Create task: `create_task`
+- Add comment: `add_comment`
+- Move card to Delivered list: `move_card`
 
 # Obsidian Workflow Sync (Graph-Relational Baseline)
 
 **MANDATORY WHEN TRIGGERED**: Load `obsidian-workflow` skill.
-**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:mcp-obsidian/*` for vault operations.
+**Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:obsidian/*` for vault operations.
 
 **Your Graph Role (The Releaser):** You create "Deployment" nodes that act as the terminus for Epics/Releases.
 1. Create or update `workflows/WF-[ID]-[slug].md`.
 2. **Establish the Upward Edge**: Set frontmatter `type: Deployment`. Set `parent: "[[WF-Epic-ID]]"` linking it back to the overarching Epic roadmap node.
-3. **Patching Down**: Use `patch_note` to update the deployed `[[WF-Plan-ID]]` notes with `status: Released`.
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]]." (Pass your Deployment node ID to Retrospective).
+3. **Patching Down**: Use `patch_note` to append release summary and deployment artifact link to deployed `[[WF-Plan-ID]]` notes.
+4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 
-# Memory Contract
+# Obsidian Graph Memory
 
-**MANDATORY**: Load `memory-contract` skill at session start. Memory is core to your reasoning.
+**MANDATORY**: Use `obsidian-workflow` as the sole long-term memory mechanism.
 
-**Key behaviors:**
-- Retrieve at decision points (2–5 times per task)
-- Store at value boundaries (decisions, findings, constraints)
-- If tools fail, announce no-memory mode immediately
-
-**Quick reference:**
-- Retrieve: `#memory_read_graph {}`
-- Store: `#memory_create_relations { "relations": [...] }`
-
-Full contract details: `memory-contract` skill
+- Record release milestones in concise `WF-*` notes with deployment artifact links.
+- Retrieve context lazily from provided `[[WF-ID]]` and parent relation.
+- Keep release status and ownership in Planka/roadmap artifacts.

@@ -1,10 +1,3 @@
-Det er en rigtig god idé! For at undgå copy-paste fejl og sikre, at alt hænger 100% sammen, får du her den fulde og komplette version af `AGENTS-DEEP-DIVE.md`.
-
-Jeg har indarbejdet alle ændringerne: fjernelse af Python-scripts, fjernelse af terminalvalidering for Obsidian, rensning af Obsidian frontmatter (så kun Planka styrer status) og sikring af "Native MCP" over hele linjen.
-
-Du kan kopiere hele koden herunder og overskrive din nuværende `AGENTS-DEEP-DIVE.md` fil:
-
-```markdown
 # VS Code Agents - Deep Dive Documentation
 
 > This comprehensive guide covers advanced usage patterns, agent collaboration, Obsidian graph integration, Planka Agile tracking, and the design philosophy behind this multi-agent workflow.
@@ -33,10 +26,20 @@ Du kan kopiere hele koden herunder og overskrive din nuværende `AGENTS-DEEP-DIV
 
 A single general-purpose AI tries to do everything—plan, code, test, review—often poorly. By splitting responsibilities:
 
-1. **Each agent has clear constraints**: Planner can't write code, Implementer can't redesign
-2. **Quality gates are built in**: Critic reviews before implementation, Security audits before production
-3. **Handoffs create checkpoints**: Work is documented at each stage
-4. **Specialization improves quality**: A security-focused agent catches vulnerabilities a general agent misses
+1. **Each agent has clear constraints**: Planner can't write code, Implementer can't redesign.
+2. **Quality gates are built in**: Critic reviews before implementation, Security audits before production.
+3. **Handoffs create checkpoints**: Work is documented at each stage.
+4. **Specialization improves quality**: A security-focused agent catches vulnerabilities a general agent misses.
+
+### Native MCP First (Zero Terminal Overhead)
+
+To ensure high reliability, extreme token efficiency, and no annoying manual terminal approvals, this system is strictly designed around **Native MCP Tools**:
+* **`planka`**: Manages Agile execution (cards, tasks, status labels).
+* **`obsidian`**: Manages the relational memory graph via lightweight `WF-` nodes.
+* **`filesystem`**: Handles all file reading, writing, and directory creation (e.g., `read_text_file`, `move_file`).
+* **`analyzer`**: Replaces fragile bash scripts for linting and code complexity checks (RUFF, VULTURE).
+
+**Rule**: *Terminal commands and external Python/Bash scripts (like `sync_roadmap_epics.py` or `planka_ops.py`) are strictly forbidden for core workflow operations.*
 
 ### The Separation of Concerns
 
@@ -65,6 +68,7 @@ agent-output/
 ├── architecture/       # ADRs and design decisions
 ├── critiques/          # Plan reviews
 ├── security/           # Security assessments
+├── code-review/        # Post-implementation reviews
 ├── qa/                 # Test strategies
 ├── uat/                # Value validation
 ├── retrospectives/     # Lessons learned
@@ -157,7 +161,7 @@ agent-output/
 
 **Incident/bug variant (when evidence is incomplete)**:
 
-* If logs/telemetry are insufficient to prove a single root cause, Analyst switches to an uncertainty-aware format: label Verified vs Hypothesis, then pivot to system weaknesses + required telemetry. A reusable template exists at `vs-code-agents/reference/uncertainty-review-template.md`.
+* If logs/telemetry are insufficient to prove a single root cause, Analyst switches to an uncertainty-aware format. The Analyst MUST trigger a "Hard Pivot": Stop digging, pivot to system weaknesses, and define required telemetry (normal vs debug). This procedure is strictly governed by the embedded `analysis-methodology` skill.
 
 ### Pattern 4: The Security Gate
 
@@ -197,6 +201,7 @@ agent-output/
 
 ---
 
+
 ## The Document-Driven Workflow
 
 ### Document Naming Convention
@@ -229,7 +234,7 @@ Every document should have:
 
 ### Document Status Tracking
 
-All agents track and update document status fields. This provides at-a-glance visibility into document state:
+All agents track and update document status fields in the YAML frontmatter. This provides at-a-glance visibility into document state:
 
 | Status | Meaning |
 | --- | --- |
@@ -238,17 +243,18 @@ All agents track and update document status fields. This provides at-a-glance vi
 | `Pending Review` | Ready for next agent's review |
 | `Approved` | Passed review gate |
 | `Blocked` | Cannot proceed until issues resolved |
-| `Released` | Committed and pushed |
+| `Committed` | Changes committed to git (awaiting release) |
+| `Released` | Successfully pushed/published to production |
 
 Agents update status when:
 
 * **Implementer**: Marks plan "In Progress" when starting implementation
 * **Critic/QA/UAT**: Updates to "Approved" or "Blocked" after review
-* **DevOps**: Updates to "Released" after successful release
+* **DevOps**: Updates to "Committed" or "Released" during deployment phases
 
 ### Document Lifecycle and Closure
 
-Completed documents move to `closed/` subfolders to keep active work visible:
+Completed documents move to `closed/` subfolders to keep active work visible. **Agents MUST use the native `filesystem` MCP tools (`move_file`, `create_directory`) for this. Terminal commands like `mkdir` and `mv` are strictly forbidden.**
 
 ```text
 agent-output/
@@ -268,10 +274,10 @@ agent-output/
 | Concept | Description |
 | --- | --- |
 | **Unified numbering** | All documents in a work chain share the same ID (analysis 080 → plan 080 → qa 080) |
-| **`.next-id` file** | Global counter at `agent-output/.next-id`, incremented by originating agents |
+| **`.next-id` file** | Global counter at `agent-output/.next-id`, read and incremented via `filesystem` tools by originating agents |
 | **Terminal statuses** | `Committed`, `Released`, `Abandoned`, `Deferred`, `Superseded` trigger closure |
-| **Closure trigger** | DevOps moves docs to `closed/` after successful commit |
-| **Orphan detection** | Agents self-check on start; Roadmap runs periodic sweep |
+| **Closure trigger** | Handled natively by agents when terminal statuses are reached |
+| **Orphan detection** | Agents self-check on start using `filesystem/list_directory` |
 
 See `document-lifecycle` skill for full details.
 
@@ -295,17 +301,36 @@ Plans may contain `OPEN QUESTION` items that require resolution before implement
 > [!CAUTION]
 > Proceeding with unresolved open questions risks building on flawed assumptions. Always resolve or explicitly acknowledge before implementation.
 
-### Handoff Protocol
+### Handoff Protocol (The Triad Bridge)
 
-When handing off between agents, we rely on **Obsidian Workflow Notes** (`WF-[ID]`).
+When handing off between agents, we rely on a strict final chat message that bridges the Obsidian Memory Graph and the Planka Execution Board.
+
+Every agent MUST end their turn with this exact format:
 
 ```markdown
-## Handoff Ready
-Parent Node context for the next agent is [[WF-NNN-feature-type]]
+Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID]).
 
 ```
 
 ---
+
+### Model Test Runs and Failure Forensics
+
+Use a repeatable run protocol whenever you want to validate end-to-end model/agent behavior and preserve failures for fast debugging.
+
+- Run protocol: [.github/reference/model-test-run-protocol.md](.github/reference/model-test-run-protocol.md)
+- Failure template: [.github/reference/model-failure-report-template.md](.github/reference/model-failure-report-template.md)
+- Artifact location: `agent-output/test-runs/`
+
+Minimum expectation:
+
+1. Define acceptance criteria before execution.
+2. Capture expected vs actual behavior.
+3. Save prompts/responses/terminal evidence on failure.
+4. Re-run after fixes and mark verified.
+
+---
+
 
 ## Obsidian Graph Integration
 
@@ -318,9 +343,9 @@ Instead of relying on an external, opaque Memory MCP server that dumps massive J
 * **Token Efficiency**: Agents load tiny "summary nodes" instead of full document histories.
 * **Relational Graph**: YAML frontmatter defines exact relationships (Epic -> Plan -> Implementation).
 * **Auditability**: You can visually open your Obsidian vault and see exactly how decisions map to one another.
-* **Tools**: Relies purely on the `mcp-obsidian/*` toolset.
+* **Tools**: Relies purely on the native `obsidian` toolset.
 
-### The "Summary Node" Pattern
+### The "Summary Node" Pattern (The 10-Line Rule)
 
 To prevent context window bloat, agents do not dump massive contents into Obsidian. They create lightweight `WF-[ID]` (Workflow) nodes. These nodes act as **pointers and semantic edges**.
 
@@ -347,14 +372,14 @@ Planka-Card: "[cardId]"
 
 ```
 
-**Validation Constraint**: Agents MUST use native `mcp-obsidian/*` tools (like `write_note`, `read_note`, `patch_note`) for all vault operations. Terminal validation scripts are strictly forbidden to save token overhead.
+**Validation Constraint**: Agents MUST use native `obsidian` tools (like `write_note`, `read_note`, `patch_note`) for all vault operations. Terminal validation scripts (like `verify-obsidian-graph.mjs`) are strictly forbidden to save token overhead.
 
 ### Retrieval and Storage Patterns
 
 **Retrieval (Lazy Loading)**:
 When an agent starts a task or receives a handoff, it should NOT search the entire vault. It should:
 
-1. Read the provided `[[WF-[ID]]]` note using `#mcp-obsidian/read_note`.
+1. Read the provided `[[WF-[ID]]]` note using `read_note`.
 2. Understand the context from the bullet points and frontmatter.
 3. Follow the `parent:` link if broader strategic context is needed.
 4. Only read the full `agent-output/` artifact if deep implementation details are strictly necessary.
@@ -366,7 +391,7 @@ Agents update the graph when:
 * Making a significant decision.
 * Handing off to another agent.
 
-They use `#mcp-obsidian/patch_note` to update the summary bullet, or link to a new downstream node.
+They use `patch_note` to update the summary bullet, or link to a new downstream node.
 
 ### Memory Enables Agent Collaboration
 
@@ -389,7 +414,7 @@ While Obsidian acts as the relational memory graph and `agent-output/` serves as
 
 1. **Markdown (`agent-output/`)**: *What* we are building and *Why* (Full details).
 2. **Obsidian Graph (`workflows/`)**: *How* decisions relate to each other (Memory).
-3. **Planka Board**: *Who* is doing what, and *Where* it is in the pipeline. Execution is driven by **Native MCP Tools** directly interacting with Planka.
+3. **Planka Board**: *Who* is doing what, and *Where* it is in the pipeline. Execution is driven by **Native MCP Tools** exclusively.
 
 ### Agent Roles in Planka
 
@@ -400,10 +425,11 @@ Agents use the `planka-workflow` skill to keep the board synchronized using **10
 * **03-Analyst**: Creates an "Analysis & Spikes" Task List via MCP tools and leaves a comment with findings when research is done.
 * **04-Architect**: Creates an "Architecture & Design" Task List via MCP tools for design constraints and leaves an Approved/Rejected verdict comment.
 * **05-Security**: Tracks required controls and vulnerabilities via MCP tasks.
-* **06-Critic**: Manages visual labels (e.g., `Plan Approved` vs `Revision Required`) via `add_label_to_card` and appends their critique link to the card's comments.
+* **06-Critic & 08-Code Reviewer**: Manages visual labels (e.g., `Plan Approved`, `Code Review Passed`) via `add_label_to_card` and appends their review link.
+* **07-Implementer**: Marks tasks as completed (`update_task`) and uses the stopwatch (`update_card`) for time tracking.
 
 **Handoff Synergy (The Triad Bridge)**:
-When an agent finishes its work, it updates the Obsidian graph, updates the Planka board (checking off tasks and adding verdict comments via native MCP), and ensures its final comment points the next agent to the correct `[[WF-ID]]` node.
+When an agent finishes its work, its final chat message MUST point the next agent to the correct `[[WF-ID]]` node and Planka `[Card-ID]`.
 
 ---
 
@@ -628,24 +654,30 @@ Plans do NOT contain:
 
 ## Skills System
 
-Agents leverage **Claude Skills**—modular, reusable instruction sets that load on-demand via progressive disclosure. This keeps agent files lean while providing deep expertise when needed.
+Agents leverage **Skills**—modular, reusable instruction sets that load on-demand via progressive disclosure. This keeps agent files lean while providing deep expertise when needed.
+
+### Skill Design: Lean Core + Optional References
+
+To maintain token-efficiency, each skill keeps its core operational instructions in `SKILL.md`.
+
+Optional `references/` files are allowed for shared templates or extended examples when they improve reuse across agents.
 
 ### Available Skills
 
 | Skill | Purpose | Key Content |
 | --- | --- | --- |
-| `obsidian-workflow` | Graph Storage Contract | When/how to retrieve and store, anti-patterns, graph edges |
-| `planka-workflow` | Agile tracking & Native MCP | Workflow board conventions, task lists, and the Triad of Truth bridge |
-| `analysis-methodology` | Investigation techniques | Confidence levels, gap tracking, POC guidance |
-| `architecture-patterns` | ADR templates, patterns, anti-patterns | Layered architecture, repository pattern, STRIDE |
-| `code-review-checklist` | Pre/post-implementation review criteria | Value statement assessment, security checklist |
-| `code-review-standards` | Code review checklist, severity definitions, templates | Review focus areas, finding format, document template |
-| `cross-repo-contract` | Multi-repo API type safety | Contract discovery, sync workflow, breaking change coordination |
-| `document-lifecycle` | Unified numbering, closure, orphan detection | ID inheritance, terminal statuses, closed/ folders |
-| `engineering-standards` | SOLID, DRY, YAGNI, KISS | Detection patterns, refactoring guidance |
-| `release-procedures` | Two-stage release workflow, semver | Version consistency, platform constraints |
-| `security-patterns` | OWASP Top 10, language vulnerabilities | Python, JavaScript, Java, Go specific patterns |
-| `testing-patterns` | TDD workflow, test pyramid | Anti-patterns, coverage strategies, mocking |
+| `obsidian-workflow` | Graph Storage Contract | 10-Line Rule, native `obsidian` usage |
+| `planka-workflow` | Agile tracking | Task lists, Native `planka` tool usage, Triad Bridge |
+| `analysis-methodology` | Investigation techniques | Hard pivot triggers, confidence levels, gap tracking |
+| `architecture-patterns` | Design rules | ADR templates, embedded Mermaid diagram templates |
+| `code-review-checklist` | Technical checks | Native `search` regex and MCP `analyzer` triggers |
+| `code-review-standards` | Review formatting | Severity definitions, markdown templates for Critic/Reviewer |
+| `cross-repo-contract` | Multi-repo safety | API sync rules via `filesystem` MCP tools |
+| `document-lifecycle` | File management | Numbering, closure procedures via `filesystem` MCP |
+| `engineering-standards` | Software quality | SOLID, DRY, YAGNI, embedded Refactoring Catalog |
+| `release-procedures` | Deployment rules | Two-stage workflow, semver validation |
+| `security-patterns` | Vulnerability checks | OWASP Top 10, language-specific vulnerabilities |
+| `testing-patterns` | Testing rules | TDD workflows, test pyramid, anti-patterns |
 
 ### Skill Placement
 
@@ -661,18 +693,16 @@ Skills are placed in different directories depending on your VS Code version:
 
 ### Creating Skills
 
-Each skill is a directory with a `SKILL.md` file:
+Each skill is a simple directory with a single `SKILL.md` file:
 
 ```text
-vs-code-agents/skills/
+.github/skills/
 └── my-skill/
-    ├── SKILL.md           # Required: skill definition
-    ├── references/        # Optional: detailed docs
-    │   └── guide.md
-    └── scripts/           # Optional: automation
-        └── check.sh
+    └── SKILL.md           # Required: self-contained skill definition
 
 ```
+
+*(Note: Native MCP workflows remain mandatory for execution. Optional `references/` files are documentation assets only.)*
 
 **SKILL.md format:**
 
@@ -698,15 +728,15 @@ Detailed instructions, tables, code examples...
 
 ### Adding New Agents
 
-1. Create `your-agent.agent.md` in `vs-code-agents/agents/`
+1. Create `your-agent.agent.md` in `.github/agents/`
 2. Follow the frontmatter format:
 
 ```yaml
 ---
 description: One-line description
 name: YourAgent
-tools: ['edit/createFile', 'search', ...]
-model: Claude 4.5 Sonnet (or preferred)
+tools: ['filesystem/read_text_file', 'planka/create_task', 'search']
+model: Claude 3.5 Sonnet (or preferred)
 handoffs:
   - label: Handoff Name
     agent: TargetAgent
@@ -737,16 +767,18 @@ handoffs:
 **Generally don't modify**:
 
 * Core separation of concerns (e.g., making Planner write code)
+* Native MCP tool constraints (e.g., allowing terminal scripts)
 
 ### Creating Workspace-Specific Variants
 
 You can have project-specific agent variants:
 
-1. Copy agent from `vs-code-agents/agents/` to `.github/agents/`
+1. Copy an existing agent in `.github/agents/` and adapt it for your project
 2. Modify for project needs
 3. Project-specific agents override global agents with same name
 
 ---
+
 
 ## Troubleshooting & FAQ
 
@@ -769,25 +801,22 @@ You can have project-specific agent variants:
 * Use explicit handoff: "Hand off to [Agent] for [task]"
 * Reference the agent's constraints
 
-### Obsidian Graph Issues
+### Native MCP & Tooling Issues
 
-**Q: Obsidian integration not working**
+**Q: Obsidian graph is not updating or retrieves irrelevant data**
 
-* Is the `mcp-obsidian` server enabled for this workspace?
-* Do agents have access to the `mcp-obsidian/*` tools?
-* Check relevant MCP/server logs or VS Code output for MCP connection errors.
-
-**Q: Retrievals return irrelevant results**
-
+* Verify the `obsidian` server is running and accessible in your VS Code MCP tool settings.
 * Stop searching the full vault. Ensure the agent uses `read_note` on the specific `WF-[ID]` handoff node.
 
-### Planka Issues
+**Q: Planka cards aren't updating or syncing natively**
 
-**Q: Cards aren't updating or syncing natively**
-
-* Ensure the `mcp-planka` server is running (e.g., via Docker on port 25478) and connected in your VS Code MCP tool settings.
+* Ensure the `planka` server is running (e.g., via Docker on port 25478).
 * Verify agents have permission to call tools like `add_comment`, `create_task_list`, or `create_card`.
-* Remind the agent strictly to use native Planka MCP tools and NOT to attempt running bash or python terminal scripts.
+* **CRITICAL**: Remind the agent strictly to use native Planka MCP tools and NOT to attempt running old python scripts like `sync_roadmap_epics.py` or `planka_ops.py`.
+
+**Q: Bash scripts failing / Permission Denied**
+
+* If an agent tries to run `verify-obsidian-graph.mjs`, `check-complexity.sh`, or `run-linters.sh`, stop it. Remind the agent that **all terminal scripts are strictly deprecated** and it must use `filesystem`, `search`, or `analyzer` MCP tools instead.
 
 ### Workflow Issues
 
@@ -837,16 +866,7 @@ For hotfixes:
 
 ---
 
-## Contributing
 
-Improvements to agents are welcome! Key areas:
-
-* **Agent refinements**: Better constraints, clearer responsibilities
-* **New agents**: For specialized workflows
-* **Documentation**: Examples, tutorials, troubleshooting
-* **Obsidian/Planka patterns**: Better integration strategies
-
-See individual agent files for their specific improvement opportunities.
 
 ---
 
@@ -877,7 +897,7 @@ User selects Roadmap agent → "Define epic for X"
 ```
 
 > [!NOTE]
-> Custom agents are selected from the agents dropdown—not invoked with `@` syntax. The `@` symbol is for built-in participants like `@workspace`.
+> Custom agents are selected from the agents dropdown—not invoked with `@` syntax. The `@` symbol is strictly for built-in participants like `@workspace`.
 
 **When to use**:
 
@@ -886,8 +906,6 @@ User selects Roadmap agent → "Define epic for X"
 * Architectural decisions requiring judgment (Architect)
 * Pre-implementation reviews (Critic, Security)
 * Research with unclear scope (Analyst)
-
-**Tool approvals**: Generally safe to auto-approve read-only tools. Terminal commands should be reviewed case-by-case.
 
 ### Phase 2: Background Implementation (Execution)
 
@@ -915,31 +933,25 @@ Planner (plan approved) ──▶ Background: Implementer in worktree
 * Can run multiple background agents in parallel (e.g., QA + Security)
 * Results can be reviewed and selectively merged
 
-**Tool approvals**: Background agents should NOT have "allow all" terminal access. Review and approve commands explicitly, especially for:
-
-* Package installs
-* Test execution with side effects
-* Any file writes outside `agent-output/`
-
 ### Phase 3: Review & Merge (Validation)
 
-**Agents**: QA, UAT, Security, DevOps
+**Agents**: Code Reviewer, QA, UAT, DevOps
 
 **Pattern**: Return to local interactive mode to review background agent results, validate value delivery, and prepare release.
 
 ```text
-Background results ──▶ Local: @QA verify tests
-                       Local: @UAT validate value
-                       Local: @Security final gate
-                       Local: @DevOps release (user approval required)
+Background results ──▶ Local: Code Reviewer analyze complexity
+                       Local: QA verify tests
+                       Local: UAT validate value
+                       Local: DevOps release (user approval required)
 
 ```
 
 **When to use**:
 
-* Reviewing background implementation results
+* Reviewing background implementation results (Code Reviewer)
+* Verifying test coverage (QA)
 * Final value validation (UAT)
-* Pre-release security gate (Security)
 * Release execution (DevOps always local, always requires explicit user approval)
 
 ### Subagent Usage Patterns
@@ -953,7 +965,6 @@ Background results ──▶ Local: @QA verify tests
 | Analyst | Clarify technical questions mid-implementation |
 | Security | Targeted security review of specific code |
 | QA | Test implications for a specific change |
-| Retrospective | Synthesize lessons after a subtask completes |
 
 **Explicit-Only Agents** (should NOT be auto-invoked):
 
@@ -977,53 +988,22 @@ Implementer working on feature
 
 ### Security and Tool Approval Guidance
 
-#### Tool Approval Categories
+With the transition to **Native MCP First**, the need for terminal commands is drastically reduced. Follow these approval rules:
 
 **Always Manual Approval** (never auto-approve):
 
-* `execute/runInTerminal` with destructive commands (rm, git push --force, npm publish)
+* `execute/runInTerminal` with destructive commands (`rm`, `git push --force`, `npm publish`)
 * `execute/runTask` for deploy/publish tasks
 * Any command modifying infrastructure or external services
 * Package install commands in production contexts
 
-**Session Auto-Approval Eligible** (based on risk tolerance):
+**Session Auto-Approval Eligible** (highly recommended for workflow speed):
 
-* Read-only file operations
-* Linters and formatters
-* Test execution (unit tests with no external dependencies)
-* `git status`, `git diff`, `git log`
-
-**Treat as Untrusted** (validate before following):
-
-* `fetch` results from external URLs
-* MCP tool outputs
-* User-pasted content from external sources
-
-#### Per-Agent Tool Safety Rules
-
-**Implementer**:
-
-* Auto-approve: file reads, search, linters
-* Manual approve: terminal commands, package installs
-* Never auto-approve: git push, npm publish, deploy scripts
-
-**QA**:
-
-* Auto-approve: test execution (isolated), file reads
-* Manual approve: test execution with external dependencies
-* Never auto-approve: commands modifying test data in shared environments
-
-**DevOps**:
-
-* Manual approve: ALL terminal commands
-* MUST get explicit user confirmation before any release action
-* Never auto-approve: git tag, npm publish, vsce publish
-
-**Security**:
-
-* Auto-approve: file reads, grep, dependency scans
-* Manual approve: network requests, vulnerability scanner execution
-* Never auto-approve: any command that could exfiltrate data
+* `filesystem/*` (Reading, writing, and moving files/directories securely)
+* `analyzer/*` (Ruff and Vulture static code analysis)
+* `planka/*` (Task creation, card updates, leaving comments)
+* `obsidian/*` (Reading notes, patching workflow nodes)
+* Native VS Code `search` tool
 
 ### Orchestration Quick Reference
 
@@ -1047,19 +1027,20 @@ Implementer working on feature
 │  └─────────────┘   └────────────┘   └──────────────┘               │
 │                                                                     │
 │  PHASE 3: LOCAL INTERACTIVE (Validation)                            │
-│  ┌──────┐   ┌──────┐   ┌──────────┐   ┌────────┐                   │
-│  │  QA  │──▶│ UAT  │──▶│ Security │──▶│ DevOps │                   │
-│  │verify│   │value │   │  gate    │   │release │                   │
-│  └──────┘   └──────┘   └──────────┘   └────────┘                   │
-│                                         ▲                           │
-│                                         │                           │
-│                              [USER APPROVAL REQUIRED]               │
+│  ┌──────────┐   ┌──────┐   ┌──────┐   ┌────────┐                   │
+│  │ Code Rev │──▶│  QA  │──▶│ UAT  │──▶│ DevOps │                   │
+│  │ (verify) │   │(test)│   │(val.)│   │(relea.)│                   │
+│  └──────────┘   └──────┘   └──────┘   └────────┘                   │
+│                                           ▲                         │
+│                                           │                         │
+│                                [USER APPROVAL REQUIRED]             │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 
 ```
 
 ---
+
 
 ## License
 

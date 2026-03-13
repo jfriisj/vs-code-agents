@@ -83,13 +83,13 @@ Create a plan for adding user authentication
 > [!NOTE]
 > Unlike built-in participants (e.g., `@workspace`), custom agents are **not** invoked with the `@` symbol. You must select them from the dropdown or use the Command Palette.
 
-### 4. Memory Requirement
+### 4. Obsidian Workflow Context
 
-These agents are designed to benefit from a Memory server for cross-session continuity.
+These agents are designed to benefit from Obsidian-backed workflow context for cross-session continuity.
 
-With Memory enabled, agents can store and retrieve durable context (decisions, constraints, and prior work) across sessions. Without Memory, the agents fall back to stateless behavior and lose some of their intended value.
+With Obsidian enabled, agents can store and retrieve durable WF-node context (decisions, constraints, and handoff links) across sessions. Without Obsidian, agents still work, but handoffs become more manual.
 
-Enable a Memory server in your environment and ensure the agent has access to the `memory_*` tools.
+Enable the `obsidian` MCP server in your environment and ensure agents have access to the `obsidian_*` tools.
 
 ### 5. (Optional) Use with GitHub Copilot CLI
 
@@ -108,8 +108,10 @@ copilot --agent 02-planner --prompt "Create a plan for adding user authenticatio
 |----------|---------|
 | [USING-AGENTS.md](USING-AGENTS.md) | Quick start guide (5 min read) |
 | [AGENTS-DEEP-DIVE.md](AGENTS-DEEP-DIVE.md) | Comprehensive documentation |
+| [reference/model-test-run-protocol.md](reference/model-test-run-protocol.md) | Standard protocol for model test runs |
+| [reference/model-failure-report-template.md](reference/model-failure-report-template.md) | Structured failure report template for reproducible debugging |
 | [CHANGELOG.md](CHANGELOG.md) | Notable repository changes |
-| [memory-contract-example.md](vs-code-agents/reference/memory-contract-example.md) | Memory usage patterns |
+| [obsidian-workflow skill](skills/obsidian-workflow/SKILL.md) | WF-node memory workflow patterns |
 
 ---
 
@@ -144,19 +146,19 @@ Agents produce Markdown documents in `agent-output/`. Every decision is recorded
 ### 🔒 Quality Gates
 Critic reviews plans. Security audits code. QA verifies tests. Nothing ships without checks.
 
-### 🧠 Robust Memory
-With Memory enabled, agents can remember decisions across sessions.
+### 🧠 Durable Context
+With Obsidian WF nodes enabled, agents can carry decisions and handoff context across sessions.
 
 ### 🔄 Handoffs
 Agents hand off to each other with context. No lost information between phases.
 
 ---
 
-## Memory Integration
+## Obsidian Workflow Integration
 
-Memory is a Model Context Protocol (MCP) server that provides a durable memory layer (often implemented as a knowledge graph) for agents and tools. It solves a specific problem: assistants forget what you've discussed. Across sessions, developers repeatedly re-explain context, architecture decisions, and constraints.
+Obsidian (via MCP) provides a durable relational context layer for agents and tools. It solves a specific problem: assistants lose cross-session context unless decisions and handoffs are stored in a structured, retrievable way.
 
-With Memory enabled, these agents can persist and retrieve structured context across sessions via the `memory_*` tools.
+With Obsidian enabled, these agents can persist and retrieve WF-node context across sessions via the `obsidian_*` tools.
 
 ### MCP Tool Prefixes (`.vscode/mcp.json`)
 
@@ -166,12 +168,11 @@ This repo ships an example MCP configuration at `.vscode/mcp.json` with these se
 
 | MCP server name | Tool prefix |
 |---|---|
-| `memory` | `memory_*` |
 | `filesystem` | `filesystem_*` |
 | `github` | `github_*` |
 | `analyzer` | `analyzer_*` |
 | `planka` | `planka_*` |
-| `mcp-obsidian` | `mcp-obsidian_*` |
+| `obsidian` | `obsidian_*` |
 
 If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes accordingly (e.g. `fs_*`). Ensure your `.agent.md` files allow the tool namespaces they need.
 
@@ -205,7 +206,6 @@ If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes acc
     │   └── 13-pi.agent.md
     ├── reference/
     │   ├── agents.md
-    │   ├── memory-contract-example.md
     │   ├── security-language-vuln-reference.md
     │   └── uncertainty-review-template.md
     └── skills/
@@ -216,7 +216,6 @@ If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes acc
         ├── cross-repo-contract/
         ├── document-lifecycle/
         ├── engineering-standards/
-        ├── memory-contract/
         ├── planka-workflow/
         ├── release-procedures/
         ├── security-patterns/
@@ -246,7 +245,7 @@ Most developers don't know how to conduct thorough security reviews. They miss:
 
 The Security Agent systematically checks all of these, producing actionable findings with severity ratings and remediation guidance.You can then hand this off to the Planner agent and the Implementer to address. 
 
-See [05-security.agent.md](vs-code-agents/agents/05-security.agent.md) for the full specification.
+See [05-security.agent.md](agents/05-security.agent.md) for the full specification.
 
 ---
 
@@ -264,31 +263,31 @@ Edit `.agent.md` files to adjust:
 
 1. Create `your-agent.agent.md` following the existing format
 2. Define purpose, responsibilities, constraints
-3. Include the Memory Contract section
+3. Include the Obsidian workflow handoff section
 4. Add to `.github/agents/` in your workspace
 
-If you are contributing to this repository directly, place agent specs under `vs-code-agents/agents/`.
+If you are contributing to this repository directly, place agent specs under `.github/agents/`.
 
 ---
 
 ## Skills Catalog
 
-All reusable skills live under `vs-code-agents/skills/`. Every skill includes a `SKILL.md`, and some skills also include optional `references/` and `scripts/` resources.
+All reusable skills live under `.github/skills/`. Every skill includes a `SKILL.md`, and some skills include optional `references/` resources.
 
 | Skill | Focus | Included resources |
 |-------|-------|--------------------|
-| [analysis-methodology](vs-code-agents/skills/analysis-methodology/SKILL.md) | Systematic investigation workflow (confidence levels, gap tracking, handoff protocol) | `SKILL.md` |
-| [architecture-patterns](vs-code-agents/skills/architecture-patterns/SKILL.md) | Architecture patterns, ADR templates, and anti-pattern detection | `SKILL.md`, `references/diagram-templates.md` |
-| [code-review-checklist](vs-code-agents/skills/code-review-checklist/SKILL.md) | Pre/post-implementation review criteria with severity-oriented checks | `SKILL.md`, `scripts/check-complexity.sh`, `scripts/pre-review-check.sh`, `scripts/run-linters.sh` |
-| [code-review-standards](vs-code-agents/skills/code-review-standards/SKILL.md) | Review checklist, severity definitions, and review document templates | `SKILL.md` |
-| [cross-repo-contract](vs-code-agents/skills/cross-repo-contract/SKILL.md) | Multi-repo API contract discovery, type safety, and coordinated contract changes | `SKILL.md` |
-| [document-lifecycle](vs-code-agents/skills/document-lifecycle/SKILL.md) | Unified numbering, terminal statuses, close procedures, and orphan detection | `SKILL.md`, `references/close-procedure.md` |
-| [engineering-standards](vs-code-agents/skills/engineering-standards/SKILL.md) | SOLID/DRY/YAGNI/KISS guidance with detection and refactoring patterns | `SKILL.md`, `references/refactoring-catalog.md` |
-| [memory-contract](vs-code-agents/skills/memory-contract/SKILL.md) | Unified memory retrieval/storage contract for durable cross-session context | `SKILL.md` |
-| [planka-workflow](vs-code-agents/skills/planka-workflow/SKILL.md) | Status-only Planka workflow synchronization contract across markdown, Planka, and memory | `SKILL.md`, `references/*`, `scripts/*.py` |
-| [release-procedures](vs-code-agents/skills/release-procedures/SKILL.md) | Versioning, release verification, and deployment process checks | `SKILL.md`, `references/release-templates.md` |
-| [security-patterns](vs-code-agents/skills/security-patterns/SKILL.md) | OWASP + language-specific vulnerability patterns and remediation guidance | `SKILL.md`, `references/*`, `scripts/check-dependencies.sh`, `scripts/check-secrets.sh`, `scripts/security-scan.sh` |
-| [testing-patterns](vs-code-agents/skills/testing-patterns/SKILL.md) | TDD workflow, test pyramid, coverage strategy, mocking, and anti-patterns | `SKILL.md`, `references/*`, `scripts/check-coverage.sh`, `scripts/run-tests.sh`, `scripts/validate-tests.sh` |
+| [analysis-methodology](.github/skills/analysis-methodology/SKILL.md) | Systematic investigation workflow (confidence levels, gap tracking, handoff protocol) | `SKILL.md` |
+| [architecture-patterns](.github/skills/architecture-patterns/SKILL.md) | Architecture patterns, ADR templates, and anti-pattern detection | `SKILL.md`, `references/*` |
+| [code-review-checklist](.github/skills/code-review-checklist/SKILL.md) | Pre/post-implementation review criteria with severity-oriented checks | `SKILL.md` |
+| [code-review-standards](.github/skills/code-review-standards/SKILL.md) | Review checklist, severity definitions, and review document templates | `SKILL.md` |
+| [cross-repo-contract](.github/skills/cross-repo-contract/SKILL.md) | Multi-repo API contract discovery, type safety, and coordinated contract changes | `SKILL.md` |
+| [document-lifecycle](.github/skills/document-lifecycle/SKILL.md) | Unified numbering, terminal statuses, close procedures, and orphan detection | `SKILL.md` |
+| [engineering-standards](.github/skills/engineering-standards/SKILL.md) | SOLID/DRY/YAGNI/KISS guidance with detection and refactoring patterns | `SKILL.md` |
+| [obsidian-workflow](.github/skills/obsidian-workflow/SKILL.md) | Relational memory graph workflow with strict WF-node conventions | `SKILL.md`, `references/*` |
+| [planka-workflow](.github/skills/planka-workflow/SKILL.md) | Agile workflow synchronization across markdown artifacts, Obsidian context, and Planka execution | `SKILL.md`, `references/*` |
+| [release-procedures](.github/skills/release-procedures/SKILL.md) | Versioning, release verification, and deployment process checks | `SKILL.md`, `references/*` |
+| [security-patterns](.github/skills/security-patterns/SKILL.md) | OWASP + language-specific vulnerability patterns and remediation guidance | `SKILL.md`, `references/*` |
+| [testing-patterns](.github/skills/testing-patterns/SKILL.md) | TDD workflow, test pyramid, coverage strategy, mocking, and anti-patterns | `SKILL.md`, `references/*` |
 
 ---
 
@@ -303,7 +302,7 @@ Agents now explicitly avoid forced root-cause narratives when evidence is missin
 - **Analyst**: Uses an objective hard pivot trigger (timebox/evidence gate) to switch from RCA attempts to system hardening + telemetry requirements.
 - **Architect**: Treats insufficient observability as an architectural risk; defines normal vs debug logging guidance and a minimum viable incident telemetry baseline.
 - **QA**: Validates diagnosability improvements; prefers asserting structured telemetry fields/events over brittle log string matching.
-- **Template**: `vs-code-agents/reference/uncertainty-review-template.md` provides a repeatable output format.
+- **Template**: `.github/reference/uncertainty-review-template.md` provides a repeatable output format.
 
 ### Skills System (2025-12-19)
 
@@ -326,7 +325,7 @@ For the current complete list of skills and included references/scripts, see [Sk
 - **Two-stage release**: DevOps commits locally first; pushes only on explicit release approval
 - **Document status tracking**: All agents update Status fields in planning docs ("Draft", "In Progress", "Released")
 - **Open Question Gate**: Implementer halts if plans have unresolved questions; requires explicit user acknowledgment to proceed
-- **Memory as skill**: Memory contract moved from inline in each agent to a loadable `memory-contract` skill
+- **Obsidian workflow memory**: Durable context is now maintained through `obsidian-workflow` WF-node conventions
 - **Slimmed Security agent**: Reduced by 46% using skill references instead of inline content
 
 ### Cross-Repository Contract Skill (2025-12-26)
@@ -363,7 +362,7 @@ Contributions welcome! Areas of interest:
 
 - **Agent refinements**: Better constraints, clearer responsibilities
 - **New agents**: For specialized workflows (e.g., Documentation, Performance)
-- **Memory patterns**: Better retrieval/storage strategies
+- **Obsidian workflow patterns**: Better retrieval/storage and handoff strategies
 - **Documentation**: Examples, tutorials, troubleshooting
 
 This repository also runs an automatic **Markdown lint** check in GitHub Actions on pushes and pull requests that touch `.md` files. The workflow uses `markdownlint-cli2` with a shared configuration, and helps catch issues like missing fenced code block languages (MD040) early in review. This lint workflow was proposed based on feedback and review from @rjmurillo.
@@ -373,7 +372,7 @@ This repository also runs an automatic **Markdown lint** check in GitHub Actions
 ## Requirements
 
 - VS Code with GitHub Copilot
-- For memory: A Memory server enabled in your environment
+- For durable context: An Obsidian MCP server enabled in your environment
 
 ---
 

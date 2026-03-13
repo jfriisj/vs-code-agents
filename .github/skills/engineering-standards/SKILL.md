@@ -1,176 +1,191 @@
 ---
 name: engineering-standards
-description: Core software engineering principles (SOLID, DRY, YAGNI, KISS) integrated with the Triad of Truth. Load when reviewing code quality, planning architecture, or identifying technical debt.
+description: Core software engineering principles (SOLID, DRY, YAGNI, KISS) and refactoring catalog. Integrates strictly with Obsidian/Planka via Native MCP for tracking technical debt.
 license: MIT
 metadata:
   author: groupzer0
-  version: "2.0"
+  version: "3.0"
 ---
 
-# Engineering Standards
+# Engineering Standards & Refactoring
 
-Foundational principles for high-quality software. Use this skill when reviewing code, planning architecture, or evaluating technical debt.
+Foundational principles for high-quality software. Use this skill when reviewing code, planning architecture, evaluating technical debt, or executing refactoring.
 
-## Triad of Truth Integration
-When these standards are applied, findings must be anchored in the system:
-1. **Markdown (`agent-output/`)**: Save full technical analyses or refactoring plans as artifacts.
-2. **Obsidian Graph (`workflows/`)**: Major architectural decisions must have a `WF-[ID]` node (strictly follow the **10-Line Rule**: only YAML frontmatter, a `## Summary` section, and a `## Artifacts` section).
-3. **Planka Board**: Create refactoring tasks via **Native MCP tools** as checklist items on the relevant Epic card.
+## 1. The Triad of Truth (Technical Debt & Standards)
+
+When these standards are applied or violated, findings must be anchored using **Native MCP Tools**:
+1. **Markdown (`agent-output/`)**: Save full technical analyses, ADRs, or code-review findings.
+2. **Obsidian Graph (`workflows/`)**: Major architectural refactoring decisions must be logged in a `WF-[ID]` node following the strict **10-Line Rule**.
+3. **Planka Board**: Use `create_task` to add specific refactoring/tech-debt items to the Epic card, or `add_comment` to flag code smells.
 
 ---
 
-## SOLID Principles
+## 2. SOLID Principles
 
 ### Single Responsibility (SRP)
 A class/module should have one reason to change.
-
-**Detection patterns:**
-- Class with 5+ public methods doing unrelated things.
-- Method longer than 50 lines.
-- Class name contains "And" or "Manager" with mixed concerns.
-- File imports from 10+ unrelated modules.
-
-**Refactoring:**
-- Extract class for each responsibility.
-- Split into focused modules.
-- Use composition over inheritance.
+* **Detection:** Class with 5+ public methods doing unrelated things. Method > 50 lines. "Manager" classes.
+* **Refactoring:** Extract class for each responsibility.
 
 ### Open/Closed (OCP)
 Open for extension, closed for modification.
-
-**Detection patterns:**
-- Switch/case on type with frequent additions.
-- if/else chains checking instance types.
-- Modifying existing code to add new features.
-
-**Refactoring:**
-- Strategy pattern for varying behaviors.
-- Plugin architecture for extensions.
-- Dependency injection for configurability.
+* **Detection:** `switch/case` or `if/else` chains checking instance types.
+* **Refactoring:** Strategy pattern, Polymorphism.
 
 ### Liskov Substitution (LSP)
 Subtypes must be substitutable for their base types.
-
-**Detection patterns:**
-- Override that throws "not implemented".
-- Subclass that ignores parent behavior.
-- Type checks before calling inherited methods.
-
-**Refactoring:**
-- Favor composition over inheritance.
-- Extract interface for true polymorphism.
-- Use abstract base with required overrides.
+* **Detection:** Override that throws "not implemented". Type checks before calling inherited methods.
+* **Refactoring:** Extract interface, use composition.
 
 ### Interface Segregation (ISP)
 Clients shouldn't depend on methods they don't use.
-
-**Detection patterns:**
-- Interface with 10+ methods.
-- Implementing classes that stub methods as no-ops.
-- "Fat" interfaces with unrelated method groups.
-
-**Refactoring:**
-- Split into role-specific interfaces.
-- Use mixins/traits for optional behaviors.
-- Compose multiple focused interfaces.
+* **Detection:** Interface with 10+ methods. Stubbed no-op methods.
+* **Refactoring:** Split into role-specific interfaces.
 
 ### Dependency Inversion (DIP)
 Depend on abstractions, not concretions.
-
-**Detection patterns:**
-- Direct instantiation of dependencies (`new ConcreteClass()`).
-- Hard-coded database/API connections.
-- Test files creating production instances.
-
-**Refactoring:**
-- Constructor injection.
-- Factory pattern for complex creation.
-- Interface-based dependencies.
+* **Detection:** Direct instantiation of dependencies (`new ConcreteClass()`). Hard-coded DB/API connections.
+* **Refactoring:** Constructor injection.
 
 ---
 
-## DRY (Don't Repeat Yourself)
+## 3. DRY, YAGNI, & KISS
 
-**Detection patterns:**
-- Copy-pasted code blocks (3+ occurrences).
-- Similar functions with minor variations.
-- Duplicated validation logic.
-- Repeated configuration values.
+**DRY (Don't Repeat Yourself)**
+* **Detection:** Copy-pasted blocks (3+ times). Similar functions with minor variations.
+* **Refactoring:** Extract shared function, parameterize variations. *(Exception: Test code clarity).*
 
-**Refactoring:**
-- Extract shared function/class.
-- Parameterize variations.
-- Create configuration constants.
-- Use template method pattern.
+**YAGNI (You Aren't Gonna Need It)**
+* **Detection:** Unused parameters "for future use". Speculative generalization.
+* **Action:** Build for current requirements. Delete dead code immediately.
 
-**Exceptions (acceptable duplication):**
-- Test code clarity (explicit over DRY).
-- Cross-boundary isolation (microservices).
-- Performance-critical paths.
+**KISS (Keep It Simple, Stupid)**
+* **Detection:** Cyclomatic complexity > 10. Nested callbacks > 4 deep. Framework overkill.
+* **Refactoring:** Flatten control flow. Use early returns.
 
 ---
 
-## YAGNI (You Aren't Gonna Need It)
-
-**Detection patterns:**
-- Unused parameters "for future use".
-- Abstract classes with single implementation.
-- Configuration options never used.
-- Speculative generalization.
-
-**Guidance:**
-- Build for current requirements.
-- Refactor when needs emerge.
-- Delete dead code immediately.
-- Prefer simple over flexible.
-
----
-
-## KISS (Keep It Simple, Stupid)
-
-**Detection patterns:**
-- Cyclomatic complexity > 10.
-- Nested callbacks/promises 4+ deep.
-- Generic solutions for specific problems.
-- Framework overkill for simple tasks.
-
-**Refactoring:**
-- Flatten control flow.
-- Extract named functions.
-- Use early returns.
-- Choose boring technology.
-
----
-
-## Code Smells Quick Reference
+## 4. Code Smells Quick Reference
 
 | Smell | Symptom | Fix |
 |-------|---------|-----|
-| Long Method | >50 lines, multiple concerns | Extract method |
-| Large Class | >500 lines, many responsibilities | Extract class |
-| Feature Envy | Method uses other class more than own | Move method |
-| Data Clumps | Same fields appear together | Extract object |
-| Primitive Obsession | Strings/ints for domain concepts | Value objects |
-| Switch Statements | Type-based switching | Polymorphism |
-| Parallel Inheritance | Every subclass needs partner subclass | Merge hierarchies |
-| Lazy Class | Class doing too little | Inline class |
-| Speculative Generality | Unused abstraction | Remove it |
-| Temporary Field | Field only set sometimes | Extract class |
+| **Long Method** | >50 lines, multiple concerns | Extract method |
+| **Large Class** | >500 lines, many responsibilities | Extract class |
+| **Feature Envy** | Method uses other class more than own | Move method |
+| **Data Clumps** | Same fields appear together often | Extract object |
+| **Primitive Obsession**| Strings/ints for domain concepts | Value objects |
+| **Switch Statements** | Type-based switching | Polymorphism |
 
 ---
 
-## When to Apply
+## 5. Refactoring Catalog (Implementation Guide)
 
-**Always apply:**
-- SRP, DRY for production code.
-- KISS for all code.
+When executing refactoring, follow these before/after patterns.
 
-**Apply with judgment:**
-- OCP when extension points are clear.
-- ISP when interfaces grow beyond 5 methods.
-- DIP at module boundaries.
+### Extract Method
+**When:** A code block can be grouped with a descriptive name to improve readability or SRP.
+```python
+# Before
+def process():
+    if not x: raise Error
+    if not y: raise Error
+    result = complex_operation()
 
-**Defer:**
-- YAGNI violations until pattern emerges 3+ times.
+# After
+def process():
+    validate_input(x, y)
+    result = complex_operation()
 
-See [references/refactoring-catalog.md](references/refactoring-catalog.md) for detailed refactoring techniques.
+def validate_input(x, y):
+    if not x: raise Error
+    if not y: raise Error
+
+```
+
+### Extract Class
+
+**When:** A class has multiple responsibilities (violating SRP).
+
+```python
+# Before
+class Order:
+    def calculate_total(self): ...
+    def format_invoice(self): ...
+    def send_email(self): ...
+
+# After
+class Order:
+    def calculate_total(self): ...
+
+class InvoiceFormatter:
+    def format(self, order): ...
+
+class OrderNotifier:
+    def send_email(self, order): ...
+
+```
+
+### Replace Conditional with Polymorphism
+
+**When:** A switch/case or if/else chain checks types to determine behavior (violating OCP).
+
+```python
+# Before
+def calculate_pay(employee):
+    if employee.type == "hourly":
+        return hours * rate
+    elif employee.type == "salary":
+        return annual / 12
+
+# After
+class HourlyEmployee:
+    def calculate_pay(self):
+        return self.hours * self.rate
+
+class SalariedEmployee:
+    def calculate_pay(self):
+        return self.annual / 12
+
+```
+
+### Introduce Parameter Object
+
+**When:** The same group of parameters consistently appear together.
+
+```python
+# Before
+def search(start_date, end_date, min_price, max_price): ...
+
+# After
+@dataclass
+class SearchCriteria:
+    start_date: date
+    end_date: date
+    min_price: float
+    max_price: float
+
+def search(criteria: SearchCriteria): ...
+
+```
+
+### Guard Clause
+
+**When:** Deeply nested conditionals obscure the primary "happy path" (violating KISS).
+
+```python
+# Before
+def process(x):
+    if x:
+        if x.valid:
+            if x.ready:
+                return do_work(x)
+    return None
+
+# After
+def process(x):
+    if not x: return None
+    if not x.valid: return None
+    if not x.ready: return None
+    return do_work(x)
+
+```

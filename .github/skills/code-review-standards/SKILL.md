@@ -120,7 +120,7 @@ Before concluding your turn and handing off to the Implementer or QA, you MUST a
 
 
 3. **The Memory (Obsidian Graph)**:
-* Use `mcp-obsidian/write_note` to create your `WF-[ID]` node.
+* Use `obsidian/write_note` to create your `WF-[ID]` node.
 * Strictly follow the **10-Line Rule** (`type: CodeReview`, `parent: "[[WF-Target-ID]]"`, and a max 3-bullet summary).
 * Patch the calling agent's node to link to yours.
 

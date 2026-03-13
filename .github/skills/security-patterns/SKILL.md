@@ -1,21 +1,75 @@
 ---
 name: security-patterns
-description: Security vulnerability detection patterns including OWASP Top 10, language-specific vulnerabilities, and remediation guidance. Load when reviewing code for security issues, conducting audits, or implementing authentication/authorization.
+description: Comprehensive security methodology, OWASP Top 10, and templates. Uses Progressive Disclosure to lazy-load language-specific vulnerabilities via Native MCP.
 license: MIT
 metadata:
   author: groupzer0
-  version: "1.0"
+  version: "2.2"
 ---
 
-# Security Patterns
+# Security Patterns & Methodology
 
-Systematic approach to identifying and remediating security vulnerabilities. Use this skill when:
-- Reviewing code for security vulnerabilities
-- Conducting security audits
-- Implementing authentication, authorization, or data handling
-- Assessing third-party dependencies
+Systematic approach to identifying and remediating security vulnerabilities. Use this skill when conducting security audits, reviewing code, or creating Threat Models.
 
-## OWASP Top 10 (2021) Quick Detection
+## 1. The Triad of Truth (Security)
+
+Every security audit or threat model must be synchronized across three systems:
+1. **Markdown (`agent-output/security/`)**: The detailed assessment using the template below.
+2. **Obsidian Graph (`workflows/`)**: The `WF-` node linking your security verdict to the Plan or Implementation.
+3. **Planka Board**: The "Security & Audit" Task List, visual labels (e.g., `Security Blocked`), and your verdict comment.
+
+---
+
+## 2. Tooling Contract (MCP First, Zero Terminal)
+
+**CRITICAL RULE**: Do NOT use terminal bash scripts. You MUST use structured MCP tools:
+
+### Secrets Scanning (Native Search)
+Use the native `search` tool (with regex enabled) to scan the workspace for hardcoded secrets:
+* **AWS Keys**: `AKIA[0-9A-Z]{16}`
+* **Passwords**: `(?i)password\s*[=:]\s*["'][^"']{8,}["']`
+* **Private Keys**: `-----BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY-----`
+* **GitHub Tokens**: `gh[pousr]_[A-Za-z0-9_]{36,}`
+* **JWT Tokens**: `eyJ[a-zA-Z0-9_-]*\.eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*`
+
+### Dependency Checks
+Use `filesystem/read_text_file` to read `package.json`, `requirements.txt`, or `go.mod` to identify outdated dependencies.
+
+---
+
+## 3. Language-Specific Deep Dives (Progressive Disclosure)
+
+To save context tokens, this skill uses lazy loading for deep language specifics. Once you identify the primary language of the repository, you MUST use `filesystem/read_text_file` to load the corresponding reference:
+
+* **If TypeScript/JavaScript**: Read `.github/skills/security-patterns/references/javascript-vulnerabilities.md`
+* **If Python**: Read `.github/skills/security-patterns/references/python-vulnerabilities.md`
+* **If Go**: Read `.github/skills/security-patterns/references/go-vulnerabilities.md`
+* **If Java/Kotlin**: Read `.github/skills/security-patterns/references/java-vulnerabilities.md`
+
+---
+
+## 4. Security Review Methodology (STRIDE)
+
+| Threat | Questions to Ask | Controls |
+|--------|------------------|----------|
+| **S**poofing | Can an attacker impersonate users/systems? | Auth, MFA, certificates |
+| **T**ampering | Can data be modified in transit/rest? | Integrity checks, MACs |
+| **R**epudiation | Can actions be denied? | Tamper-proof audit logs |
+| **I**nfo Disclosure | Where could sensitive data leak? | Encryption, access control |
+| **D**enial of Service | What resources can be exhausted? | Rate limits, redundancy |
+| **E**levation | Can users gain unauthorized access? | RBAC, input validation |
+
+### Severity Classification (CVSS-Aligned)
+| Severity | CVSS Score | Definition |
+|----------|------------|------------|
+| **CRITICAL** | 9.0 - 10.0 | Active exploitation possible, data breach imminent. **REJECT** |
+| **HIGH** | 7.0 - 8.9 | Significant vulnerability, exploitation likely. **REJECT** |
+| **MEDIUM** | 4.0 - 6.9 | Moderate risk, requires specific conditions. |
+| **LOW** | 0.1 - 3.9 | Minor issue, minimal impact. |
+
+---
+
+## 5. OWASP Top 10 (2021) Quick Detection
 
 ### A01: Broken Access Control
 **Detection patterns:**
@@ -157,36 +211,63 @@ Systematic approach to identifying and remediating security vulnerabilities. Use
 
 ---
 
-## Language-Specific Patterns
+## 6. Security Document Template
 
-See detailed references:
-- [references/javascript-vulnerabilities.md](references/javascript-vulnerabilities.md)
-- [references/python-vulnerabilities.md](references/python-vulnerabilities.md)
-- [references/java-vulnerabilities.md](references/java-vulnerabilities.md)
-- [references/go-vulnerabilities.md](references/go-vulnerabilities.md)
+Save your assessment to `agent-output/security/NNN-[topic]-security-audit.md`:
+
+```markdown
+---
+ID: [NNN]
+Type: SecurityAudit
+Status: [Active / Closed]
+Epic: "[[WF-Epic-ID]]"
+Planka-Card: "[cardId]"
+---
+
+# Security Assessment: [Feature/Component Name]
+
+## Executive Summary
+**Overall Risk Rating**: CRITICAL | HIGH | MEDIUM | LOW
+**Verdict**: APPROVED | APPROVED_WITH_CONTROLS | REJECTED
+
+## Threat Model (STRIDE)
+[Brief analysis results]
+
+## Findings
+
+### [SEVERITY] ID: [Category] - [Title]
+- **Location**: `file.ts:123`
+- **Issue**: [What's wrong]
+- **Risk**: [Impact if exploited]
+- **Fix**: [How to remediate]
+- **CVSS**: [Score]
+
+## Compliance & Controls
+[Required controls that must be implemented for approval]
+
+```
 
 ---
 
-## Security Headers Checklist
+## 7. Agent Responsibilities & The Triad Handoff
 
-| Header | Value | Purpose |
-|--------|-------|---------|
-| `Content-Security-Policy` | `default-src 'self'` | Prevent XSS |
-| `X-Content-Type-Options` | `nosniff` | Prevent MIME sniffing |
-| `X-Frame-Options` | `DENY` | Prevent clickjacking |
-| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | Force HTTPS |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | Limit referrer leakage |
-| `Permissions-Policy` | `geolocation=(), camera=()` | Disable unused APIs |
+Before concluding your turn, you MUST align the Triad using **Native MCP Tools**:
 
----
+1. **The Artifact (`agent-output/`)**: Save the filled document template using `filesystem/write_file`.
+2. **The Execution (Planka Board)**:
+* Use `create_task` for specific security controls or blocking findings.
+* Use `add_label_to_card` for the visual verdict.
+* Use `add_comment` to state the final verdict.
 
-## STRIDE Threat Modeling
 
-| Threat | Question | Controls |
-|--------|----------|----------|
-| **Spoofing** | Can attacker impersonate? | Auth, MFA, certificates |
-| **Tampering** | Can data be modified? | Integrity checks, MACs |
-| **Repudiation** | Can actions be denied? | Audit logs, signing |
-| **Information Disclosure** | Can data leak? | Encryption, access control |
-| **Denial of Service** | Can service be disrupted? | Rate limits, redundancy |
-| **Elevation of Privilege** | Can user gain access? | RBAC, input validation |
+3. **The Memory (Obsidian Graph)**:
+* Use `obsidian/write_note` to create your `WF-[ID]` node.
+* Strictly follow the **10-Line Rule** (`type: Security`, `parent: "[[WF-Target-ID]]"`, and max 3-bullet summary).
+* Patch the calling agent's node to link to yours.
+
+
+
+**Final Chat Message**:
+Always conclude your turn with:
+
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*

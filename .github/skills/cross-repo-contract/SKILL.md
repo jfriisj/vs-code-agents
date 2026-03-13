@@ -66,7 +66,7 @@ When a Planner or Architect proposes a contract change, they MUST perform the fo
    - Use Planka's `create_task` to explicitly add a task like: *"Coordinate breaking contract change across repos"*.
    - Use Planka's `add_comment` to flag the breaking change for the human user.
 3. **Always bump the version** in `version.ts` when modifying `types.ts`.
-4. **Update Obsidian**: Use `mcp-obsidian/patch_note` to ensure the active `WF-[ID]` node mentions the contract change in its `## Summary`.
+4. **Update Obsidian**: Use `obsidian/patch_note` to ensure the active `WF-[ID]` node mentions the contract change in its `## Summary`.
 
 ---
 

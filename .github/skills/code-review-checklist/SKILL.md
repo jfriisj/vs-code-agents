@@ -138,7 +138,7 @@ Before concluding your turn and handing off, you MUST align the Triad using **Na
 
 
 3. **The Memory (Obsidian Graph)**:
-* Use `mcp-obsidian/write_note` to create your `WF-[ID]` node.
+* Use `obsidian/write_note` to create your `WF-[ID]` node.
 * Follow the **10-Line Rule** (`type`, `parent: "[[WF-Target-ID]]"`, and max 3-bullet summary).
 * Patch the calling agent's node to link to yours.
 

@@ -24,7 +24,7 @@ Use this skill when:
 Our system strictly follows a three-pillar architecture for state, context, and execution:
 
 1. **Markdown (`agent-output/`)**: "What" and "Why". The canonical source of truth.
-2. **Obsidian Graph (`workflows/`)**: "How it connects". Our memory graph using `mcp-obsidian/*` tools (10-Line Rule).
+2. **Obsidian Graph (`workflows/`)**: "How it connects". Our memory graph using `obsidian/*` tools (10-Line Rule).
 3. **Planka Board**: "Who does what and status". The live operational Agile Kanban view using **Native Planka MCP Tools**.
 
 **When conflicts occur:**

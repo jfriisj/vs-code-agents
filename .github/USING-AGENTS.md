@@ -10,17 +10,16 @@ A typical high-level workflow looks like:
 
 01-Roadmap → 02-Planner → (03-Analyst, 04-Architect, 05-Security, 06-Critic) → 07-Implementer → 08-Code Reviewer → 09-QA → 10-UAT → 11-DevOps → 12-Retrospective → 13-Process Improvement
 
-**All agents use Memory** via the `memory-contract` skill to provide long-running context across sessions. Agents function without memory, but greatly benefit from durable cross-session context when a Memory server is enabled.
+**All agents use Obsidian workflow context** via the `obsidian-workflow` skill to provide durable cross-session continuity. Agents function without it, but handoffs and traceability are strongest when WF-node updates are maintained.
 
-### MCP Tools (memory/filesystem/github/analyzer/planka/mcp-obsidian)
+### MCP Tools (filesystem/github/analyzer/planka/obsidian)
 
 This repo is designed to be used with MCP servers configured in `.vscode/mcp.json`. In VS Code, the MCP server name becomes the tool prefix:
-- `memory` → `memory_*`
 - `filesystem` → `filesystem_*`
 - `github` → `github_*`
 - `analyzer` → `analyzer_*`
 - `planka` → `planka_*`
-- `mcp-obsidian` → `mcp-obsidian_*`
+- `obsidian` → `obsidian_*`
 
 If you customize agents or rename MCP servers, make sure the agent `tools:` allowlist includes the corresponding `*/` namespace.
 
@@ -40,7 +39,7 @@ There are two simple ways to make these agents available to VS Code:
 > [!TIP]
 > The easiest way to create a user-level agent is via the Command Palette: **Chat: New Custom Agent** → select **User profile**. VS Code will place it in the correct location automatically.
 
-In this repo, the source copies live under `vs-code-agents/agents/`; you can copy or sync from there into `.github/agents/` or your user-level folder.
+In this repo, the source copies live under `.github/agents/`; you can copy or sync from there into other workspaces as needed.
 
 For more guidance on GitHub Copilot agents in VS Code, see the official documentation: https://code.visualstudio.com/docs/copilot/customization/custom-agents
 
@@ -93,13 +92,13 @@ Custom agents give you:
 
 ## Skills
 
-Agents can load **Skills**—modular, reusable instruction sets that provide specialized knowledge on-demand. Skills are stored in the `vs-code-agents/skills/` directory.
+Agents can load **Skills**—modular, reusable instruction sets that provide specialized knowledge on-demand. Skills are stored in the `.github/skills/` directory.
 
 ### Available Skills
 
 | Skill | Purpose |
 |-------|---------|  
-| `memory-contract` | Unified Memory retrieval/storage contract |
+| `obsidian-workflow` | Relational workflow memory graph using WF nodes |
 | `analysis-methodology` | Confidence levels, gap tracking, investigation techniques |
 | `architecture-patterns` | ADR templates, patterns, anti-pattern detection |
 | `code-review-checklist` | Pre/post-implementation review criteria |
@@ -154,6 +153,22 @@ echo "75" > agent-output/.next-id  # If your highest plan is 074
 3. Completed documents automatically move to `closed/` subfolders after commit
 
 That's it! The agents handle the rest automatically.
+
+---
+
+## Model Test Runs & Failure Capture
+
+Use the reference protocol and template to run end-to-end agent/model checks and preserve failures for later analysis:
+
+- Protocol: [.github/reference/model-test-run-protocol.md](.github/reference/model-test-run-protocol.md)
+- Failure report template: [.github/reference/model-failure-report-template.md](.github/reference/model-failure-report-template.md)
+- Run artifacts location: `agent-output/test-runs/`
+
+Recommended flow:
+1. Create a run folder using the naming convention in the protocol.
+2. Execute the scenario with explicit acceptance criteria.
+3. If anything fails, fill `03-failure-report.md` and attach evidence under `evidence/`.
+4. Re-run after fixes and mark the report verified.
 
 ---
 
@@ -406,4 +421,4 @@ That's it! The agents handle the rest automatically.
 - Use **Architect / Analyst / Security / Critic** to refine and de‑risk the plan and architecture.
 - Hand off to **Implementer** for code and tests, then **QA** for technical quality, **UAT** for value, **DevOps** for release.
 - Afterward, let **Retrospective** and **Process Improvement** update how you work next time.
-- **All agents use Memory** via the `memory-contract` skill. Agents function without memory but greatly benefit from cross-session context.
+- **All agents use Obsidian WF nodes** via the `obsidian-workflow` skill. Agents function without it, but cross-session context and handoff quality improve significantly when maintained.
