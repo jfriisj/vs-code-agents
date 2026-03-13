@@ -1,10 +1,10 @@
 ---
 name: architecture-patterns
-description: Common software architecture patterns, ADR templates, and anti-pattern detection. Supports architectural review, design decisions, and system documentation.
+description: Common software architecture patterns, ADR templates, and anti-pattern detection. Integrates with Obsidian for architectural memory graphs and Planka for design constraints tracking.
 license: MIT
 metadata:
   author: groupzer0
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Architecture Patterns
@@ -15,17 +15,30 @@ Reference for architectural design and documentation. Use this skill when:
 - Analyst investigates integration approaches
 - Critic evaluates architectural alignment
 
+## The Triad of Truth (Architecture)
+
+Every architectural decision must be reflected across three systems:
+1. **Markdown (`agent-output/architecture/`)**: The detailed ADRs, master architecture doc, and findings.
+2. **Obsidian Graph (`workflows/`)**: The `WF-` nodes linking architecture decisions to specific Epics and Plans.
+3. **Planka Board**: The "Architecture & Design" Task List on the relevant Epic card to enforce implementation constraints.
+
+---
+
 ## Architecture Decision Records (ADR)
 
 ### ADR Format
 
-Every significant architectural decision should be documented:
+Every significant architectural decision should be documented. All ADRs and Findings documents MUST include this standard YAML frontmatter for Obsidian indexing:
 
 ```markdown
+---
+ID: [NNN]
+Type: Architecture
+Status: [Proposed | Accepted | Deprecated]
+Epic: "[[WF-Epic-ID]]"
+Planka-Card: "[cardId]"
+---
 # ADR-[NNN]: [Decision Title]
-
-## Status
-[Proposed | Accepted | Deprecated | Superseded by ADR-XXX]
 
 ## Context
 [What is the situation? What forces are at play?]
@@ -57,7 +70,7 @@ Every significant architectural decision should be documented:
 ### When to Write ADRs
 
 | Scenario | ADR Required? |
-|----------|--------------|
+| --- | --- |
 | New external dependency | Yes |
 | New architectural pattern | Yes |
 | Technology switch | Yes |
@@ -85,9 +98,10 @@ Every significant architectural decision should be documented:
 ```
 
 **Rules:**
-- Dependencies point downward only
-- Lower layers never import from higher
-- Domain has no external dependencies
+
+* Dependencies point downward only
+* Lower layers never import from higher
+* Domain has no external dependencies
 
 **Use when:** Enterprise apps, clear separation needed
 
@@ -111,10 +125,10 @@ class PostgresUserRepository implements UserRepository {
 }
 ```
 
-**Use when:** 
-- Need to swap data stores
-- Testing without real database
-- Multiple data sources
+**Use when:** - Need to swap data stores
+
+* Testing without real database
+* Multiple data sources
 
 ### Service Layer
 
@@ -139,9 +153,10 @@ class OrderService {
 ```
 
 **Use when:**
-- Multiple steps in operation
-- Transaction coordination
-- Cross-cutting concerns
+
+* Multiple steps in operation
+* Transaction coordination
+* Cross-cutting concerns
 
 ### Event-Driven Architecture
 
@@ -160,10 +175,11 @@ class OrderService {
 ```
 
 **Use when:**
-- Loose coupling between components
-- Asynchronous processing
-- Multiple consumers of same event
-- Audit trail needed
+
+* Loose coupling between components
+* Asynchronous processing
+* Multiple consumers of same event
+* Audit trail needed
 
 ### Dependency Injection
 
@@ -192,7 +208,7 @@ new OrderService(new MockDatabase());
 ## Anti-Patterns to Detect
 
 | Anti-Pattern | Detection | Fix |
-|--------------|-----------|-----|
+| --- | --- | --- |
 | **God Object** | Class with 20+ methods, 500+ lines | Extract classes |
 | **Circular Dependencies** | A→B→C→A | Introduce interface |
 | **Big Ball of Mud** | No clear structure | Define boundaries |
@@ -221,7 +237,7 @@ grep -c "^import" src/**/*.ts | sort -t: -k2 -rn | head -10
 
 ### Required Sections
 
-For `system-architecture.md`:
+For `system-architecture.md` (Must also contain Dataview YAML header):
 
 1. **Purpose**: What does this system do?
 2. **High-Level Architecture**: Diagram, major components
@@ -234,31 +250,7 @@ For `system-architecture.md`:
 
 ### Diagram Standards
 
-Use Mermaid for version-controlled diagrams:
-
-```mermaid
-graph TB
-    subgraph Presentation
-        API[API Gateway]
-        UI[Web UI]
-    end
-    
-    subgraph Application
-        Auth[Auth Service]
-        Orders[Order Service]
-    end
-    
-    subgraph Data
-        DB[(PostgreSQL)]
-        Cache[(Redis)]
-    end
-    
-    UI --> API
-    API --> Auth
-    API --> Orders
-    Orders --> DB
-    Orders --> Cache
-```
+Use Mermaid for version-controlled diagrams. See `references/diagram-templates.md` for full templates.
 
 ---
 
@@ -271,14 +263,8 @@ When the Architect reconciles architecture docs after implementations, use this 
 |------|--------|-----------|--------|
 | 2024-12-20 | Added memory retrieval caching layer | Reconciled from Plan-015 implementation | Plan-015-memory-caching |
 | 2024-12-18 | Updated API boundary diagram | Implementation added new endpoint | Post-implementation audit |
-| 2024-12-15 | Documented Cognee integration pattern | Previously undocumented, discovered during health audit | Health audit |
-```
 
-**Reconciliation Entry Format:**
-- **Date**: When reconciliation occurred
-- **Change**: What was updated in architecture docs
-- **Rationale**: "Reconciled from Plan-NNN" or "Post-implementation audit" or "Health audit discovery"
-- **Source**: Reference to plan, implementation, or audit that triggered reconciliation
+```
 
 ---
 
@@ -294,53 +280,45 @@ Track architectural improvements in the **Problem Areas** section of `system-arc
 | ID | Area | Current State | Optimal State | Priority | Discovered | Last Reviewed |
 |----|------|---------------|---------------|----------|------------|---------------|
 | DD-001 | Memory Subsystem | Direct Cognee calls scattered | Unified memory service facade | Medium | 2024-12-15 | 2024-12-20 |
-| DD-002 | Error Handling | Inconsistent error types | Typed error hierarchy | Low | 2024-12-18 | 2024-12-18 |
 
-### Resolved Design Debt
-
-| ID | Resolution | Resolved Date | Related Plan |
-|----|------------|---------------|--------------|
-| DD-000 | Extracted shared utilities | 2024-12-10 | Plan-012 |
 ```
-
-**Design Debt Entry Fields:**
-- **ID**: Sequential identifier (DD-NNN)
-- **Area**: Component or subsystem affected
-- **Current State**: What exists now (brief)
-- **Optimal State**: What would be better (brief)
-- **Priority**: Critical / High / Medium / Low
-- **Discovered**: When architect identified the debt
-- **Last Reviewed**: When last evaluated (may affect priority)
-
-**Priority Guidelines:**
-- **Critical**: Blocking other improvements or causing active issues
-- **High**: Should address in next 1-2 releases
-- **Medium**: Address when touching related code
-- **Low**: Nice-to-have, address opportunistically
 
 ---
 
-## Agent Responsibilities
+## Agent Responsibilities & The Triad Handoff
 
-### Architect Agent
-- Maintain `system-architecture.md` as single source of truth
-- Document ADRs within master doc
-- Challenge plans violating architectural constraints
-- Provide verdicts: APPROVED / APPROVED_WITH_CHANGES / REJECTED
+### 04-Architect (Execution & Handoff)
+
+Before handing off, the Architect MUST align the triad:
+
+1. **The Artifact (`agent-output/`)**: Document ADRs and update `system-architecture.md`.
+2. **The Execution (Planka Board)**:
+* Ensure an "Architecture & Design" Task List exists on the Epic card.
+* Add Tasks for specific constraints the Implementer must follow.
+* Leave a comment with the final verdict (`APPROVED`, `APPROVED_WITH_CHANGES`, `REJECTED`) and link to the findings document.
+
+
+3. **The Memory (Obsidian Graph)**:
+* Create/Update `workflows/WF-[ID]-[slug].md`.
+* Set `type: Architecture` and `parent: "[[WF-[Calling-ID]]]"`.
+* Summarize the architectural invariant/constraint in max 3 bullets.
+* Patch the calling agent's node to link back to the Architect node.
+
+
 
 ### Analyst Agent
-- Reference architecture when investigating integration points
-- Consult Architect for systemic pattern questions
-- Document architectural context in analysis findings
+
+* Reference architecture when investigating integration points.
+* Consult Architect for systemic pattern questions.
+* Link findings nodes to architecture nodes in Obsidian if proposing new dependencies.
 
 ### Planner Agent
-- Read `system-architecture.md` before planning
-- Ensure plans respect documented patterns
-- Flag architectural impact in plan scope
+
+* Read the active `WF-Architecture` notes and `system-architecture.md` before planning.
+* Ensure plans respect documented patterns.
 
 ### Critic Agent
-- Reference `system-architecture.md` during plan review
-- Verify architectural alignment
-- Flag plans that violate documented decisions
 
-See [references/diagram-templates.md](references/diagram-templates.md) for diagram examples.
+* Reference `system-architecture.md` during plan review.
+* Verify architectural alignment.
+* Flag plans that violate documented decisions.

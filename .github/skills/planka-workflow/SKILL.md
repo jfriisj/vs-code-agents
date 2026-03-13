@@ -1,10 +1,10 @@
 ---
 name: planka-workflow
-description: Agile Epic Management and synchronization contract for Planka MCP. Markdown remains the source of truth; Planka provides live agile execution visibility.
+description: Agile Epic Management and synchronization contract for Planka MCP. Markdown remains the source of truth; Planka provides live agile execution visibility via Native MCP Tools.
 license: MIT
 metadata:
   author: groupzer0
-  version: "2.0"
+  version: "3.0"
 ---
 
 # Planka Workflow (Agile Epic Management)
@@ -19,18 +19,19 @@ Use this skill when:
 
 ---
 
-## Source of Truth Model
+## The Triad of Truth Architecture
 
-**Canonical source**: Markdown artifacts in `agent-output/` (specifically `product-roadmap.md` and individual planning/domain docs).
+Our system strictly follows a three-pillar architecture for state, context, and execution:
 
-Planka is the synchronized operational execution view:
-- **Planka**: Live Agile board tracking Epics, Tasks, and delivery status.
-- **Memory**: Durable context for decisions, constraints, and IDs.
+1. **Markdown (`agent-output/`)**: "What" and "Why". The canonical source of truth containing full artifacts (plans, ADRs, analyses).
+2. **Obsidian Graph (`workflows/`)**: "How it connects". Our memory graph using `mcp-obsidian/*` tools. Follows the strict "10-Line Rule" (`WF-[ID]` nodes with YAML frontmatter, `## Summary`, and `## Artifacts`).
+3. **Planka Board**: "Who does what and status". The live operational Agile Kanban view tracking Epics, Tasks, time, and delivery state using **Native Planka MCP Tools**.
 
 When conflicts occur:
-1. Trust the Markdown artifacts first.
-2. Update Planka to match the Markdown state.
-3. Add a comment on the Planka card detailing the reconciliation.
+1. Trust the Markdown artifacts in `agent-output/` first.
+2. Ensure the Obsidian `WF-[ID]` node correctly points to the artifact.
+3. Update Planka to match the Markdown/Obsidian state.
+4. Add a comment on the Planka card detailing the reconciliation.
 
 ---
 
@@ -54,10 +55,10 @@ Create lists in this exact order to represent the Epic Lifecycle:
 
 Each Card represents a single **Epic**.
 - **Card Name**: `Epic [X.Y]: [Title]`
-- **Description**: Contains the full Epic Markdown Template from the Roadmap (User Story, Business Value, Dependencies, Acceptance Criteria, Constraints).
+- **Description**: Contains the full Epic Markdown Template from the Roadmap (User Story, Business Value, Dependencies, Acceptance Criteria, Constraints), plus a link to the root Obsidian Epic node (`**Obsidian Root Node**: [[WF-Epic-ID]]`).
 
 ### Task Lists (Agent Workspaces)
-Instead of moving cards between agent-specific lists, the card stays in its Status List (e.g., `In Progress`). Agentes create and manage their own **Task Lists** inside the Epic card:
+Instead of moving cards between agent-specific lists, the card stays in its Status List (e.g., `In Progress`). Agents create and manage their own **Task Lists** inside the Epic card:
 
 - `Acceptance Criteria` (Managed by Planner)
 - `Analysis & Spikes` (Managed by Analyst)
@@ -76,11 +77,10 @@ Instead of moving cards between agent-specific lists, the card stays in its Stat
 
 ### 1. Portfolio Reconciliation (Roadmap Agent)
 Whenever the roadmap changes in `product-roadmap.md`:
-- Reconcile **all releases and all epics** to Planka in one pass (not only the currently-started epic).
-- Ensure Project, Board, and Status Lists exist (`project:create`, `board:create`, `list:create`).
+- Reconcile **all releases and all epics** to Planka in one pass using the `sync_roadmap_epics.py` script.
+- Ensure Project, Board, and Status Lists exist.
 - Ensure every roadmap epic exists as a card, is in the matching lifecycle list, and has updated description + due date (from release `**Target Date**` when available).
 - Ensure labels for release and priority are present on each epic card.
-- Optionally bootstrap default agile task lists on each epic card (`--ensure-task-lists`) so downstream agents can execute directly in Planka.
 
 ### Label Taxonomy (Portfolio Overview)
 - `Release vX.Y.Z` label on every epic for release grouping.
@@ -90,91 +90,54 @@ Whenever the roadmap changes in `product-roadmap.md`:
 ### 2. Task Breakdown (Planner Agent)
 When planning an Epic:
 - Read the Epic Card's description to fetch Acceptance Criteria.
-- Create a Task List for the Acceptance Criteria (`tasklist:create`).
-- Add individual execution Tasks (`task:create`).
+- Create a Task List for the Acceptance Criteria (`create_task_list` tool).
+- Add individual execution Tasks (`create_task` tool).
 
 ### 3. Active Execution (All specialized agents)
-When an agent (Analyst, Architect, Security, Implementer, QA, Code Reviewer) works on an Epic:
-- **Start Stopwatch**: `stopwatch:start` to track time spent.
-- **Create Workspace**: If missing, create your specific Task List (`tasklist:create`).
-- **Log Tasks**: Add tasks for the specific checks, code, or validations you perform (`task:create`).
-- **Complete Work**: Stop the stopwatch (`stopwatch:stop`).
-- **Handoff / Report**: Add a comment summarizing the findings/verdict and link to your generated markdown artifact (`comment:add`).
+When an agent (Analyst, Architect, Security, Implementer, QA, Code Reviewer) works on an Epic, they MUST use **Native MCP Tools** (e.g., `call_tool`), NOT terminal scripts:
+- **Start Stopwatch**: Call `update_card` to track time spent.
+- **Create Workspace**: If missing, call `create_task_list` to create your specific Task List.
+- **Log Tasks**: Add tasks via `create_task` and mark complete via `update_task` (`isCompleted: true`).
+- **Complete Work**: Stop the stopwatch via `update_card`.
+- **Handoff / Report**: Call `add_comment` summarizing findings. **CRITICAL**: You must include a link to your generated Markdown artifact AND your Obsidian workflow node (e.g., `[[WF-NNN-Feature]]`) to bridge the Planka execution board with our Obsidian memory graph.
 
 ### 4. Terminal Lifecycle (DevOps & UAT)
 When an Epic is deployed:
-- DevOps moves the Epic Card to the `Delivered` list (`card:move`).
-- UAT and DevOps leave final approval and deployment comments.
+- DevOps moves the Epic Card to the `Delivered` list (`move_card` tool).
+- UAT and DevOps leave final approval and deployment comments (linking to final release nodes).
 
 ---
 
-## Script Helpers
+## Operational Guidance
 
-The primary engine for Planka operations is `planka_ops.py`. 
-*Note: The old `bootstrap_workflow_board.py` and `sync_workflow_handoff.py` are legacy scripts from the "Status-Only" model and should generally be avoided in favor of direct Agile operations via `planka_ops.py`.*
-
-For roadmap-level synchronization, prefer `sync_roadmap_epics.py`:
+### 1. Bulk Roadmap Synchronization (Python CLI)
+Only the `01-Roadmap` agent uses the terminal for bulk synchronization via `sync_roadmap_epics.py`:
 
 ```bash
 # Parse roadmap and preview all required changes
 python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --dry-run
 
-# Apply full reconciliation (all epics, lists, labels, descriptions, due dates)
+# Apply full reconciliation
 python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py
-
-# Optional: force an explicit project name if your roadmap heading is not suitable
-python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --project-name "Real-Time Translation Frontend"
-
-# Optional: do not write [CardID]/[BoardID] metadata back to roadmap Status lines
-python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --no-write-roadmap-status
 
 # Optional bootstrap: auto-create default agile task lists on each epic card
 python .github/skills/planka-workflow/scripts/sync_roadmap_epics.py --ensure-task-lists
+
 ```
 
-By default, `sync_roadmap_epics.py` also writes `CardID` and `BoardID` into each epic's roadmap `**Status**` line for downstream agent traceability.
+### 2. Daily Agent Operations (Native MCP)
 
-For cross-instance mapping, keep `agent-output/planka/workflow-index.md` aligned to `references/workflow-index-template.md`.
+**CRITICAL**: Do NOT use bash or `planka_ops.py` for daily operations. Use the exposed native Planka tools directly.
 
-**Usage Example:**
-```bash
-# Create Task List
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op tasklist:create --arg cardId=<id> --arg name="QA & Testing"
-
-# Add Task
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op task:create --arg taskListId=<id> --arg name="Test edge case X"
-
-# Add Comment (Handoff/Verdict)
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op comment:add --arg cardId=<id> --arg text="QA Passed. Ready for UAT."
-
-# Move Card (Change Status)
-python .github/skills/planka-workflow/scripts/planka_ops.py run \
-  --op card:move --arg cardId=<id> --arg listId=<delivered_list_id>
-```
-
----
-
-## Tool Usage Guidance
-
-Use Planka MCP operations (`planka_ops.py`) for:
-- Discovery (`list_projects`, `list_boards`, `get_board`, `get_card`)
-- Card & List management (`create_card`, `update_card`, `move_card`)
-- Task management (`create_task_list`, `create_task`, `update_task`)
-- Audit trail (`add_comment`)
-- Time tracking (`stopwatch:start`, `stopwatch:stop`)
+* **Discovery**: `list_projects`, `list_boards`, `get_board`, `get_card`
+* **Card & List management**: `create_card`, `update_card`, `move_card`
+* **Task management**: `create_task_list`, `create_task`, `update_task`
+* **Audit trail & Triad Bridge**: `add_comment` (must include `[[WF-ID]]` and artifact link)
+* **Time tracking**: `update_card` (modifying the stopwatch field)
+* **Visual Status**: `create_label`, `add_label_to_card`
 
 Prefer idempotent actions:
-- List/find before create.
-- Update/move only when state differs.
 
-## Token & Quality Optimization Contract
-
-For high-quality low-token operation:
-- Do one board snapshot (`get_board`) per reconciliation run and compute diffs locally.
-- Allow targeted per-card fetch (`get_card`) only for task-list hydration and when board payload lacks required fields.
-- Write only changed entities (create missing cards/lists/labels, move status drift, update changed descriptions/due dates; create task-lists only when `--ensure-task-lists` is enabled).
-- Reuse existing labels by canonical names (`Release vX.Y.Z`, `Priority PX`) and remove obsolete release/priority labels from cards when needed.
-- Keep comments sparse and meaningful; description + labels + tasks should carry primary operational state.
+* List/find before create.
+* Update/move only when state differs.
+* Keep comments sparse and meaningful; description + labels + tasks should carry primary operational state.

@@ -1,16 +1,24 @@
-# Refactoring Catalog
+# Engineering Catalogs: Refactoring & Design
 
-Quick reference for common refactoring techniques.
+This document serves as a reference for agents to transform code from "smelly" or rigid states into clean, maintainable, and standard-compliant structures.
 
-## Extract Method
-**When:** Code block can be grouped with descriptive name
-```
+## Triad of Truth Documentation Protocol
+When performing a refactoring or implementing a design pattern:
+1. **Markdown (`agent-output/`)**: Document the "Before" vs. "After" state in your implementation artifact.
+2. **Obsidian (`workflows/`)**: Create a `WF-[ID]` node if the refactoring changes a system-wide boundary or architecture.
+3. **Planka**: Add specific checklist items to the Epic card (e.g., "Extract validation logic to separate class").
+
+---
+
+## 1. Refactoring Catalog
+
+### Extract Method
+**When:** A code block can be grouped with a descriptive name to improve readability or SRP.
+```python
 # Before
 def process():
-    # validate input
     if not x: raise Error
     if not y: raise Error
-    # do work
     result = complex_operation()
 
 # After
@@ -21,11 +29,14 @@ def process():
 def validate_input(x, y):
     if not x: raise Error
     if not y: raise Error
+
 ```
 
-## Extract Class
-**When:** Class has multiple responsibilities
-```
+### Extract Class
+
+**When:** A class has multiple responsibilities (violating SRP).
+
+```python
 # Before
 class Order:
     def calculate_total(self): ...
@@ -41,11 +52,14 @@ class InvoiceFormatter:
 
 class OrderNotifier:
     def send_email(self, order): ...
+
 ```
 
-## Replace Conditional with Polymorphism
-**When:** Switch/case on type
-```
+### Replace Conditional with Polymorphism
+
+**When:** A switch/case or if/else chain checks types to determine behavior (violating OCP).
+
+```python
 # Before
 def calculate_pay(employee):
     if employee.type == "hourly":
@@ -61,11 +75,14 @@ class HourlyEmployee:
 class SalariedEmployee:
     def calculate_pay(self):
         return self.annual / 12
+
 ```
 
-## Introduce Parameter Object
-**When:** Same parameters appear together
-```
+### Introduce Parameter Object
+
+**When:** The same group of parameters consistently appear together in multiple functions.
+
+```python
 # Before
 def search(start_date, end_date, min_price, max_price): ...
 
@@ -78,22 +95,14 @@ class SearchCriteria:
     max_price: float
 
 def search(criteria: SearchCriteria): ...
+
 ```
 
-## Replace Magic Number with Constant
-**When:** Literal values with meaning
-```
-# Before
-if velocity > 343: return "supersonic"
+### Guard Clause
 
-# After
-SPEED_OF_SOUND_MPS = 343
-if velocity > SPEED_OF_SOUND_MPS: return "supersonic"
-```
+**When:** Deeply nested conditionals obscure the primary "happy path" (violating KISS).
 
-## Guard Clause (Replace Nested Conditional)
-**When:** Deep nesting obscures logic
-```
+```python
 # Before
 def process(x):
     if x:
@@ -108,4 +117,6 @@ def process(x):
     if not x.valid: return None
     if not x.ready: return None
     return do_work(x)
+
 ```
+

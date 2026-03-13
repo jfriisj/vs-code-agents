@@ -47,14 +47,10 @@ const requiredFrontmatterFields = [
   "last_updated"
 ];
 
+// OPDATERET: Kræver nu kun de to minimalistiske overskrifter
 const requiredHeadings = [
   "Summary",
-  "Relations",
-  "Decisions",
-  "Constraints",
-  "Artifacts",
-  "Handoffs",
-  "Next"
+  "Artifacts"
 ];
 
 function escapeRegex(value) {

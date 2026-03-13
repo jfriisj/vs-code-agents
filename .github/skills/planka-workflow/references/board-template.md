@@ -19,7 +19,9 @@ Hvert kort repræsenterer en komplet Epic.
 **Due Date**: Sync from release `**Target Date**` when available (`YYYY-MM-DDT23:59:59.000Z`).
 
 **Description template**:
-Beskrivelsen fungerer som "Single Source of Truth" i Planka. Den indeholder Epic-definitionen i toppen, og agenterne tilføjer løbende links til deres markdown-filer i bunden.
+Beskrivelsen fungerer som "Single Source of Truth" i Planka. Den indeholder Epic-definitionen i toppen, og agenterne tilføjer løbende links til deres markdown-filer og Obsidian-noder via kommentarer eller i bunden af beskrivelsen.
+
+**Obsidian Root Node**: `[[WF-Epic-ID]]`
 
 **User Story**:
 As a [user type], I want [capability/outcome], So that [business value/benefit].
@@ -54,9 +56,9 @@ As a [user type], I want [capability/outcome], So that [business value/benefit].
 - `Retrospective & Learnings`
 
 ---
-**Artifacts (Appended by agents):**
-- [Analysis]: agent-output/analysis/...
-- [Plan]: agent-output/planning/...
-- [Architecture]: agent-output/architecture/...
-- [Implementation]: agent-output/implementation/...
-- [QA]: agent-output/qa/...
+**Artifacts & Memory Nodes (Appended by agents):**
+- [Analysis]: agent-output/analysis/... | Node: `[[WF-001-Analysis]]`
+- [Plan]: agent-output/planning/... | Node: `[[WF-002-Plan]]`
+- [Architecture]: agent-output/architecture/... | Node: `[[WF-003-Architecture]]`
+- [Implementation]: agent-output/implementation/... | Node: `[[WF-004-Implementation]]`
+- [QA]: agent-output/qa/... | Node: `[[WF-005-QA]]`

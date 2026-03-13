@@ -1,19 +1,23 @@
 ---
 name: engineering-standards
-description: Core software engineering principles (SOLID, DRY, YAGNI, KISS) with detection patterns and refactoring guidance. Load when reviewing code quality, planning architecture, or identifying technical debt.
+description: Core software engineering principles (SOLID, DRY, YAGNI, KISS) integrated with the Triad of Truth. Load when reviewing code quality, planning architecture, or identifying technical debt.
 license: MIT
 metadata:
   author: groupzer0
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Engineering Standards
 
-Foundational principles for high-quality software. Use this skill when:
-- Reviewing code for quality issues
-- Planning architectural changes
-- Identifying refactoring opportunities
-- Evaluating technical debt
+Foundational principles for high-quality software. Use this skill when reviewing code, planning architecture, or evaluating technical debt.
+
+## Triad of Truth Integration
+When these standards are applied, findings must be anchored in the system:
+1. **Markdown (`agent-output/`)**: Save full technical analyses or refactoring plans as artifacts.
+2. **Obsidian Graph (`workflows/`)**: Major architectural decisions must have a `WF-[ID]` node (strictly follow the **10-Line Rule**: only YAML frontmatter, a `## Summary` section, and a `## Artifacts` section).
+3. **Planka Board**: Create refactoring tasks via **Native MCP tools** as checklist items on the relevant Epic card.
+
+---
 
 ## SOLID Principles
 
@@ -21,120 +25,120 @@ Foundational principles for high-quality software. Use this skill when:
 A class/module should have one reason to change.
 
 **Detection patterns:**
-- Class with 5+ public methods doing unrelated things
-- Method longer than 50 lines
-- Class name contains "And" or "Manager" with mixed concerns
-- File imports from 10+ unrelated modules
+- Class with 5+ public methods doing unrelated things.
+- Method longer than 50 lines.
+- Class name contains "And" or "Manager" with mixed concerns.
+- File imports from 10+ unrelated modules.
 
 **Refactoring:**
-- Extract class for each responsibility
-- Split into focused modules
-- Use composition over inheritance
+- Extract class for each responsibility.
+- Split into focused modules.
+- Use composition over inheritance.
 
 ### Open/Closed (OCP)
 Open for extension, closed for modification.
 
 **Detection patterns:**
-- Switch/case on type with frequent additions
-- if/else chains checking instance types
-- Modifying existing code to add new features
+- Switch/case on type with frequent additions.
+- if/else chains checking instance types.
+- Modifying existing code to add new features.
 
 **Refactoring:**
-- Strategy pattern for varying behaviors
-- Plugin architecture for extensions
-- Dependency injection for configurability
+- Strategy pattern for varying behaviors.
+- Plugin architecture for extensions.
+- Dependency injection for configurability.
 
 ### Liskov Substitution (LSP)
 Subtypes must be substitutable for their base types.
 
 **Detection patterns:**
-- Override that throws "not implemented"
-- Subclass that ignores parent behavior
-- Type checks before calling inherited methods
+- Override that throws "not implemented".
+- Subclass that ignores parent behavior.
+- Type checks before calling inherited methods.
 
 **Refactoring:**
-- Favor composition over inheritance
-- Extract interface for true polymorphism
-- Use abstract base with required overrides
+- Favor composition over inheritance.
+- Extract interface for true polymorphism.
+- Use abstract base with required overrides.
 
 ### Interface Segregation (ISP)
 Clients shouldn't depend on methods they don't use.
 
 **Detection patterns:**
-- Interface with 10+ methods
-- Implementing classes that stub methods as no-ops
-- "Fat" interfaces with unrelated method groups
+- Interface with 10+ methods.
+- Implementing classes that stub methods as no-ops.
+- "Fat" interfaces with unrelated method groups.
 
 **Refactoring:**
-- Split into role-specific interfaces
-- Use mixins/traits for optional behaviors
-- Compose multiple focused interfaces
+- Split into role-specific interfaces.
+- Use mixins/traits for optional behaviors.
+- Compose multiple focused interfaces.
 
 ### Dependency Inversion (DIP)
 Depend on abstractions, not concretions.
 
 **Detection patterns:**
-- Direct instantiation of dependencies (`new ConcreteClass()`)
-- Hard-coded database/API connections
-- Test files creating production instances
+- Direct instantiation of dependencies (`new ConcreteClass()`).
+- Hard-coded database/API connections.
+- Test files creating production instances.
 
 **Refactoring:**
-- Constructor injection
-- Factory pattern for complex creation
-- Interface-based dependencies
+- Constructor injection.
+- Factory pattern for complex creation.
+- Interface-based dependencies.
 
 ---
 
 ## DRY (Don't Repeat Yourself)
 
 **Detection patterns:**
-- Copy-pasted code blocks (3+ occurrences)
-- Similar functions with minor variations
-- Duplicated validation logic
-- Repeated configuration values
+- Copy-pasted code blocks (3+ occurrences).
+- Similar functions with minor variations.
+- Duplicated validation logic.
+- Repeated configuration values.
 
 **Refactoring:**
-- Extract shared function/class
-- Parameterize variations
-- Create configuration constants
-- Use template method pattern
+- Extract shared function/class.
+- Parameterize variations.
+- Create configuration constants.
+- Use template method pattern.
 
 **Exceptions (acceptable duplication):**
-- Test code clarity (explicit over DRY)
-- Cross-boundary isolation (microservices)
-- Performance-critical paths
+- Test code clarity (explicit over DRY).
+- Cross-boundary isolation (microservices).
+- Performance-critical paths.
 
 ---
 
 ## YAGNI (You Aren't Gonna Need It)
 
 **Detection patterns:**
-- Unused parameters "for future use"
-- Abstract classes with single implementation
-- Configuration options never used
-- Speculative generalization
+- Unused parameters "for future use".
+- Abstract classes with single implementation.
+- Configuration options never used.
+- Speculative generalization.
 
 **Guidance:**
-- Build for current requirements
-- Refactor when needs emerge
-- Delete dead code immediately
-- Prefer simple over flexible
+- Build for current requirements.
+- Refactor when needs emerge.
+- Delete dead code immediately.
+- Prefer simple over flexible.
 
 ---
 
 ## KISS (Keep It Simple, Stupid)
 
 **Detection patterns:**
-- Cyclomatic complexity > 10
-- Nested callbacks/promises 4+ deep
-- Generic solutions for specific problems
-- Framework overkill for simple tasks
+- Cyclomatic complexity > 10.
+- Nested callbacks/promises 4+ deep.
+- Generic solutions for specific problems.
+- Framework overkill for simple tasks.
 
 **Refactoring:**
-- Flatten control flow
-- Extract named functions
-- Use early returns
-- Choose boring technology
+- Flatten control flow.
+- Extract named functions.
+- Use early returns.
+- Choose boring technology.
 
 ---
 
@@ -158,15 +162,15 @@ Depend on abstractions, not concretions.
 ## When to Apply
 
 **Always apply:**
-- SRP, DRY for production code
-- KISS for all code
+- SRP, DRY for production code.
+- KISS for all code.
 
 **Apply with judgment:**
-- OCP when extension points are clear
-- ISP when interfaces grow beyond 5 methods
-- DIP at module boundaries
+- OCP when extension points are clear.
+- ISP when interfaces grow beyond 5 methods.
+- DIP at module boundaries.
 
 **Defer:**
-- YAGNI violations until pattern emerges 3+ times
+- YAGNI violations until pattern emerges 3+ times.
 
 See [references/refactoring-catalog.md](references/refactoring-catalog.md) for detailed refactoring techniques.
