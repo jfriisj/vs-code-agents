@@ -2,7 +2,7 @@
 ID: 1
 Origin: 1
 UUID: 7f8e32c1
-Status: Approved with Comments
+Status: Committed
 ---
 
 ## Changelog

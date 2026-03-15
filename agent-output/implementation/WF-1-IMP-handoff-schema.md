@@ -2,7 +2,7 @@
 ID: 2
 Origin: 1
 UUID: b4f1a2c3 # Simulated
-Status: Active
+Status: Committed
 ---
 
 ## Plan Reference
