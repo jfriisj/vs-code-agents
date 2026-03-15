@@ -127,7 +127,14 @@ When you perform technical research or analysis for an Epic or Plan, you MUST tr
   - Create individual Tasks (`create_task`) within this list for each specific technical unknown or POC you are investigating.
 3. **Report Findings**:
   - Once your analysis is complete, add a comment to the Epic card (`add_comment`) summarizing the root cause or key findings.
-   - Include a reference/link to your detailed markdown artifact (`agent-output/analysis/NNN-topic-analysis.md`) in the comment.
+  - Include a reference/link to your detailed markdown artifact (`agent-output/analysis/NNN-topic-analysis.md`) in the comment.
+
+**Cross-Agent Planka Guardrails (Mandatory)**:
+- Do not create/edit Planner AC task lists (`AC1: ...`, `AC2: ...`) unless Planner explicitly requests analyst decomposition support.
+- Every `add_comment` MUST include:
+  - artifact path (`agent-output/...`),
+  - related `[[WF-ID]]`,
+  - handoff sentence: `Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).`
 
 **Tool Usage**:
 Use native `planka/*` MCP tools for all operations (`create_task_list`, `create_task`, `add_comment`).
@@ -139,10 +146,10 @@ Use native `planka/*` MCP tools for all operations (`create_task_list`, `create_
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:obsidian/*` for vault operations.
 
 **Your Graph Role (The Dependency):** You create "Analysis" nodes that link back to the calling Plan or Epic.
-1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Analysis`. Set `parent: "[[WF-Calling-ID]]"` using the ID provided by the Planner or Roadmap agent in the chat history.
-3. **Closing the Loop**: When your analysis is complete and you hand back to Planner, use `patch_note` to append a concise summary bullet with a direct wikilink to your node (e.g., `See [[WF-[Your-ID]]] for verified root cause.`).
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
+1. Create or update `workflows/WF-<concrete-id>-<slug>.md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Analysis`. Set `parent: "[[WF-...]]"` using the ID provided by the Planner or Roadmap agent in the chat history.
+3. **Closing the Loop**: When your analysis is complete and you hand back to Planner, use `patch_note` to append a concise summary bullet with a direct wikilink to your node (e.g., `See [[WF-...]] for verified root cause.`).
+4. **CRITICAL HANDOFF**: Before concluding, output a final message with concrete IDs (no placeholders) using this structure: "Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."
 
 **Context Retrieval**: Do NOT search the vault. Read your active note, and if you need broader context, use `read_note` strictly on the wikilink found in your `parent:` frontmatter field.
 

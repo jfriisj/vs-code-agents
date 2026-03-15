@@ -184,9 +184,11 @@ When you perform architectural reviews, define constraints, or audit a plan for 
 2. **Record Review Tasks and Constraints**:
    - If it does not already exist, create a Task List on the Epic card named `Architecture & Design` (`create_task_list`).
    - Create individual Tasks (`create_task`) for specific architectural checks, components to design, or constraints that the Implementer must follow (e.g., "Enforce Den Gyldne Rengøringsregel on module X", "Update data boundary diagrams").
+   - MUST NOT create/edit Planner acceptance-criterion lists (`AC1: ...`, `AC2: ...`) except adding explicit architecture dependency notes requested by Planner.
 3. **Report Verdict & Findings**:
    - Once your review is complete, add a comment to the Epic card (`add_comment`) summarizing your verdict (APPROVED / APPROVED_WITH_CHANGES / REJECTED) and key architectural decisions.
-   - Include a reference/link to your findings artifact (`agent-output/architecture/NNN-[topic]-architecture-findings.md`) and remind the team to check `system-architecture.md` for the current state.
+   - Include a reference/link to your findings artifact (`agent-output/architecture/NNN-[topic]-architecture-findings.md`), include the related `[[WF-ID]]` node, and remind the team to check `system-architecture.md` for the current state.
+   - Include handoff sentence: `Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).`
 
 **Tool Usage**:
 Use native `planka/*` MCP tools for all operations (`create_task_list`, `create_task`, `add_comment`).
@@ -197,10 +199,10 @@ Use native `planka/*` MCP tools for all operations (`create_task_list`, `create_
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:obsidian/*` for vault operations.
 
 **Your Graph Role (The Design Authority):** You create "Architecture" nodes that evaluate Epics or Plans.
-1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Architecture`. Set `parent: "[[WF-Calling-ID]]"` using the Epic or Plan ID provided by the calling agent in the chat history.
-3. **Closing the Loop**: When your review is complete, use `patch_note` to append a concise summary bullet with a direct wikilink to your node (e.g., `See [[WF-[Your-ID]]] for architectural invariants.`).
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
+1. Create or update `workflows/WF-<concrete-id>-<slug>.md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Architecture`. Set `parent: "[[WF-...]]"` using the Epic or Plan ID provided by the calling agent in the chat history.
+3. **Closing the Loop**: When your review is complete, use `patch_note` to append a concise summary bullet with a direct wikilink to your node (e.g., `See [[WF-...]] for architectural invariants.`).
+4. **CRITICAL HANDOFF**: Before concluding, output a final message with concrete IDs (no placeholders) using this structure: "Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 

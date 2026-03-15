@@ -4,7 +4,7 @@ Use this template when you cannot prove a single root cause due to missing telem
 
 ## 1) What we can prove
 **Verified facts**:
-- 
+- [fact]
 
 **Reproduction / evidence**:
 - Steps attempted:
@@ -13,10 +13,10 @@ Use this template when you cannot prove a single root cause due to missing telem
 
 ## 2) What we *suspect* (explicitly labeled)
 **High-confidence inference** (supported by evidence, not fully proven):
-- 
+- [inference]
 
 **Hypotheses** (plausible, not proven):
-- 
+- [hypothesis]
 
 For each hypothesis, include:
 - Confidence: High | Med | Low
@@ -56,4 +56,4 @@ Minimum viable incident telemetry set (recommended default):
 
 ## 5) Fastest next steps to reduce uncertainty
 Smallest set of investigations/experiments that most quickly collapse uncertainty.
-- 
+- [next step]

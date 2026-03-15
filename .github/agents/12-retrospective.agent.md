@@ -191,6 +191,13 @@ When you conduct a retrospective for a delivered Plan or Epic, you MUST track yo
    - Once the retrospective is complete, add a comment to the Epic card (`add_comment`) summarizing the top process improvement identified and overall retrospective status.
    - Include a reference/link to your detailed retrospective artifact (`agent-output/retrospectives/...`) in the comment.
 
+**Cross-Agent Planka Guardrails (Mandatory)**:
+- Do not create/edit Planner AC task lists (`AC1: ...`, `AC2: ...`) outside explicit Planner-requested decomposition support.
+- Every retrospective `add_comment` MUST include:
+  - artifact path (`agent-output/...`),
+  - related `[[WF-ID]]`,
+  - handoff sentence: `Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).`
+
 **Tool Usage**:
 Use native `planka/*` MCP tools for all operations.
 Examples:
@@ -204,9 +211,9 @@ Examples:
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:obsidian/*` for vault operations.
 
 **Your Graph Role (The Historian):** You create "Retrospective" nodes attached to Deployments.
-1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Retrospective`. Set `parent: "[[WF-Deployment-ID]]"` using the ID provided by DevOps.
-3. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
+1. Create or update `workflows/WF-<concrete-id>-<slug>.md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Retrospective`. Set `parent: "[[WF-DEP-<plan-id>]]"` using the ID provided by DevOps.
+3. **CRITICAL HANDOFF**: Before concluding, output a final message with concrete IDs (no placeholders) using this structure: "Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 

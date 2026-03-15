@@ -48,7 +48,7 @@ When reviewing code, run these specific checks using your tools.
 
 ### Check 1: Complexity & Code Smells
 *Instead of `check-complexity.sh`, use these heuristics:*
-- **High Coupling**: Use `search` with regex `^import ` or `^from .+ import ` to find files with massive import blocks.
+- **High Coupling**: Use `search` with regex `^import\s` or `^from .+ import\s` to find files with massive import blocks.
 - **Deep Nesting**: Use `search` with regex `^(\s{16}|\t{4})` to find 4+ levels of indentation.
 - **God Objects**: Use `get_file_info` (from `filesystem`) to check file sizes, or visually inspect line counts when reading files. Threshold: > 500 lines.
 
@@ -57,7 +57,7 @@ When reviewing code, run these specific checks using your tools.
 
 | Anti-Pattern | Search Regex | Severity |
 |---|---|---|
-| **Debug Leftovers** | `console\.log\|console\.debug\|debugger\|print\(|pdb\.set_trace` | MEDIUM |
+| **Debug Leftovers** | `console\.log\|console\.debug\|debugger\|print\(\|pdb\.set_trace` | MEDIUM |
 | **TODO/FIXME** | `(TODO\|FIXME\|XXX\|HACK):` | LOW (Flag for tracking) |
 | **Swallowed Errors** | `catch\s*\([^)]*\)\s*\{\s*\}` | HIGH |
 | **Hardcoded URLs** | `https?://[a-zA-Z0-9]+(localhost\|127\.0\.0\.1\|staging\|dev\.)` | HIGH |
@@ -138,8 +138,8 @@ Before concluding your turn and handing off, you MUST align the Triad using **Na
 
 
 3. **The Memory (Obsidian Graph)**:
-* Use `obsidian/write_note` to create your `WF-[ID]` node.
-* Follow the **10-Line Rule** (`type`, `parent: "[[WF-Target-ID]]"`, and max 3-bullet summary).
+* Use `obsidian/write_note` to create your `WF-<concrete-id>` node.
+* Follow the **10-Line Rule** (`type`, `parent: "[[WF-...]]"`, and max 3-bullet summary).
 * Patch the calling agent's node to link to yours.
 
 
@@ -147,5 +147,5 @@ Before concluding your turn and handing off, you MUST align the Triad using **Na
 **Final Chat Message**:
 Always conclude your turn in the chat with:
 
-> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."*
 

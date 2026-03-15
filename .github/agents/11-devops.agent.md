@@ -4,7 +4,7 @@ name: 11-DevOps
 target: vscode
 argument-hint: Specify the version to release or deployment task to perform
 tools: [execute/getTerminalOutput, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, search, 'filesystem/*', 'github/*', 'obsidian/*', 'planka/*', todo]
-model: GPT-5.3-Codex (copilot)
+model: Gemini 3 Flash (Preview) (copilot)
 handoffs:
   - label: Request Implementation Fixes
     agent: 07-Implementer
@@ -75,7 +75,7 @@ Deployment Workflow:
 4. Check version consistency for target release per `release-procedures` skill.
 5. Review .gitignore: Run `git status`, analyze untracked, propose changes if needed.
 6. **Commit locally** with detailed message:
-   ```
+   ```text
    Plan [ID] for v[X.Y.Z]: [summary]
    
    - [Key change 1]
@@ -209,6 +209,13 @@ When you perform stage 1 commits or stage 2 releases for an Epic, you MUST track
    - When Stage 2 (Release Execution) is successfully completed, **you must move the Epic card** (`move_card`) to the `Delivered` (or `Closed`) list on the Epics board to signify that the business value is now in production.
    - Add a final comment with the release version and a link to the `agent-output/deployment/...` artifact.
 
+**Cross-Agent Planka Guardrails (Mandatory)**:
+- Do not create/edit Planner AC task lists (`AC1: ...`, `AC2: ...`) unless explicitly requested by Planner for release decomposition.
+- Every release `add_comment` MUST include:
+   - artifact path (`agent-output/...`),
+   - related `[[WF-ID]]`,
+   - handoff sentence: `Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).`
+
 **Tool Usage**:
 Use native `planka/*` MCP tools for all operations.
 Examples:
@@ -223,10 +230,10 @@ Examples:
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:obsidian/*` for vault operations.
 
 **Your Graph Role (The Releaser):** You create "Deployment" nodes that act as the terminus for Epics/Releases.
-1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Deployment`. Set `parent: "[[WF-Epic-ID]]"` linking it back to the overarching Epic roadmap node.
-3. **Patching Down**: Use `patch_note` to append release summary and deployment artifact link to deployed `[[WF-Plan-ID]]` notes.
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
+1. Create or update `workflows/WF-<concrete-id>-<slug>.md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Deployment`. Set `parent: "[[WF-E<epic-number>]]"` linking it back to the overarching Epic roadmap node.
+3. **Patching Down**: Use `patch_note` to append release summary and deployment artifact link to deployed `[[WF-P<plan-id>]]` notes.
+4. **CRITICAL HANDOFF**: Before concluding, output a final message with concrete IDs (no placeholders) using this structure: "Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 

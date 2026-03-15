@@ -55,8 +55,8 @@ Create your review in `agent-output/code-review/NNN-review.md` matching the plan
 ID: [NNN]
 Type: CodeReview
 Status: [Active / Closed]
-Epic: "[[WF-Epic-ID]]"
-Planka-Card: "[cardId]"
+Epic: "[[WF-E<epic-number>]]"
+Planka-Card: "CARD_ID_NUMERIC"
 ---
 
 # Code Review: [Plan Name]
@@ -120,8 +120,8 @@ Before concluding your turn and handing off to the Implementer or QA, you MUST a
 
 
 3. **The Memory (Obsidian Graph)**:
-* Use `obsidian/write_note` to create your `WF-[ID]` node.
-* Strictly follow the **10-Line Rule** (`type: CodeReview`, `parent: "[[WF-Target-ID]]"`, and a max 3-bullet summary).
+* Use `obsidian/write_note` to create your `WF-<concrete-id>` node.
+* Strictly follow the **10-Line Rule** (`type: CodeReview`, `parent: "[[WF-...]]"`, and a max 3-bullet summary).
 * Patch the calling agent's node to link to yours.
 
 
@@ -129,4 +129,4 @@ Before concluding your turn and handing off to the Implementer or QA, you MUST a
 **Final Chat Message**:
 Always conclude your turn in the chat with:
 
-> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."*

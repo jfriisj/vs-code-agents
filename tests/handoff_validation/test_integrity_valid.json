@@ -1,0 +1,15 @@
+{
+  "id": "WF-IMP-001",
+  "origin_id": "WF-P-001",
+  "correlation_id": "EPIC-1.1",
+  "author_role": "Implementer",
+  "status": "Completed",
+  "session_id": "sesh-1234",
+  "artifacts": [
+    {
+      "path": "/home/jonfriis/Dokumenter/vs-code-agents/agent-output/planning/001-standardized-handoff-schema.md",
+      "hash": "e847359554ae98e3c047607815c3e18cef1df452ba284e9a134364246c518030",
+      "planka_task_id": "1729878110406444893"
+    }
+  ]
+}

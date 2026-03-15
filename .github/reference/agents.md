@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Supported AI models in GitHub Copilot
 
 Learn about the supported AI models in GitHub Copilot.

@@ -34,7 +34,7 @@ Run the scenario with one clear prompt sequence. Keep prompts deterministic.
 Minimum checks:
 
 1. Correct agent behavior (stays within role constraints).
-2. Correct handoff format: `Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID]).`
+2. Correct handoff format: `Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).`
 3. Correct artifact updates in `agent-output/`.
 4. Correct MCP usage (no forbidden script-based flow for core operations).
 

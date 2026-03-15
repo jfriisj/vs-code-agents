@@ -220,8 +220,8 @@ Save your assessment to `agent-output/security/NNN-[topic]-security-audit.md`:
 ID: [NNN]
 Type: SecurityAudit
 Status: [Active / Closed]
-Epic: "[[WF-Epic-ID]]"
-Planka-Card: "[cardId]"
+Epic: "[[WF-E<epic-number>]]"
+Planka-Card: "CARD_ID_NUMERIC"
 ---
 
 # Security Assessment: [Feature/Component Name]
@@ -261,8 +261,8 @@ Before concluding your turn, you MUST align the Triad using **Native MCP Tools**
 
 
 3. **The Memory (Obsidian Graph)**:
-* Use `obsidian/write_note` to create your `WF-[ID]` node.
-* Strictly follow the **10-Line Rule** (`type: Security`, `parent: "[[WF-Target-ID]]"`, and max 3-bullet summary).
+* Use `obsidian/write_note` to create your `WF-<concrete-id>` node.
+* Strictly follow the **10-Line Rule** (`type: Security`, `parent: "[[WF-...]]"`, and max 3-bullet summary).
 * Patch the calling agent's node to link to yours.
 
 
@@ -270,4 +270,4 @@ Before concluding your turn, you MUST align the Triad using **Native MCP Tools**
 **Final Chat Message**:
 Always conclude your turn with:
 
-> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."*

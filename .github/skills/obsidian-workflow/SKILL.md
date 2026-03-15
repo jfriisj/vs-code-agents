@@ -4,7 +4,7 @@ description: Relational memory graph workflow using native Obsidian MCP tools wi
 license: MIT
 metadata:
   author: groupzer0
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Obsidian Workflow (Memory Graph)
@@ -24,8 +24,8 @@ Use concise `WF-*` notes only. Do not duplicate full artifact content.
 ```markdown
 ---
 type: [Epic | Plan | Analysis | Architecture | Security | Critique | Implementation | QA | UAT | Deployment | Retrospective | ProcessImprovement]
-parent: "[[WF-Parent-ID]]" # use "none" only for root epic nodes
-Planka-Card: "[cardId]"
+parent: "[[WF-...]]" # use "none" only for root epic nodes
+Planka-Card: "CARD_ID_NUMERIC"
 ---
 
 ## Summary
@@ -34,6 +34,28 @@ Planka-Card: "[cardId]"
 ## Artifacts
 - [[agent-output/path/to/artifact.md]]
 ```
+
+## Deterministic WF-ID Contract (Mandatory)
+
+WF IDs must be concrete and reproducible. Placeholder IDs are forbidden.
+
+Use these conventions:
+- **Epic root nodes**: `WF-E<epic-number>` (example: `WF-E1.2`)
+- **Plan nodes**: `WF-P<plan-id>` (example: `WF-P001`)
+- **Phase nodes**: `WF-<TYPE>-<plan-id>`
+  - Examples: `WF-AN-001`, `WF-AR-001`, `WF-IMPL-001`, `WF-QA-001`, `WF-UAT-001`, `WF-DEP-001`
+
+If an epic has no plan ID yet, reference the epic root (`WF-E...`) only.
+
+### Placeholder Ban
+
+Never emit placeholders such as:
+- `[[WF-[ID]]]`
+- `[[WF-Epic-ID]]`
+- `[[WF-Plan-ID]]`
+- `[[WF-Calling-ID]]`
+
+All handoff messages and Planka comments must contain a concrete `[[WF-...]]` link.
 
 ## Allowed Operations (Native MCP Only)
 - Use `read_note`, `write_note`, `patch_note`, and frontmatter update tools.
@@ -45,10 +67,18 @@ Planka-Card: "[cardId]"
 - Follow only `parent:` if broader context is required.
 - Read full artifacts only when summary bullets are insufficient.
 
+## WF Existence Gate (Before Handoff/Planka Comment)
+
+Before writing a handoff message or Planka comment that references `[[WF-...]]`:
+1. Resolve a concrete WF ID via the deterministic contract.
+2. Attempt targeted read on that exact note (`read_note`).
+3. If missing, create a minimal compliant note (`write_note`) with required frontmatter.
+4. Then emit handoff/comment using that concrete, existing `[[WF-...]]` link.
+
 ## Handoff Contract
 Before concluding, output:
 
-> "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
+> "Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."
 
 ## Token Budget Guidance
 - 0 broad vault searches

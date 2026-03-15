@@ -109,13 +109,13 @@ Before handing off to the Planner or Implementer, you must align the three sourc
 
 3. **The Memory (Obsidian Graph)**:
 
-* Use native Obsidian tools (`write_note` or `patch_note`) to create or update your `WF-[ID]` node.
-* Set `type: Analysis` and `parent: "[[WF-Calling-ID]]"`.
+* Use native Obsidian tools (`write_note` or `patch_note`) to create or update your `WF-<concrete-id>` node.
+* Set `type: Analysis` and `parent: "[[WF-...]]"`.
 * Write a strict 3-bullet TL;DR summary in the note (The 10-Line Rule).
 * Link to your `agent-output/` artifact.
-* If handing back to a Planner, use `patch_note` to update their node to link to yours (`See [[WF-[Your-ID]]]`).
+* If handing back to a Planner, use `patch_note` to update their node to link to yours (`See [[WF-...]]`).
 
 **Final Chat Message**:
 Always conclude your turn in the chat with:
 
-> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."*

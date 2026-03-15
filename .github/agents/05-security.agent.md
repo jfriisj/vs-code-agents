@@ -151,8 +151,8 @@ Document any areas you were unable to cover and recommend a follow-up review.
 
 Load `security-patterns` skill for detailed methodology. Quick reference:
 
-| Phase | Focus | Output |
-|-------|-------|--------|
+| Phase | Domain | Focus | Output |
+|-------|--------|-------|--------|
 | **Phase 1** | Architectural Security | Trust boundaries, STRIDE threat model, attack surface | `*-architecture-security.md` |
 | **Phase 2** | Code Security | OWASP Top 10, language-specific patterns, auth/authz | `*-code-audit.md` |
 | **Phase 3** | Dependencies | Vulnerability scanning, supply chain, lockfiles | `*-dependency-audit.md` |
@@ -311,6 +311,13 @@ When you perform security audits, dependency checks, or compliance reviews for a
    - Once your review is complete, add a comment to the Epic card (`add_comment`) summarizing your verdict (e.g., APPROVED / APPROVED_WITH_CONTROLS / BLOCKED_PENDING_REMEDIATION) and the highest severity findings.
    - Include a reference/link to your detailed security artifact (`agent-output/security/...`) in the comment.
 
+**Cross-Agent Planka Guardrails (Mandatory)**:
+- Do not create/edit Planner AC task lists (`AC1: ...`, `AC2: ...`) unless explicitly requested by Planner for security decomposition.
+- Every `add_comment` MUST include:
+   - artifact path (`agent-output/...`),
+   - related `[[WF-ID]]`,
+   - handoff sentence: `Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).`
+
 **Tool Usage**:
 Use native `planka/*` MCP tools for all operations.
 Examples:
@@ -324,10 +331,10 @@ Examples:
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:obsidian/*` for vault operations.
 
 **Your Graph Role (The Security Gate):** You create "Security" nodes attached to Plans.
-1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: Security`. Set `parent: "[[WF-Plan-ID]]"` using the Plan ID provided in the chat history.
+1. Create or update `workflows/WF-<concrete-id>-<slug>.md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: Security`. Set `parent: "[[WF-P<plan-id>]]"` using the Plan ID provided in the chat history.
 3. **Closing the Loop**: When your audit is complete, use `patch_note` to append a concise summary bullet with a direct wikilink to your node.
-4. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
+4. **CRITICAL HANDOFF**: Before concluding, output a final message with concrete IDs (no placeholders) using this structure: "Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 

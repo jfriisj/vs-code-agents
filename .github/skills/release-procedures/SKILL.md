@@ -16,7 +16,7 @@ Systematic approach to packaging and releasing software. Use this skill when:
 
 ## Release Workflow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Two-Stage Release Flow                       │
 ├─────────────────────────────────────────────────────────────────┤
@@ -56,7 +56,7 @@ Systematic approach to packaging and releasing software. Use this skill when:
 
 ### Pre-Release Versions
 
-```
+```text
 1.2.3-alpha.1    # Early development
 1.2.3-beta.1     # Feature complete, testing
 1.2.3-rc.1       # Release candidate

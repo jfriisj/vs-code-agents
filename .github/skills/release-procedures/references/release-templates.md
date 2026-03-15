@@ -179,7 +179,7 @@ Version: [Version]
 
 ## Git Tag Message Template
 
-```
+```text
 Release vX.Y.Z
 
 Key changes:

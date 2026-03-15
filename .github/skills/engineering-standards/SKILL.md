@@ -15,7 +15,7 @@ Foundational principles for high-quality software. Use this skill when reviewing
 
 When these standards are applied or violated, findings must be anchored using **Native MCP Tools**:
 1. **Markdown (`agent-output/`)**: Save full technical analyses, ADRs, or code-review findings.
-2. **Obsidian Graph (`workflows/`)**: Major architectural refactoring decisions must be logged in a `WF-[ID]` node following the strict **10-Line Rule**.
+2. **Obsidian Graph (`workflows/`)**: Major architectural refactoring decisions must be logged in a `WF-<concrete-id>` node following the strict **10-Line Rule**.
 3. **Planka Board**: Use `create_task` to add specific refactoring/tech-debt items to the Epic card, or `add_comment` to flag code smells.
 
 ---

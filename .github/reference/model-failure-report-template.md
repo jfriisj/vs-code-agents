@@ -1,6 +1,6 @@
 # Model Failure Report Template
 
----
+```yaml
 Run-ID: [YYYYMMDD-HHMM-scenario]
 Date: [YYYY-MM-DD]
 Agent: [01-Roadmap / 02-Planner / ...]
@@ -8,7 +8,7 @@ Model: [e.g., GPT-5.3-Codex]
 Scenario: [short name]
 Severity: [BLOCKER/HIGH/MEDIUM/LOW]
 Status: [Open/In Analysis/Fixed/Verified]
----
+```
 
 ## 1) Expected Behavior
 

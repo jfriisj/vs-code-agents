@@ -28,7 +28,7 @@ Before implementing any API endpoint or client, check for contract definitions i
 If neither exists and you are implementing API endpoints, propose creating an `api-contract/` directory following the standard structure:
 
 
-```
+```text
 
 api-contract/ (or .contracts/)
 ├── README.md       # Purpose, sync instructions, change process
@@ -66,7 +66,7 @@ When a Planner or Architect proposes a contract change, they MUST perform the fo
    - Use Planka's `create_task` to explicitly add a task like: *"Coordinate breaking contract change across repos"*.
    - Use Planka's `add_comment` to flag the breaking change for the human user.
 3. **Always bump the version** in `version.ts` when modifying `types.ts`.
-4. **Update Obsidian**: Use `obsidian/patch_note` to ensure the active `WF-[ID]` node mentions the contract change in its `## Summary`.
+4. **Update Obsidian**: Use `obsidian/patch_note` to ensure the active `WF-<concrete-id>` node mentions the contract change in its `## Summary`.
 
 ---
 

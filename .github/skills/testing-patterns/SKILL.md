@@ -106,8 +106,8 @@ Before concluding your turn as QA or Implementer:
 
 1. **The Artifact (`agent-output/`)**: Save test results or strategies using `filesystem/write_file`.
 2. **The Execution (Planka)**: Check off completed testing tasks and use `add_label_to_card` (e.g., `QA Passed`).
-3. **The Memory (Obsidian)**: Use `obsidian/write_note` to create your `WF-[ID]` node (Strictly 10-Line Rule, type: `QA` or `Implementation`).
+3. **The Memory (Obsidian)**: Use `obsidian/write_note` to create your `WF-<concrete-id>` node (Strictly 10-Line Rule, type: `QA` or `Implementation`).
 
 **Final Chat Message**:
 Always conclude your turn with:
-> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."*

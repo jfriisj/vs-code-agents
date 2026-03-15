@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 <div align="center">
   <img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/1e21d898-811b-42c2-a810-bf921dde0f58" />
 </div>

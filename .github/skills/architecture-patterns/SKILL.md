@@ -35,8 +35,8 @@ Every significant architectural decision should be documented in `agent-output/a
 ID: [NNN]
 Type: Architecture
 Status: [Proposed | Accepted | Deprecated]  # This is the decision status, not execution status
-Epic: "[[WF-Epic-ID]]"
-Planka-Card: "[cardId]"
+Epic: "[[WF-E<epic-number>]]"
+Planka-Card: "CARD_ID_NUMERIC"
 ---
 # ADR-[NNN]: [Decision Title]
 
@@ -82,7 +82,7 @@ Planka-Card: "[cardId]"
 
 ### Layered Architecture
 
-```
+```text
 ┌─────────────────────────────────┐
 │         Presentation            │  UI, API endpoints
 ├─────────────────────────────────┤
@@ -345,14 +345,14 @@ Before handing off, the Architect MUST align the triad using **Native MCP Tools*
 
 3. **The Memory (Obsidian Graph)**:
 
-* Use native tools (`write_note`, `patch_note`) to create/update `workflows/WF-[ID]-[slug].md`.
+* Use native tools (`write_note`, `patch_note`) to create/update `workflows/WF-<concrete-id>-<slug>.md`.
 * Strictly follow the **10-Line Rule** (`type`, `parent`, `Planka-Card`, max 3-bullet summary, and Artifact link).
 * Patch the calling agent's node to link back to your new Architect node.
 
 **Final Chat Message**:
 Always conclude your turn in the chat with:
 
-> *"Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."*
+> *"Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."*
 
 ### Other Agents
 

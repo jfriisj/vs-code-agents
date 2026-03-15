@@ -234,6 +234,13 @@ When you conduct User Acceptance Testing for an implemented Plan, you MUST track
    - Once UAT is complete, add a comment to the Epic card (`add_comment`) summarizing your verdict (UAT Complete / UAT Failed) and the Epic-level decision (e.g., EPIC APPROVED).
    - Include a reference/link to your detailed UAT artifact (`agent-output/uat/...`) in the comment.
 
+**Cross-Agent Planka Guardrails (Mandatory)**:
+- Do not create/edit Planner AC task lists (`AC1: ...`, `AC2: ...`) unless explicitly requested by Planner for UAT decomposition.
+- Every verdict `add_comment` MUST include:
+  - artifact path (`agent-output/...`),
+  - related `[[WF-ID]]`,
+  - handoff sentence: `Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).`
+
 **Tool Usage**:
 Use native `planka/*` MCP tools for all operations.
 Examples:
@@ -247,9 +254,9 @@ Examples:
 **Canonical source rule**: `agent-output/*` is authoritative. Obsidian stores relational context and handoffs. Use `#tool:obsidian/*` for vault operations.
 
 **Your Graph Role (The Validator):** You create "UAT" nodes to validate Plans.
-1. Create or update `workflows/WF-[ID]-[slug].md`.
-2. **Establish the Upward Edge**: Set frontmatter `type: UAT`. Set `parent: "[[WF-Plan-ID]]"` using the ID provided in the chat history.
-3. **CRITICAL HANDOFF**: Before concluding, output a final message stating: "Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID])."
+1. Create or update `workflows/WF-<concrete-id>-<slug>.md`.
+2. **Establish the Upward Edge**: Set frontmatter `type: UAT`. Set `parent: "[[WF-P<plan-id>]]"` using the ID provided in the chat history.
+3. **CRITICAL HANDOFF**: Before concluding, output a final message with concrete IDs (no placeholders) using this structure: "Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC)."
 
 **Token budget discipline**: 0 searches, max 2 reads, max 2 writes. Context retrieval relies on graph links.
 

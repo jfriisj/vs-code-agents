@@ -308,7 +308,7 @@ When handing off between agents, we rely on a strict final chat message that bri
 Every agent MUST end their turn with this exact format:
 
 ```markdown
-Handoff Ready. Parent Node context for the next agent is [[WF-[ID]]] (Planka Card: [Card-ID]).
+Handoff Ready. Parent Node context for the next agent is [[WF-...]] (Planka Card: CARD_ID_NUMERIC).
 
 ```
 
@@ -347,7 +347,7 @@ Instead of relying on an external, opaque Memory MCP server that dumps massive J
 
 ### The "Summary Node" Pattern (The 10-Line Rule)
 
-To prevent context window bloat, agents do not dump massive contents into Obsidian. They create lightweight `WF-[ID]` (Workflow) nodes. These nodes act as **pointers and semantic edges**.
+To prevent context window bloat, agents do not dump massive contents into Obsidian. They create lightweight `WF-<concrete-id>` (Workflow) nodes. These nodes act as **pointers and semantic edges**.
 
 **The 10-Line Rule for `WF-` Notes**:
 
@@ -361,7 +361,7 @@ To prevent context window bloat, agents do not dump massive contents into Obsidi
 ---
 type: Plan
 parent: "[[WF-001-Auth-Epic]]"
-Planka-Card: "[cardId]"
+Planka-Card: "CARD_ID_NUMERIC"
 ---
 ### Summary
 * Decided to use JWT tokens over session cookies.
@@ -379,7 +379,7 @@ Planka-Card: "[cardId]"
 **Retrieval (Lazy Loading)**:
 When an agent starts a task or receives a handoff, it should NOT search the entire vault. It should:
 
-1. Read the provided `[[WF-[ID]]]` note using `read_note`.
+1. Read the provided `[[WF-...]]` note using `read_note`.
 2. Understand the context from the bullet points and frontmatter.
 3. Follow the `parent:` link if broader strategic context is needed.
 4. Only read the full `agent-output/` artifact if deep implementation details are strictly necessary.
@@ -429,7 +429,7 @@ Agents use the `planka-workflow` skill to keep the board synchronized using **10
 * **07-Implementer**: Marks tasks as completed (`update_task`) and uses the stopwatch (`update_card`) for time tracking.
 
 **Handoff Synergy (The Triad Bridge)**:
-When an agent finishes its work, its final chat message MUST point the next agent to the correct `[[WF-ID]]` node and Planka `[Card-ID]`.
+When an agent finishes its work, its final chat message MUST point the next agent to the correct `[[WF-ID]]` node and Planka `CARD_ID_NUMERIC`.
 
 ---
 
@@ -806,7 +806,7 @@ You can have project-specific agent variants:
 **Q: Obsidian graph is not updating or retrieves irrelevant data**
 
 * Verify the `obsidian` server is running and accessible in your VS Code MCP tool settings.
-* Stop searching the full vault. Ensure the agent uses `read_note` on the specific `WF-[ID]` handoff node.
+* Stop searching the full vault. Ensure the agent uses `read_note` on the specific `WF-<concrete-id>` handoff node.
 
 **Q: Planka cards aren't updating or syncing natively**
 
@@ -833,7 +833,7 @@ You can have project-specific agent variants:
 
 **Q: Too many handoffs, losing context**
 
-* Ensure the Obsidian summary nodes (`WF-[ID]`) are used correctly to maintain context.
+* Ensure the Obsidian summary nodes (`WF-<concrete-id>`) are used correctly to maintain context.
 * Reference artifact paths explicitly.
 
 ### General FAQ
