@@ -14,6 +14,7 @@ handoff_id: "[[WF-1]]"
 ## Changelog
 | Date | Change | Rationale | Plan/Epic |
 |------|--------|-----------|-----------|
+| 2026-03-15 | Formalized Memory Invariants | Added ID Contract & 10-Line Rule. | Plan-002 |
 | 2026-03-13 | Initial Architecture Draft | Establish baseline for multi-agent system. | Epic 1.1 |
 
 ## Purpose
@@ -30,13 +31,14 @@ The system follows a role-based multi-agent pattern where specialized agents han
 5. **Implementer/QA Agent**: Executes plans and verifies quality.
 
 ## Runtime Flows
+- **Memory Initialization**: [Date: 2026-03-15] Reconciled from Plan-002: Standardized `WF-` ID contract (`WF-E<epic-id>`, `WF-P<plan-id>`, etc.) and 10-Line Rule.
 - **Epic Initiation**: User -> Roadmap Agent -> Planka Epic Card -> Architecture Assessment.
 - **Task Execution**: Architect Review -> Planner -> Critic Review -> Implementer -> QA -> Architect Audit.
 
 ## Data Boundaries
 - **Workspace**: Source code and local configuration.
 - **Agent Output**: Standardized directory structure for agent artifacts (`/agent-output/`).
-- **Memory**: Obsidian vault for relational context and handoffs.
+- **Memory**: Obsidian vault for relational context and handoffs using `WF-<ID>` nodes in `agent-output/workflows/`.
 - **Agile**: Planka for execution visibility and status tracking.
 
 ## Quality Attributes

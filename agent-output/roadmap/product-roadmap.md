@@ -24,7 +24,7 @@ handoff_id: "[[WF-1]]"
 
 ### Epic 1.1: Multi-Agent Coordination Layer
 **Priority**: P0
-**Status**: EPIC APPROVED [CardID: 1729878110406444893] [BoardID: 1729877970501240657] [WF-E1.1]
+**Status**: Delivered [CardID: 1729878110406444893] [BoardID: 1729877970501240657] [WF-E1.1]
 
 **User Story**:
 As a developer, I want a structured system where different AI agents (Planner, Architect, Roadmap, Reviewer) collaborate on tasks, so that I get higher quality code with less manual oversight.
@@ -38,12 +38,12 @@ As a developer, I want a structured system where different AI agents (Planner, A
 - None
 
 **Acceptance Criteria**:
-- [ ] Agents can hand off tasks using a standardized protocol.
-- [ ] Clear separation of concerns between Planner and Architect roles.
+- [x] Agents can hand off tasks using a standardized protocol.
+- [x] Clear separation of concerns between Planner and Architect roles.
 
 ### Epic 1.2: Persistent Memory with Obsidian
 **Priority**: P0
-**Status**: Planned [CardID: 1729878166190688097] [BoardID: 1729877970501240657]
+**Status**: In Progress [CardID: 1729878166190688097] [BoardID: 1729877970501240657] [WF-E1.2]
 
 **User Story**:
 As a developer, I want my project's context and decisions to persist across chat sessions via Obsidian, so that the AI doesn't forget previous architectural choices.
@@ -61,7 +61,7 @@ As a developer, I want my project's context and decisions to persist across chat
 
 ### Epic 1.3: Planka Agile execution visibility
 **Priority**: P1
-**Status**: Planned [CardID: 1729878222469859173] [BoardID: 1729877970501240657]
+**Status**: In Progress [CardID: 1729878222469859173] [BoardID: 1729877970501240657] [WF-E1.3]
 
 **User Story**:
 As a product owner, I want to see the status of AI-driven epics and tasks in a Kanban board, so that I can track progress transparently.
@@ -87,7 +87,7 @@ As a product owner, I want to see the status of AI-driven epics and tasks in a K
 ### Epic Readiness Matrix (v0.1.0)
 | Epic ID | Title | Status | Linked Plans | Blockers |
 |---------|-------|--------|--------------|----------|
-| 1.1     | Multi-Agent Coordination Layer | EPIC APPROVED | - | - |
+| 1.1     | Multi-Agent Coordination Layer | Delivered | Plan 001 | - |
 | 1.2     | Persistent Memory with Obsidian | EPIC APPROVED | - | - |
 | 1.3     | Planka Agile execution visibility | EPIC APPROVED | - | - |
 
