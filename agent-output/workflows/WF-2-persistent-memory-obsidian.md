@@ -2,7 +2,7 @@
 type: Implementation
 parent: '[[WF-E1.2]]'
 Planka-Card: '123'
-handoff_id: b2c4d5e6
+handoff_id: '[[WF-CR-2]]'
 status: Closed
 ---
 

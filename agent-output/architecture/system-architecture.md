@@ -14,6 +14,7 @@ handoff_id: "[[WF-1]]"
 ## Changelog
 | Date | Change | Rationale | Plan/Epic |
 |------|--------|-----------|-----------|
+| 2026-03-15 | Approved Planka Sync Strategy | Added mapping durability & telemetry requirements. | Plan-003 |
 | 2026-03-15 | Formalized Memory Invariants | Added ID Contract & 10-Line Rule. | Plan-002 |
 | 2026-03-13 | Initial Architecture Draft | Establish baseline for multi-agent system. | Epic 1.1 |
 
@@ -51,6 +52,10 @@ The system follows a role-based multi-agent pattern where specialized agents han
 - [ ] Context window limits for large architectural summaries.
 
 ## Decisions (ADRs)
+- **ADR-002: Dynamic Planka-Roadmap Sync (Idempotent Architecture)**
+  - **Context**: Static IDs in Planka vary across board instances. Manual status sync is error-prone.
+  - **Choice**: Use name-based list resolution and diff-based sync with mandatory telemetry logging.
+  - **Consequences**: Robust visibility across environments; overhead of metadata retrieval.
 - **ADR-001: Role-Based Agent Specialization**
   - **Context**: LLMs struggle with multi-stage complex tasks in a single prompt.
   - **Choice**: Separate roles into specialized agents with distinct toolsets.

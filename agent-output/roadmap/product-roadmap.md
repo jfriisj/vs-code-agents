@@ -43,7 +43,7 @@ As a developer, I want a structured system where different AI agents (Planner, A
 
 ### Epic 1.2: Persistent Memory with Obsidian
 **Priority**: P0
-**Status**: In Progress [CardID: 1729878166190688097] [BoardID: 1729877970501240657] [WF-E1.2]
+**Status**: Delivered [CardID: 1729878166190688097] [BoardID: 1729877970501240657] [WF-E1.2]
 
 **User Story**:
 As a developer, I want my project's context and decisions to persist across chat sessions via Obsidian, so that the AI doesn't forget previous architectural choices.
@@ -88,7 +88,7 @@ As a product owner, I want to see the status of AI-driven epics and tasks in a K
 | Epic ID | Title | Status | Linked Plans | Blockers |
 |---------|-------|--------|--------------|----------|
 | 1.1     | Multi-Agent Coordination Layer | Delivered | Plan 001 | - |
-| 1.2     | Persistent Memory with Obsidian | EPIC APPROVED | - | - |
+| 1.2     | Persistent Memory with Obsidian | Delivered | Plan 002 | - |
 | 1.3     | Planka Agile execution visibility | EPIC APPROVED | - | - |
 
 ---

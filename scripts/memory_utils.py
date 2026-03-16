@@ -1,6 +1,7 @@
 import os
 import yaml
 import re
+import hashlib
 
 class WFNodeManager:
     def __init__(self, workflows_dir=None, output_root=None):
@@ -8,12 +9,19 @@ class WFNodeManager:
         self.output_root = output_root or "agent-output"
         self.next_id_path = os.path.join(self.output_root, ".next-id")
 
-    def create_node(self, node_id, slug, node_type, parent, planka_card, handoff_id, summary_lines=None):
-        # Normalise ID to WF-<ID> if needed
-        full_id = f"WF-{node_id}" if not str(node_id).startswith("WF-") else node_id
-        filename = f"{full_id}-{slug}.md"
-        filepath = os.path.join(self.workflows_dir, filename)
+    def create_node(self, node_id, slug, node_type, parent, planka_card, handoff_id, summary_lines=None, artifact_path=None):
+        # SECURITY (INJ-001): Path sanitisation using os.path.basename
+        clean_node_id = os.path.basename(str(node_id))
+        clean_slug = os.path.basename(str(slug))
+        full_id = f"WF-{clean_node_id}" if not clean_node_id.startswith("WF-") else clean_node_id
         
+        filename = f"{full_id}-{clean_slug}.md"
+        filepath = os.path.abspath(os.path.join(self.workflows_dir, filename))
+        
+        # Verify it stays inside workflows_dir
+        if not filepath.startswith(os.path.abspath(self.workflows_dir)):
+            raise ValueError(f"Security Violation: Path traversal detected for {filepath}")
+
         # Enforce 10-Line Rule for summary
         if summary_lines and len(summary_lines) > 3:
             summary_lines = summary_lines[:3]
@@ -24,6 +32,11 @@ class WFNodeManager:
             "Planka-Card": str(planka_card),
             "handoff_id": handoff_id
         }
+
+        # SECURITY (INTEGRITY-001): Hash linked artifact
+        if artifact_path:
+            frontmatter["artifact_hash"] = self._calculate_hash(artifact_path)
+            frontmatter["artifact_path"] = artifact_path
         
         content = "---\n"
         content += yaml.dump(frontmatter, sort_keys=False)
@@ -37,6 +50,82 @@ class WFNodeManager:
             f.write(content)
             
         return filepath
+
+    def _calculate_hash(self, filepath):
+        if not os.path.exists(filepath):
+            return None
+        sha256 = hashlib.sha256()
+        with open(filepath, "rb") as f:
+            for byte_block in iter(lambda: f.read(4096), b""):
+                sha256.update(byte_block)
+        return sha256.hexdigest()
+
+    def verify_integrity(self, node_id, slug, artifact_path=None):
+        clean_node_id = os.path.basename(str(node_id))
+        clean_slug = os.path.basename(str(slug))
+        full_id = f"WF-{clean_node_id}" if not clean_node_id.startswith("WF-") else clean_node_id
+        filename = f"{full_id}-{clean_slug}.md"
+        filepath = os.path.join(self.workflows_dir, filename)
+        
+        if not os.path.exists(filepath):
+            return False
+            
+        with open(filepath, "r") as f:
+            content = f.read()
+            
+        # Parse frontmatter
+        fm_match = re.search(r'^---\s*\n(.*?)\n---', content, re.DOTALL)
+        if not fm_match:
+            return False
+            
+        try:
+            frontmatter = yaml.safe_load(fm_match.group(1))
+        except yaml.YAMLError:
+            return False
+
+        stored_hash = frontmatter.get("artifact_hash")
+        artifact_to_check = artifact_path or frontmatter.get("artifact_path")
+        
+        if not stored_hash or not artifact_to_check:
+            return False
+            
+        current_hash = self._calculate_hash(artifact_to_check)
+        return stored_hash == current_hash
+
+    def update_hash(self, node_id, slug, artifact_path=None):
+        clean_node_id = os.path.basename(str(node_id))
+        clean_slug = os.path.basename(str(slug))
+        full_id = f"WF-{clean_node_id}" if not clean_node_id.startswith("WF-") else clean_node_id
+        filename = f"{full_id}-{clean_slug}.md"
+        filepath = os.path.join(self.workflows_dir, filename)
+        
+        if not os.path.exists(filepath):
+            return False
+            
+        with open(filepath, "r") as f:
+            content = f.read()
+            
+        fm_match = re.search(r'^---\s*\n(.*?)\n---', content, re.DOTALL)
+        if not fm_match:
+            return False
+            
+        frontmatter = yaml.safe_load(fm_match.group(1))
+        artifact_to_hash = artifact_path or frontmatter.get("artifact_path")
+        
+        if not artifact_to_hash:
+            return False
+            
+        new_hash = self._calculate_hash(artifact_to_hash)
+        frontmatter["artifact_hash"] = new_hash
+        if artifact_path:
+            frontmatter["artifact_path"] = artifact_path
+            
+        new_fm = yaml.dump(frontmatter, sort_keys=False)
+        new_content = f"---\n{new_fm}---\n" + content[fm_match.end():].lstrip()
+        
+        with open(filepath, "w") as f:
+            f.write(new_content)
+        return True
 
     def get_next_id(self, increment=False):
         if not os.path.exists(self.next_id_path):
@@ -141,6 +230,7 @@ if __name__ == "__main__":
     create_parser.add_argument("--card", required=True)
     create_parser.add_argument("--handoff", required=True)
     create_parser.add_argument("--summary", action="append")
+    create_parser.add_argument("--artifact", help="Path to linked artifact for hashing")
 
     # Get next ID
     id_parser = subparsers.add_parser("next-id")
@@ -158,11 +248,23 @@ if __name__ == "__main__":
     status_parser.add_argument("--status", required=True)
     status_parser.add_argument("--handoff", required=True)
 
+    # Update hash
+    update_hash_parser = subparsers.add_parser("update-hash")
+    update_hash_parser.add_argument("--id", required=True)
+    update_hash_parser.add_argument("--slug", required=True)
+    update_hash_parser.add_argument("--artifact", help="Path to linked artifact")
+
+    # Verify integrity
+    verify_parser = subparsers.add_parser("verify")
+    verify_parser.add_argument("--id", required=True)
+    verify_parser.add_argument("--slug", required=True)
+    verify_parser.add_argument("--artifact", help="Path to linked artifact")
+
     args = parser.parse_args()
     manager = WFNodeManager()
 
     if args.command == "create":
-        path = manager.create_node(args.id, args.slug, args.type, args.parent, args.card, args.handoff, args.summary)
+        path = manager.create_node(args.id, args.slug, args.type, args.parent, args.card, args.handoff, args.summary, artifact_path=args.artifact)
         print(f"Created node at {path}")
     elif args.command == "next-id":
         print(manager.get_next_id(increment=args.increment))
@@ -179,4 +281,18 @@ if __name__ == "__main__":
             print("Status updated successfully.")
         else:
             print("Failed to update status (id mismatch or file not found).")
+            sys.exit(1)
+    elif args.command == "update-hash":
+        success = manager.update_hash(args.id, args.slug, artifact_path=args.artifact)
+        if success:
+            print("Hash updated successfully.")
+        else:
+            print("Failed to update hash.")
+            sys.exit(1)
+    elif args.command == "verify":
+        valid = manager.verify_integrity(args.id, args.slug, artifact_path=args.artifact)
+        if valid:
+            print("Integrity verified.")
+        else:
+            print("Integrity check FAILED.")
             sys.exit(1)
