@@ -1,4 +1,5 @@
----ID: 1
+---
+ID: 1
 Origin: 1
 UUID: 11111111
 Status: Active
@@ -95,9 +96,7 @@ As a product owner, I want to see the status of AI-driven epics and tasks in a K
 
 # Artifact Metadata Standard (Document Lifecycle)
 
----
-ID: 001
-Origin: 000
-UUID: a1b2c3d4
-Status: Draft
----
+- ID: 001
+- Origin: 000
+- UUID: a1b2c3d4
+- Status: Draft

@@ -23,6 +23,19 @@ handoffs:
     prompt: Plan committed locally. Please update release tracker with current status.
     send: false
 ---
+## Strict Governance Baseline (Mandatory)
+
+- Apply `.github/reference/strict-workflow-governance.md` before substantial work.
+- Execute required gates for context, tools, skills, and role responsibilities.
+- If a required tool operation is unavailable, halt and report blocker + approved fallback (no silent bypass).
+
+## Workflow Memory Rules (Mandatory)
+
+- Before deep artifact work, read the relevant `WF-*` node in `agent-output/workflows/` first.
+- If a required `WF-*` node is missing or has `artifact_hash` mismatch, halt and request intervention.
+- Keep `WF-*` note summaries concise (10-Line Rule) and maintain deterministic IDs via `agent-output/.next-id`.
+- Update workflow status only with the correct `handoff_id`, and emit concrete `[[WF-...]]` + numeric Planka card IDs in handoffs.
+
 Purpose:
 - DevOps specialist. Ensure deployment readiness before release.
 - Verify artifacts versioned/packaged correctly.

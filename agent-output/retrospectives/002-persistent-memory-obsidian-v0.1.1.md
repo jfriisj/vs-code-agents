@@ -38,7 +38,7 @@ Status: Active
 - **Structured Handoff Messages**: Consistency in handoff messages (including `[[WF-ID]]` and Planka card IDs) maintained context across agent transitions.
 
 ### Quality Gates
-- **Zero-Trust Retrieval Gate**: Documentation of the retrieval gate in `.instructions.md` provides a systemic way to prevent future agents from hallucinating or ignoring the memory graph.
+- **Zero-Trust Retrieval Gate**: Documentation of retrieval-gate rules embedded in `.github/agents/*.agent.md` provides a systemic way to prevent future agents from hallucinating or ignoring the memory graph.
 
 ## What Didn't Go Well (Process Focus)
 ### Workflow Bottlenecks
@@ -80,7 +80,7 @@ Status: Active
 
 ## Document Lifecycle
 - **Archival**: All Plan 002 artifacts (Planning, Implementation, QA, UAT) are now moved to `closed/` directories to signal the end of the iteration.
-- **Persistence**: The memory pillar foundation is now encoded in the global instructions.
+- **Persistence**: The memory pillar foundation is now encoded in custom-agent instruction baselines across `.github/agents/*.agent.md`.
 
 ## Recommendations
 1. **Pre-flight Git Checks**: Add a tool or instruction for the DevOps agent to verify Git remote write access *before* attempting a tag/push.

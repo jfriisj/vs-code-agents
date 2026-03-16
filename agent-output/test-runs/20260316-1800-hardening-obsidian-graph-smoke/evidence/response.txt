@@ -1,0 +1,6 @@
+Outcome summary:
+- Added stricter skill declaration checks and per-role assertions.
+- Added dedicated Obsidian graph contract checker.
+- Integrated new checker in CI and governance docs/catalogs.
+- Verified positive baseline and expected negative failures.
+- Restored state and confirmed final all-green stack.

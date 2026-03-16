@@ -1,0 +1,2 @@
+No persistent problems detected after restoration.
+All gate checks returned green on final run.

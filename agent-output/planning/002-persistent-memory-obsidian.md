@@ -44,7 +44,7 @@ Establish the automated "Memory Pillar" using Obsidian `WF-*` nodes. This plan f
    - Max 3 bullet points per summary.
    - Direct wikilinks to `agent-output/` artifacts.
 3. Establish the "Retrieval Gate": Agents must read the `WF-` node *before* deep-diving into artifacts.
-   - **Enforcement**: Update `.instructions.md` for Planner, Implementer, and QA roles to include a strict pre-flight check of the `WF-` node linked in context.
+   - **Enforcement**: Update `.github/agents/*.agent.md` for Planner, Implementer, and QA roles to include a strict pre-flight check of the `WF-` node linked in context.
    - **FAILURE MODE (CRITICAL - F1)**: If the memory node is missing, inaccessible, or its `artifact_hash` mismatching, the agent MUST **HALT** immediately and request human intervention. Proceeding with unverified context is strictly forbidden.
 4. **REMEDIATION (INTEGRITY-001)**: Implement SHA-256 integrity verification in `scripts/memory_utils.py`. The node manager must automatically calculate the hash of the linked artifact upon creation/update and verify it during subsequent reads to prevent "Context Poisoning."
    - **HASH UPDATE POLICY (F2)**: Any agent modifying a canonical artifact MUST invoke `scripts/memory_utils.py --update-hash <node_id>` as the final step of their closure procedure to maintain synchronicity.
@@ -55,7 +55,7 @@ Establish the automated "Memory Pillar" using Obsidian `WF-*` nodes. This plan f
 1. Standardize the final chat handoff message to include the concrete `[[WF-...]]` link.
 2. Integrate Planka-Obsidian cross-linking: update Planka descriptions to include the `Obsidian Root Node` link.
 3. Define the **System Integrity Check** (QA Gate): verify that `WF-` summaries match the source artifact content. **HARDENING**: Implementation must include a cryptographic hash check or strict schema validation between the `WF-` node and the source `agent-output/` artifact (Mitigate DATA-001).
-4. Implement the **Zero-Trust Retrieval Gate**: Agents must only access `WF-` nodes for which they have a valid logical parent in the current active scope. **ENFORCEMENT**: Update `.instructions.md` for all roles to explicitly forbid out-of-scope graph traversal (Mitigate IAM-001).
+4. Implement the **Zero-Trust Retrieval Gate**: Agents must only access `WF-` nodes for which they have a valid logical parent in the current active scope. **ENFORCEMENT**: Update `.github/agents/*.agent.md` for all roles to explicitly forbid out-of-scope graph traversal (Mitigate IAM-001).
 5. Define the "Closed" lifecycle for memory nodes:
    - **Idempotent Closure**: Implement state-aware replacement for node status (`Active` -> `Closed`) rather than opportunistic appends to avoid frontmatter corruption.
    - Use the `handoff_id` as the locking key to prevent concurrent agent closure conflicts.

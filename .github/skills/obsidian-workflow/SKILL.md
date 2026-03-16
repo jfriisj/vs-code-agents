@@ -76,6 +76,13 @@ Before writing a handoff message or Planka comment that references `[[WF-...]]`:
 3. If missing, create a minimal compliant note (`write_note`) with required frontmatter.
 4. Then emit handoff/comment using that concrete, existing `[[WF-...]]` link.
 
+## Strict Governance Hooks (Mandatory)
+
+1. Apply `.github/reference/strict-workflow-governance.md` on every workflow update.
+2. Use alias nodes only for backward compatibility with legacy links.
+3. Alias nodes MUST include `status: alias` and `canonical: "[[WF-...]]"` frontmatter.
+4. If a referenced WF node cannot be created or verified, halt handoff and report blocker.
+
 ## Handoff Contract
 Before concluding, output:
 

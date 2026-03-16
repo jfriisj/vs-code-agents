@@ -23,6 +23,19 @@ This repo is designed to be used with MCP servers configured in `.vscode/mcp.jso
 
 If you customize agents or rename MCP servers, make sure the agent `tools:` allowlist includes the corresponding `*/` namespace.
 
+### Strict Bootstrap (Required)
+
+When copying these agents to a new project, run:
+
+```bash
+sh .github/scripts/scaffold_required_files.sh --create-missing
+sh .github/scripts/check_strict_governance.sh
+sh .github/scripts/check_skill_gate_coverage.sh
+sh .github/scripts/check_obsidian_graph_contract.sh
+```
+
+This guarantees required governance files are present (including non-`.github` bootstrap files such as `.vscode/mcp.json` and `agent-output/.next-id`).
+
 ## Where to Put These Files
 
 There are two simple ways to make these agents available to VS Code:

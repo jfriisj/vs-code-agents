@@ -9,4 +9,4 @@ status: Closed
 ## Summary
 - Created the memory utility layer (scripts/memory_utils.py).
 - Established TDD verification suite (tests/test_memory_utils.py).
-- Operationalized agent-wide constraints in .instructions.md.
+- Operationalized agent-wide constraints in .github/agents/*.agent.md.

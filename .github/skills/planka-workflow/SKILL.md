@@ -144,3 +144,18 @@ For cross-instance recovery, agents should maintain `agent-output/planka/workflo
   }
 }
 ```
+
+## 7. Strict Governance Hooks (Mandatory)
+
+1. Apply `.github/reference/strict-workflow-governance.md` in every Planka operation sequence.
+2. Keep canonical lifecycle lanes present and ordered:
+  - `Planned`, `In Progress`, `Delivered`, `Deferred`, `Closed`.
+3. If `delete_list` is unavailable in runtime tools:
+  - rename non-canonical active lanes to `LEGACY - ...`,
+  - move them to far-right positions,
+  - ensure they contain zero cards.
+4. `Delivered` cards with open tasks require explicit deferment rationale comment.
+5. Every epic card must have:
+  - one `Release v*` label,
+  - one `Priority P*` label,
+  - description field containing `Obsidian Root Node: [[WF-E...]]`.

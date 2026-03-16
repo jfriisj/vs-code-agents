@@ -45,7 +45,7 @@ The plan defines the implementation of a relational context graph in Obsidian us
 
 ### [LOW] "Retrieval Gate" Enforcement
 - **Status**: RESOLVED (2026-03-15)
-- **Description**: Addressed in Milestone 2, Point 3. Includes specific task to update `.instructions.md` for all agent roles.
+- **Description**: Addressed in Milestone 2, Point 3. Includes specific task to update `.github/agents/*.agent.md` for all agent roles.
 
 ### [LOW] Broken Link Detection
 - **Status**: RESOLVED (2026-03-15)

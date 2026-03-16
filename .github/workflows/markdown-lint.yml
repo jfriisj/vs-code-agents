@@ -18,6 +18,20 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check strict workflow governance contract
+        run: sh .github/scripts/check_strict_governance.sh
+
+      - name: Check workflow note contract (changed files)
+        run: sh .github/scripts/check_workflow_contract.sh --changed-only --base-ref "${{ github.base_ref }}"
+
+      - name: Check skill-gate coverage
+        run: sh .github/scripts/check_skill_gate_coverage.sh
+
+      - name: Check Obsidian graph contract
+        run: sh .github/scripts/check_obsidian_graph_contract.sh
 
       - name: Run markdownlint-cli2
         uses: DavidAnson/markdownlint-cli2-action@v19

@@ -26,14 +26,14 @@ Status: **Committed**. Utility layer refactored for security, `WF-` template sta
 - [x] Milestone 1: Refactor `memory_utils.py` for Security (Sanitisation/Hashing).
 - [x] Milestone 1: Memory Node Template & ID Standardization
 - [x] Milestone 2: Automated Linking & Upward Edges (Parent Edge & Summary Rule)
-- [x] Milestone 2: Retrieval Gate & HALT Logic Enforcement in `.instructions.md`
+- [x] Milestone 2: Retrieval Gate & HALT Logic Enforcement in `.github/agents/*.agent.md`
 - [x] Milestone 3: Operational Integration & Security Controls (Filesystem chmod 600)
 
 ## Files Modified
 | Path | Changes | Lines |
 |------|---------|-------|
 | `scripts/memory_utils.py` | Added path sanitization, hashlib integration, `verify_integrity`, and `update_hash` methods. | ~150 |
-| `.instructions.md` | Added HALT on gate failure and mandatory Hash update on closure. | ~5 |
+| `.github/agents/*.agent.md` | Added HALT on gate failure and mandatory Hash update on closure. | ~5 |
 | `agent-output/workflows/*.md` | Updated existing nodes to include `artifact_hash` and `artifact_path`. | ~20 |
 | `agent-output/roadmap/product-roadmap.md` | Updated Epic 1.2 to "Delivered". | ~5 |
 

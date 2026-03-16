@@ -1,0 +1,7 @@
+Outcome summary:
+- Baseline gates passed.
+- Negative strict test failed as expected.
+- Negative workflow test failed as expected.
+- Files restored.
+- Final strict/scaffold/workflow/lint checks passed.
+- Smoke-run evidence bundle persisted for auditability.

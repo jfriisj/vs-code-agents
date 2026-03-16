@@ -1,11 +1,11 @@
-# 002-handoff-schema-planning-review
-
 ---
 ID: 002
 Origin: 1
 UUID: b5c6d7e8-f9a0-41b2-c3d4-e5f6a7b8c9d1
 Status: Draft
 ---
+
+# 002-handoff-schema-planning-review
 
 ## Changelog
 | Date | Handoff Context | Outcome Summary |

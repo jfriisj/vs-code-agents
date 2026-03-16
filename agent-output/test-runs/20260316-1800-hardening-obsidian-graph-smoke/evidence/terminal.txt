@@ -1,0 +1,23 @@
+Baseline stack:
+sh .github/scripts/check_skill_gate_coverage.sh && sh .github/scripts/check_obsidian_graph_contract.sh && sh .github/scripts/check_strict_governance.sh && sh .github/scripts/scaffold_required_files.sh && sh .github/scripts/check_workflow_contract.sh --changed-only && npx -y markdownlint-cli2 ".github/**/*.md" "agent-output/test-runs/**/*.md" --config .markdownlint.json
+Result: PASS
+Marker: HARDENING_STACK_OK
+
+Negative test A (skill semantics):
+- File: .github/agents/12-retrospective.agent.md
+- Change: removed token `analysis-methodology` from methodology declaration line
+Command: sh .github/scripts/check_skill_gate_coverage.sh
+Result: FAIL (expected)
+Key output: missing `analysis-methodology` for retrospective declaration
+
+Negative test B (obsidian graph contract):
+- File: .github/agents/09-qa.agent.md
+- Change: renamed `# Obsidian Graph Memory` heading
+Command: sh .github/scripts/check_obsidian_graph_contract.sh
+Result: FAIL (expected)
+Key output: missing `Obsidian Graph Memory` in QA agent
+
+Restore + final rerun:
+sh .github/scripts/check_skill_gate_coverage.sh && sh .github/scripts/check_obsidian_graph_contract.sh && sh .github/scripts/check_strict_governance.sh && sh .github/scripts/scaffold_required_files.sh && sh .github/scripts/check_workflow_contract.sh --changed-only && npx -y markdownlint-cli2 ".github/**/*.md" "agent-output/test-runs/**/*.md" --config .markdownlint.json
+Result: PASS
+Marker: HARDENING_STACK_OK

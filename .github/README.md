@@ -110,6 +110,8 @@ copilot --agent 02-planner --prompt "Create a plan for adding user authenticatio
 | [AGENTS-DEEP-DIVE.md](AGENTS-DEEP-DIVE.md) | Comprehensive documentation |
 | [reference/model-test-run-protocol.md](reference/model-test-run-protocol.md) | Standard protocol for model test runs |
 | [reference/model-failure-report-template.md](reference/model-failure-report-template.md) | Structured failure report template for reproducible debugging |
+| [reference/strict-workflow-governance.md](reference/strict-workflow-governance.md) | Mandatory strict workflow contract (context, tools, skills, role gates) |
+| [reference/required-files-catalog.md](reference/required-files-catalog.md) | Required file inventory and recovery/scaffolding rules |
 | [CHANGELOG.md](CHANGELOG.md) | Notable repository changes |
 | [obsidian-workflow skill](skills/obsidian-workflow/SKILL.md) | WF-node memory workflow patterns |
 
@@ -205,8 +207,10 @@ If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes acc
     │   ├── 12-retrospective.agent.md
     │   └── 13-pi.agent.md
     ├── reference/
-    │   ├── agents.md
-    │   ├── security-language-vuln-reference.md
+    │   ├── model-failure-report-template.md
+    │   ├── model-test-run-protocol.md
+    │   ├── required-files-catalog.md
+    │   ├── strict-workflow-governance.md
     │   └── uncertainty-review-template.md
     └── skills/
         ├── analysis-methodology/

@@ -1,11 +1,11 @@
-# 001-foundation-architecture-findings
-
 ---
 ID: 001
 Origin: 000
 UUID: 39f842d0-798a-4467-8509-f55a1d5292eb
 Status: Draft
 ---
+
+# 001-foundation-architecture-findings
 
 ## Changelog
 | Date | Handoff Context | Outcome Summary |

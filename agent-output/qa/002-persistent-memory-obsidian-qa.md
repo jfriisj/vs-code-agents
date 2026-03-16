@@ -38,7 +38,7 @@ Verified the implementation of the `WFNodeManager` utility layer in `scripts/mem
 - pyyaml
 
 **Configuration Files Needed**:
-- .instructions.md (to verify Retrieval Gate rules)
+- .github/agents/*.agent.md (to verify Retrieval Gate rules)
 
 ### Required Unit Tests
 - `scripts/memory_utils.py create`: Verify node creation with deterministic ID and 10-line summary truncation.
@@ -64,7 +64,7 @@ Verified the implementation of the `WFNodeManager` utility layer in `scripts/mem
 - `scripts/memory_utils.py`: Created CLI utility for memory node management with security hardening.
 - `tests/test_memory_utils.py`: Pytest suite for the utility.
 - `scripts/test_memory_utils_security.py`: Security TDD suite.
-- `.instructions.md`: Global instructions for agents.
+- `.github/agents/*.agent.md`: Custom-agent instruction baselines.
 - `agent-output/.next-id`: Initialized/incremented ID counter.
 
 ## Test Coverage Analysis
@@ -90,7 +90,7 @@ Verified the implementation of the `WFNodeManager` utility layer in `scripts/mem
 - **Output**: 2 tests passed in 0.002s (Path Traversal + SHA-256).
 
 ### Integration Tests
-- **Verification of .instructions.md**: Verified presence of sections: Zero-Trust Retrieval Gate, 10-Line Rule, ID Management, and Status Idempotency.
+- **Verification of .github/agents/*.agent.md**: Verified presence of sections: Strict Governance Baseline and Workflow Memory Rules.
 - **Verification of .next-id**: Verified file exists and contains current ID counter.
 - **Broken Link Detection Verification**: Verified `validate` command correctly identifies broken links (Output: `Broken links found: WF-2, non-existent-file.md`).
 - **10-Line Rule Verification**: Verified `create` command correctly truncates summary lines (Output: 3 lines kept of 5 provided).

@@ -1,11 +1,11 @@
-# 001-handoff-schema-security-audit
-
 ---
 ID: 001
 Origin: 1
 UUID: e9b5c3d1-f2a4-4678-a509-f55a1d5292eb
 Status: Draft
 ---
+
+# 001-handoff-schema-security-audit
 
 ## Review Mode: Targeted Code/Plan Review
 **Scope**: `agent-output/planning/001-standardized-handoff-schema.md` and proposed `handoff-schema.json`.

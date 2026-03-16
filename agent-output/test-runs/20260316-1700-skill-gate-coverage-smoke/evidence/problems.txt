@@ -1,0 +1,2 @@
+No persistent problems after restoration.
+Skill-gate checker and full governance stack passed on final run.

@@ -1,5 +1,3 @@
-# 003-obsidian-memory-architecture-findings
-
 ---
 ID: 003
 Origin: 2
@@ -9,6 +7,8 @@ Epic: "[[WF-E1.2]]"
 Planka-Card: "1729878166190688097"
 handoff_id: "[[WF-AR-002]]"
 ---
+
+# 003-obsidian-memory-architecture-findings
 
 ## Changelog
 | Date | Handoff Context | Outcome Summary |

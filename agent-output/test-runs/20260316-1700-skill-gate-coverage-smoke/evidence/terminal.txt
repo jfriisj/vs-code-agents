@@ -1,0 +1,18 @@
+Baseline stack:
+sh .github/scripts/check_skill_gate_coverage.sh && sh .github/scripts/check_strict_governance.sh && sh .github/scripts/scaffold_required_files.sh && sh .github/scripts/check_workflow_contract.sh --changed-only && npx -y markdownlint-cli2 ".github/**/*.md" "agent-output/test-runs/**/*.md" --config .markdownlint.json
+Result: PASS
+Marker: SKILL_GATE_STACK_OK
+
+Negative test injection:
+- File: .github/agents/13-pi.agent.md
+- Change: removed `analysis-methodology` token from Investigation Methodology line
+Command: sh .github/scripts/check_skill_gate_coverage.sh
+Result: FAIL (expected)
+Key output:
+- .github/agents/13-pi.agent.md missing 'analysis-methodology' (process-hardening methodology)
+- Process Hardening stage missing 'analysis-methodology' coverage
+
+Restore + final rerun:
+sh .github/scripts/check_skill_gate_coverage.sh && sh .github/scripts/check_strict_governance.sh && sh .github/scripts/scaffold_required_files.sh && sh .github/scripts/check_workflow_contract.sh --changed-only && npx -y markdownlint-cli2 ".github/**/*.md" "agent-output/test-runs/**/*.md" --config .markdownlint.json
+Result: PASS
+Marker: SKILL_GATE_STACK_OK

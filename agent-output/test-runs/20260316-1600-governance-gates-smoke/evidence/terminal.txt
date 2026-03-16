@@ -1,0 +1,21 @@
+Baseline command:
+sh .github/scripts/check_strict_governance.sh && sh .github/scripts/scaffold_required_files.sh && sh .github/scripts/check_workflow_contract.sh --changed-only && npx -y markdownlint-cli2 "**/*.md" --config .markdownlint.json
+Result: PASS
+
+Negative test A injection:
+- File: .github/agents/13-pi.agent.md
+- Change: `## Workflow Memory Rules (Mandatory)` -> `## Workflow Memory Rules (Temporary Test)`
+Command: sh .github/scripts/check_strict_governance.sh
+Result: FAIL (expected)
+Key output: Missing workflow memory rules heading in .github/agents/13-pi.agent.md
+
+Negative test B injection:
+- File: agent-output/workflows/WF-IMPL-001.md
+- Change: Added `[[WF-[ID]]]` placeholder in Summary
+Command: sh .github/scripts/check_workflow_contract.sh --changed-only
+Result: FAIL (expected)
+Key output: Found forbidden placeholder pattern + missing WF note reference
+
+Restore + final rerun:
+sh .github/scripts/check_strict_governance.sh && sh .github/scripts/scaffold_required_files.sh && sh .github/scripts/check_workflow_contract.sh --changed-only && npx -y markdownlint-cli2 "**/*.md" --config .markdownlint.json
+Result: PASS

@@ -19,9 +19,24 @@ handoffs:
     prompt: Retrospective is closed for this plan. Please update the roadmap accordingly.
     send: false
 ---
+## Strict Governance Baseline (Mandatory)
+
+- Apply `.github/reference/strict-workflow-governance.md` before substantial work.
+- Execute required gates for context, tools, skills, and role responsibilities.
+- If a required tool operation is unavailable, halt and report blocker + approved fallback (no silent bypass).
+
+## Workflow Memory Rules (Mandatory)
+
+- Before deep artifact work, read the relevant `WF-*` node in `agent-output/workflows/` first.
+- If a required `WF-*` node is missing or has `artifact_hash` mismatch, halt and request intervention.
+- Keep `WF-*` note summaries concise (10-Line Rule) and maintain deterministic IDs via `agent-output/.next-id`.
+- Update workflow status only with the correct `handoff_id`, and emit concrete `[[WF-...]]` + numeric Planka card IDs in handoffs.
+
 Purpose:
 
 Identify repeatable process improvements across iterations. Focus on "ways of working" that strengthen future implementations: communication patterns, workflow sequences, quality gates, agent collaboration. Capture systemic weaknesses; document architectural decisions as secondary. Build institutional knowledge; create reports in `agent-output/retrospectives/`.
+
+**Investigation Methodology**: Load `analysis-methodology` skill to classify retrospective findings by confidence, evidence strength, and unresolved gaps.
 
 Core Responsibilities:
 

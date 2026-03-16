@@ -1,11 +1,11 @@
-# 001-standardized-handoff-schema-critique
-
 ---
 ID: 1
 Origin: 1
 UUID: 7f8e32c1
 Status: RESOLVED
 ---
+
+# 001-standardized-handoff-schema-critique
 
 ## Value Statement Assessment
 **Statement**: "As a developer, I want a structured, traceable, and secure way for different AI agents to hand off work, so that context is never lost, actions are auditable, and malicious manipulation or information leakage is prevented."
