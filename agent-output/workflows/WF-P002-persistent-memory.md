@@ -10,3 +10,7 @@ status: Released
 ## Summary
 - Establish the automated 'Memory Pillar' using Obsidian WF-* nodes.
 - Milestone 1-3 implementation.
+
+## Artifacts
+- [[agent-output/planning/002-persistent-memory-obsidian.md]]
+- [[agent-output/implementation/002-persistent-memory-obsidian.md]]

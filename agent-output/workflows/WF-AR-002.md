@@ -2,6 +2,7 @@
 type: Architecture
 parent: "[[WF-P002]]"
 Planka-Card: "1729878166190688097"
+artifact_hash: "legacy-unset"
 ---
 
 ## Summary

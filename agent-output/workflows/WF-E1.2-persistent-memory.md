@@ -10,3 +10,7 @@ status: Delivered
 ## Summary
 - Implementing persistent context via Obsidian.
 - Goal: Automated WF-node generation and relational graph.
+
+## Artifacts
+- [[agent-output/roadmap/product-roadmap.md]]
+- [[agent-output/planning/002-persistent-memory-obsidian.md]]

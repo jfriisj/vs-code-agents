@@ -6,6 +6,7 @@ type: CodeReview
 parent: "[[WF-2-persistent-memory-obsidian]]"
 Planka-Card: "1729878166190688097"
 handoff_id: "[[WF-CR-2]]"
+artifact_hash: "legacy-unset"
 ---
 
 # WF-CR-2: Code Review (Plan 002)
@@ -19,3 +20,6 @@ handoff_id: "[[WF-CR-2]]"
 
 ## Next Step
 - Handing off to qa agent for test execution.
+
+## Artifacts
+- [[agent-output/code-review/002-persistent-memory-obsidian-review.md]]

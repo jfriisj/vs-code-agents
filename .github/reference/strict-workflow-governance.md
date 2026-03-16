@@ -131,7 +131,7 @@ If a required skill is not applicable, agent must state why.
 ### Automated Enforcement
 
 - Run `sh .github/scripts/check_strict_governance.sh` to verify required governance files and markers.
-- Run `sh .github/scripts/check_workflow_contract.sh --changed-only` to block new WF-contract regressions in modified workflow notes.
+- Run `sh .github/scripts/check_workflow_contract.sh` to enforce WF-contract compliance across all workflow notes.
 - Run `sh .github/scripts/check_skill_gate_coverage.sh` to verify phase/role skill-gate coverage across custom agents.
 - Run `sh .github/scripts/check_obsidian_graph_contract.sh` to verify agent-level Obsidian graph parent-edge and handoff contract declarations.
 - Run `sh .github/scripts/scaffold_required_files.sh --create-missing` to scaffold missing required files from documented templates.

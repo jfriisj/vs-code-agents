@@ -24,8 +24,8 @@ jobs:
       - name: Check strict workflow governance contract
         run: sh .github/scripts/check_strict_governance.sh
 
-      - name: Check workflow note contract (changed files)
-        run: sh .github/scripts/check_workflow_contract.sh --changed-only --base-ref "${{ github.base_ref }}"
+      - name: Check workflow note contract (full scan)
+        run: sh .github/scripts/check_workflow_contract.sh
 
       - name: Check skill-gate coverage
         run: sh .github/scripts/check_skill_gate_coverage.sh

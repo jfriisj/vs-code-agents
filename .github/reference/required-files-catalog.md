@@ -16,8 +16,8 @@ This catalog defines the minimum file set required for strict and organized oper
   - `sh .github/scripts/scaffold_required_files.sh --create-missing`
 - Validate governance contract:
   - `sh .github/scripts/check_strict_governance.sh`
-- Validate changed workflow note contract:
-  - `sh .github/scripts/check_workflow_contract.sh --changed-only`
+- Validate workflow note contract (full scan):
+  - `sh .github/scripts/check_workflow_contract.sh`
 - Validate skill-gate coverage:
   - `sh .github/scripts/check_skill_gate_coverage.sh`
 - Validate Obsidian graph contract:
@@ -68,7 +68,7 @@ Required automation scripts are centralized in `.github/scripts/` and are not re
 2. If a file is scaffolded as a minimal stub, replace it with full canonical content before production use.
 3. Always re-run both checks after recovery:
   - `sh .github/scripts/check_strict_governance.sh`
-  - `sh .github/scripts/check_workflow_contract.sh --changed-only`
+  - `sh .github/scripts/check_workflow_contract.sh`
   - `sh .github/scripts/check_skill_gate_coverage.sh`
   - `sh .github/scripts/check_obsidian_graph_contract.sh`
 

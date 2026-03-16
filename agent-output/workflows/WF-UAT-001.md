@@ -2,6 +2,7 @@
 type: UAT
 parent: "[[WF-P001]]"
 Planka-Card: "1729878110406444893"
+artifact_hash: "legacy-unset"
 ---
 
 ## Summary

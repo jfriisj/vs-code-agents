@@ -30,6 +30,7 @@ When copying these agents to a new project, run:
 ```bash
 sh .github/scripts/scaffold_required_files.sh --create-missing
 sh .github/scripts/check_strict_governance.sh
+sh .github/scripts/check_workflow_contract.sh
 sh .github/scripts/check_skill_gate_coverage.sh
 sh .github/scripts/check_obsidian_graph_contract.sh
 ```

@@ -7,6 +7,7 @@ type: Critique
 parent: "[[WF-P-002]]"
 Planka-Card: 1729878166190688097
 handoff_id: "[[WF-C-002]]"
+artifact_hash: "legacy-unset"
 ---
 
 # WF-C-002-memory-critique
@@ -21,3 +22,6 @@ handoff_id: "[[WF-C-002]]"
 ## Next Steps
 - Planner to address F1 (HALT instruction) and F2 (Hash strategy).
 - Update implementation instructions to enforce zero-trust retrieval.
+
+## Artifacts
+- [[agent-output/critiques/002-persistent-memory-obsidian-critique.md]]
