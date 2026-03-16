@@ -2,7 +2,7 @@
 ID: 2
 Origin: 2
 UUID: b2c4d5e6
-Status: Committed
+Status: Released
 ---
 
 # 002-persistent-memory-obsidian (Implementation)

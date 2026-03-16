@@ -187,9 +187,11 @@ All notable changes to this project will be documented in this file.
 |-------|----------------|---------------|
 | UAT Status | Read `agent-output/uat/` | STOP if not "APPROVED FOR RELEASE" |
 | QA Status | Read `agent-output/qa/` | STOP if not "QA Complete" |
+| Git Auth | `git push --dry-run` or `gh auth status` | STOP and fix (check GITHUB_TOKEN conflict) |
 | Version Match | Compare all version files | STOP and fix |
 | Tests Pass | Run test suite | STOP and fix |
 | Clean Workspace | `git status` | Commit or stash |
+| Memory Hash | `scripts/memory_utils.py --verify-all` | STOP and update hashes |
 | No Debug | Check for debug flags | Remove before release |
 
 ### Pre-Commit Cleanup

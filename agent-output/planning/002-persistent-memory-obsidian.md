@@ -2,7 +2,7 @@
 ID: 2
 Origin: 2
 UUID: b2c4d5e6
-Status: UAT Approved
+Status: Released
 Target Release: v0.1.0
 handoff_id: "[[WF-2]]"
 ---

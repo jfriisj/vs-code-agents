@@ -8,3 +8,5 @@
 !.github/*
 !.github/workflows/
 !.github/workflows/**
+scripts/__pycache__/*
+tests/__pycache__/*

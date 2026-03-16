@@ -26,6 +26,7 @@ Use concise `WF-*` notes only. Do not duplicate full artifact content.
 type: [Epic | Plan | Analysis | Architecture | Security | Critique | Implementation | QA | UAT | Deployment | Retrospective | ProcessImprovement]
 parent: "[[WF-...]]" # use "none" only for root epic nodes
 Planka-Card: "CARD_ID_NUMERIC"
+artifact_hash: "SHA256_EXTRACTED_FROM_SCRIPT"
 ---
 
 ## Summary
