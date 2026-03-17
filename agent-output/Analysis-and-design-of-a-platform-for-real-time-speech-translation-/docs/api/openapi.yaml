@@ -1,26 +1,28 @@
 openapi: 3.0.3
 info:
-  title: Realtids Taleoversættelse API
+  title: Real-Time Speech Translation API
   description: >
-    API specifikation for TaleOversæt platformen. Håndterer REST requests 
-    for dashboard, indstillinger, transkripter og sessionshåndtering. 
-    (Realtidslyd og live-transkription håndteres via WebSockets efter en session er oprettet).
+    API specification for the TaleOversaet platform. Handles REST requests
+    for dashboard, settings, transcripts, and session management.
+    (Real-time audio and live transcription are handled over WebSockets after a session is created.)
   version: 0.2.0
   contact:
     name: Jon Jakobsen
 servers:
   - url: 'https://api.taleoversaet.dk/v1'
-    description: Produktionsserver
+    description: Production server
   - url: 'http://localhost:8080/v1'
-    description: Lokal udviklingsserver
+    description: Local development server
 security:
   - bearerAuth: []
 
 paths:
   /auth/token:
     post:
-      summary: Udsted runtime access token
-      description: Udsteder en kortlivet access token til frontend runtime provisioning-flow.
+      summary: Issue runtime access token
+      description: >
+        Issues a short-lived, session-bound access token for the frontend runtime provisioning flow.
+        The token may only be used through an AUTH control message on WebSocket and must never be transported in a query string.
       tags:
         - Auth
       security: []
@@ -32,23 +34,25 @@ paths:
               $ref: '#/components/schemas/IssueTokenRequest'
       responses:
         '200':
-          description: Token udstedt
+          description: Token issued
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenIssueResponse'
         '401':
-          description: Uautoriseret token-anmodning
+          description: Unauthorized token request
+        '429':
+          description: Too many token requests
 
   /dashboard/stats:
     get:
-      summary: Hent dashboard statistik
-      description: Returnerer nøgletal til brugerens forside.
+      summary: Get dashboard statistics
+      description: Returns a KPI snapshot for the user's dashboard.
       tags:
         - Dashboard
       responses:
         '200':
-          description: Succes
+          description: Success
           content:
             application/json:
               schema:
@@ -56,13 +60,13 @@ paths:
 
   /activity-stream:
     get:
-      summary: Hent aktivitetsstrøm
-      description: Henter seneste hændelser til højre sidebar.
+      summary: Get activity stream
+      description: Returns the latest events for the right-hand sidebar.
       tags:
         - Dashboard
       responses:
         '200':
-          description: Succes
+          description: Success
           content:
             application/json:
               schema:
@@ -72,13 +76,13 @@ paths:
 
   /demo/capabilities:
     get:
-      summary: Hent unified gateway capabilities
-      description: Returnerer gateway capability snapshot for source/target sprog, tuple-berettigelse og stemmevalg pr. målsprog.
+      summary: Get unified gateway capabilities
+      description: Returns a gateway capability snapshot for source/target languages, eligible language pairs, and voice selection per target language.
       tags:
-        - Indstillinger
+        - Settings
       responses:
         '200':
-          description: Succes
+          description: Success
           content:
             application/json:
               schema:
@@ -110,20 +114,20 @@ paths:
 
   /settings:
     get:
-      summary: Hent brugerindstillinger
+      summary: Get user settings
       tags:
-        - Indstillinger
+        - Settings
       responses:
         '200':
-          description: Brugerens globale sprog- og ML-indstillinger.
+          description: The user's global language and ML settings.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Settings'
     put:
-      summary: Opdater brugerindstillinger
+      summary: Update user settings
       tags:
-        - Indstillinger
+        - Settings
       requestBody:
         required: true
         content:
@@ -132,7 +136,7 @@ paths:
               $ref: '#/components/schemas/Settings'
       responses:
         '200':
-          description: Indstillinger opdateret
+          description: Settings updated
           content:
             application/json:
               schema:
@@ -140,9 +144,9 @@ paths:
 
   /sessions:
     get:
-      summary: Hent tidligere sessioner
+      summary: Get previous sessions
       tags:
-        - Sessioner
+        - Sessions
       parameters:
         - name: limit
           in: query
@@ -156,7 +160,7 @@ paths:
             default: 0
       responses:
         '200':
-          description: Liste over sessioner
+          description: List of sessions
           content:
             application/json:
               schema:
@@ -164,12 +168,13 @@ paths:
                 items:
                   $ref: '#/components/schemas/Session'
     post:
-      summary: Opret ny realtidssession
+      summary: Create new real-time session
       description: >
-        Opretter en ny session (2-vejs eller konference) og returnerer 
-        en WebSocket URL (wss://), som frontend skal forbinde til for streaming.
+        Creates a new session (two-way or conference) and returns
+        a WebSocket URL (wss://) that the frontend must connect to for streaming.
+        The URL must not contain credentials; the runtime token is issued separately and sent via an AUTH control message.
       tags:
-        - Sessioner
+        - Sessions
       requestBody:
         required: true
         content:
@@ -178,19 +183,19 @@ paths:
               $ref: '#/components/schemas/CreateSessionRequest'
       responses:
         '201':
-          description: Session oprettet
+          description: Session created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionConnectionResponse'
 
-  # ===== NYT ENDPOINT TIL FR-005 (LYD UPLOAD) =====
+  # ===== NEW ENDPOINT FOR FR-005 (AUDIO UPLOAD) =====
   /sessions/{sessionId}/audio:
     post:
-      summary: Upload lydfil til session
-      description: Alternativ til streaming. Uploader en præ-indspillet lydfil til batch-processing (FR-005).
+      summary: Upload audio file to session
+      description: Alternative to streaming. Uploads a pre-recorded audio file for batch processing (FR-005).
       tags:
-        - Sessioner
+        - Sessions
       parameters:
         - name: sessionId
           in: path
@@ -207,16 +212,16 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: Lydfilen der skal oversættes (f.eks. .wav eller .mp3).
+                  description: Audio file to translate (for example .wav or .mp3).
       responses:
         '202':
-          description: Lyd modtaget og lagt i kø til processing
+          description: Audio accepted and queued for processing
   /sessions/{sessionId}/join:
     post:
-      summary: Tilslut en eksisterende session
-      description: Gør det muligt for Person B at joine Person A's aktive session via et invitationslink.
+      summary: Join an existing session
+      description: Allows Person B to join Person A's active session through an invitation link.
       tags:
-        - Sessioner
+        - Sessions
       parameters:
         - name: sessionId
           in: path
@@ -225,27 +230,27 @@ paths:
             type: string
       responses:
         '200':
-          description: Vellykket tilslutning
+          description: Successful join
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionConnectionResponse'
-  # =================================================
+  # ================================================
 
   /transcripts:
     get:
-      summary: Hent gemte transkripter
+      summary: Get saved transcripts
       tags:
-        - Transkripter
+        - Transcripts
       parameters:
         - name: search
           in: query
-          description: Søgeterm til at filtrere transkripter
+          description: Search term used to filter transcripts
           schema:
             type: string
       responses:
         '200':
-          description: Succes
+          description: Success
           content:
             application/json:
               schema:
@@ -255,9 +260,9 @@ paths:
 
   /transcripts/{id}/export:
     get:
-      summary: Eksporter transkript
+      summary: Export transcript
       tags:
-        - Transkripter
+        - Transcripts
       parameters:
         - name: id
           in: path
@@ -272,7 +277,7 @@ paths:
             default: txt
       responses:
         '200':
-          description: Binær fil (tekst eller PDF)
+          description: Binary file (text or PDF)
           content:
             text/plain:
               schema:
@@ -285,12 +290,12 @@ paths:
 
   /team:
     get:
-      summary: Hent teammedlemmer
+      summary: Get team members
       tags:
         - Team
       responses:
         '200':
-          description: Liste over brugere i teamet
+          description: List of team users
           content:
             application/json:
               schema:
@@ -300,7 +305,7 @@ paths:
 
   /team/invite:
     post:
-      summary: Inviter nyt medlem
+      summary: Invite new member
       tags:
         - Team
       requestBody:
@@ -317,7 +322,7 @@ paths:
                   format: email
       responses:
         '204':
-          description: Invitation sendt
+          description: Invitation sent
 
 components:
   securitySchemes:
@@ -329,11 +334,23 @@ components:
   schemas:
     IssueTokenRequest:
       type: object
+      required:
+        - grantType
+        - sessionId
+        - participantRole
       properties:
         grantType:
           type: string
           enum: [session]
           default: session
+        sessionId:
+          type: string
+          description: Session the token is bound to. Query-string transport is forbidden.
+          example: "sess_98765"
+        participantRole:
+          type: string
+          enum: [HOST, GUEST]
+          description: Role-bound token used to prevent privilege escalation between participants.
 
     TokenIssueResponse:
       type: object
@@ -341,6 +358,9 @@ components:
         - accessToken
         - tokenType
         - expiresIn
+        - expiresAt
+        - sessionId
+        - transportMode
       properties:
         accessToken:
           type: string
@@ -351,11 +371,24 @@ components:
           example: "Bearer"
         expiresIn:
           type: integer
-          description: Token levetid i sekunder.
+          description: Token lifetime in seconds.
           example: 300
+        expiresAt:
+          type: string
+          format: date-time
+          description: Absolute expiration time for the short-lived runtime token.
+          example: "2026-03-17T18:45:00Z"
+        sessionId:
+          type: string
+          description: Session the token is cryptographically bound to.
+          example: "sess_98765"
+        transportMode:
+          type: string
+          enum: [AUTH_CONTROL_MESSAGE]
+          description: The token may only be sent in an AUTH control message after the WebSocket connection is established.
         jti:
           type: string
-          description: Token-identitetskorrelation til revocation/telemetry.
+          description: Token identity correlation for revocation and telemetry.
           example: "jti-abc-123"
 
     DashboardStats:
@@ -409,7 +442,7 @@ components:
           $ref: '#/components/schemas/UserBasic'
         message:
           type: string
-          example: "startede en Live 2-vejs session"
+          example: "started a live two-way session"
         timestamp:
           type: string
           format: date-time
@@ -426,7 +459,7 @@ components:
           example: "da-male-1"
         name:
           type: string
-          example: "Dansk Mand 1"
+          example: "Danish Male 1"
         gender:
           type: string
           enum: [male, female, neutral]
@@ -443,7 +476,7 @@ components:
           example: "da-DK"
         name:
           type: string
-          example: "Dansk"
+          example: "Danish"
         voices:
           type: array
           items:
@@ -466,7 +499,7 @@ components:
         useDomainDictionary:
           type: boolean
           example: true
-          description: Brug specialiseret IT/Software ordliste
+          description: Use a specialized IT/software glossary
         autoDetectLanguageSwitch:
           type: boolean
           example: true
@@ -489,7 +522,7 @@ components:
           example: "en-US"
         voiceId:
           type: string
-          description: TTS Stemme ID (hvis relevant for modparten)
+          description: TTS voice ID (if relevant for the receiving participant)
 
     SessionConnectionResponse:
       type: object
@@ -497,16 +530,32 @@ components:
         - sessionId
         - websocketUrl
         - status
+        - authMode
+        - tokenEndpoint
+        - sessionBindingRequired
       properties:
         sessionId:
           type: string
         websocketUrl:
           type: string
           format: uri
+          description: Credentials must not appear in the URL. The runtime token is sent separately via an AUTH control message.
           example: "wss://api.taleoversaet.dk/ws/sessions/sess_98765"
         status:
           type: string
           enum: [INITIALIZED, ACTIVE, FAILED]
+        authMode:
+          type: string
+          enum: [AUTH_CONTROL_MESSAGE]
+          description: WebSocket authentication is performed after connect via an AUTH control message.
+        tokenEndpoint:
+          type: string
+          example: "/auth/token"
+          description: Endpoint used to issue short-lived runtime tokens.
+        sessionBindingRequired:
+          type: boolean
+          example: true
+          description: Indicates that the runtime token is bound to the returned session.
 
     Session:
       type: object

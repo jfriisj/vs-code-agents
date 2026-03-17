@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.3.7)  17 MAR 2026 17:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.3.7)  17 MAR 2026 20:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -666,19 +666,37 @@ r de-sign di-rec-tion. Speech
 
 [10]) (./chap-analysis-and-design.tex [11]
 Chapter 3.
-) (./chap-implementation.tex [12
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 10
+.
+(/usr/share/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+)
+Overfull \hbox (9.92291pt too wide) in paragraph at lines 14--15
+\T1/cmr/m/n/10.95 (\T1/pcr/m/n/10.95 FR-010\T1/cmr/m/n/10.95 ), re-ten-tion con
+-trol (\T1/pcr/m/n/10.95 FR-011\T1/cmr/m/n/10.95 ), and privacy-safe ob-serv-ab
+il-ity (\T1/pcr/m/n/10.95 NFR-004
+ []
 
-]
+[12
+
+{/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc}] [13] [14] [15]
+Overfull \hbox (2.27223pt too wide) in paragraph at lines 64--65
+[]\T1/cmr/bx/n/10.95 Persistent stores. \T1/cmr/m/n/10.95 Post-greSQL stores se
+ssion-oriented ap-pli-ca-tion state,
+ []
+
+[16{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}])
+(./chap-implementation.tex [17]
 Chapter 4.
-) (./chap-evaluation.tex [13
+) (./chap-evaluation.tex [18
 
 ]
 Chapter 5.
-) (./chap-conclusion.tex [14
+) (./chap-conclusion.tex [19
 
 ]
 Chapter 6.
-) (./chap-appendix.tex [15
+) (./chap-appendix.tex [20
 
 ]
 Appendix A.
@@ -715,7 +733,7 @@ Overfull \hbox (34.15886pt too wide) in alignment at lines 19--45
  []
 
 
-ignored: Infinite glue shrinkage found in box being split [16
+ignored: Infinite glue shrinkage found in box being split [21
 
 ]
 Overfull \hbox (42.3199pt too wide) in alignment at lines 49--52
@@ -738,7 +756,7 @@ Overfull \hbox (42.3199pt too wide) in alignment at lines 57--69
  []
 
 
-ignored: Infinite glue shrinkage found in box being split [17] [18]
+ignored: Infinite glue shrinkage found in box being split [22] [23]
 Appendix B.
 
 Overfull \hbox (7.39455pt too wide) in paragraph at lines 74--75
@@ -746,15 +764,11 @@ Overfull \hbox (7.39455pt too wide) in paragraph at lines 74--75
 s-trat-ing the asyn-chronous
  []
 
-[19
+[24
 
 ]
 Appendix C.
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 82
-.
-(/usr/share/texmf-dist/tex/latex/psnfss/t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-)
+
 Overfull \hbox (8.69795pt too wide) in paragraph at lines 82--83
 []\T1/cmr/m/n/10.95 All events in-herit a com-mon en-ve-lope struc-ture de-fine
 d in \T1/pcr/m/n/10.95 BaseEvent.avsc
@@ -766,12 +780,11 @@ Overfull \hbox (31.54764pt too wide) in paragraph at lines 104--105
 it-ted by the Ingress Gate-way. Note the \T1/pcr/m/n/10.95 audio_bytes
  []
 
-[20
+[25
 
-{/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc}] [21] [22]) (./main.bbl
-[23]
+] [26] [27]) (./main.bbl [28]
 bibitemlist
-[24
+[29
 
 ]
 Underfull \hbox (badness 10000) in paragraph at lines 91--97
@@ -808,7 +821,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 124--130
 mr/m/n/10.95 , 2024.
  []
 
-[25]) [26]
+[30]) [31]
 \tf@toc=\write4
 \openout4 = `main.toc'.
 
@@ -819,11 +832,11 @@ L3 programming layer <2020/03/25>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 10175 strings out of 468904
- 148520 string characters out of 5454207
+ 10181 strings out of 468904
+ 148632 string characters out of 5454207
  842899 words of memory out of 5000000
- 38698 multiletter control sequences out of 15000+600000
- 651057 words of font info for 95 fonts, out of 8000000 for 9000
+ 38702 multiletter control sequences out of 15000+600000
+ 651398 words of font info for 96 fonts, out of 8000000 for 9000
  350 hyphenation exceptions out of 8191
  85i,12n,93p,974b,1844s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/
@@ -840,10 +853,10 @@ ist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1
 /public/cm-super/sfsl1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-supe
 r/sfti1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfxc2074.pfb>
 </usr/share/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb>
-Output written on main.pdf (30 pages, 359932 bytes).
+Output written on main.pdf (35 pages, 379714 bytes).
 PDF statistics:
- 192 PDF objects out of 1000 (max. 8388607)
- 122 compressed objects within 2 object streams
+ 212 PDF objects out of 1000 (max. 8388607)
+ 136 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

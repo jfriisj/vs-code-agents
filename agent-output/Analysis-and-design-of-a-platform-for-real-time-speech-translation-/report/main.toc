@@ -23,32 +23,32 @@
 \contentsline {section}{\numberline {2.7}Synthesis and Design Implications}{10}{}%
 \contentsline {chapter}{\chapternumberline {3}Analysis and Design}{12}{}%
 \contentsline {section}{\numberline {3.1}Architectural Drivers}{12}{}%
-\contentsline {section}{\numberline {3.2}Quality Attribute Analysis}{12}{}%
-\contentsline {section}{\numberline {3.3}High-Level System Architecture}{12}{}%
-\contentsline {section}{\numberline {3.4}Data Modeling and Governance}{12}{}%
-\contentsline {section}{\numberline {3.5}Service Decomposition}{12}{}%
-\contentsline {section}{\numberline {3.6}Infrastructure and Deployment Strategy}{12}{}%
-\contentsline {chapter}{\chapternumberline {4}Implementation}{13}{}%
-\contentsline {section}{\numberline {4.1}Orchestrator and Event Flow}{13}{}%
-\contentsline {section}{\numberline {4.2}Data Management and the Claim Check Pattern}{13}{}%
-\contentsline {section}{\numberline {4.3}Model Wrapping and "Warm-Loading"}{13}{}%
-\contentsline {section}{\numberline {4.4}Architectural Guardrails and VAD Integration}{13}{}%
-\contentsline {chapter}{\chapternumberline {5}Evaluation}{14}{}%
-\contentsline {section}{\numberline {5.1}Real-Time Responsiveness (Latency)}{14}{}%
-\contentsline {section}{\numberline {5.2}Heterogeneous Scalability Testing}{14}{}%
-\contentsline {section}{\numberline {5.3}Robustness and Chaos Engineering}{14}{}%
-\contentsline {section}{\numberline {5.4}Architectural Fidelity (Pipeline Quality)}{14}{}%
-\contentsline {section}{\numberline {5.5}Modifiability Proof}{14}{}%
-\contentsline {chapter}{\chapternumberline {6}Conclusion}{15}{}%
-\contentsline {section}{\numberline {6.1}Future Work}{15}{}%
-\contentsline {appendix}{\chapternumberline {A}Requirement Specifications}{16}{}%
-\contentsline {section}{\numberline {A.1}Functional Requirements}{16}{}%
-\contentsline {section}{\numberline {A.2}Non-Functional Requirements}{17}{}%
-\contentsline {appendix}{\chapternumberline {B}Sequence Diagrams}{19}{}%
-\contentsline {appendix}{\chapternumberline {C}Data Contracts (Avro Schemas)}{20}{}%
-\contentsline {section}{\numberline {C.1}Base Envelope}{20}{}%
-\contentsline {section}{\numberline {C.2}Audio Ingestion}{20}{}%
-\contentsline {section}{\numberline {C.3}Speech Segmentation (VAD)}{21}{}%
-\contentsline {section}{\numberline {C.4}Translation Output}{22}{}%
-\contentsline {section}{\numberline {C.5}Synthesis Output (TTS)}{23}{}%
-\contentsline {chapter}{Bibliography}{24}{}%
+\contentsline {section}{\numberline {3.2}Quality Attribute Analysis}{13}{}%
+\contentsline {section}{\numberline {3.3}High-Level System Architecture}{14}{}%
+\contentsline {section}{\numberline {3.4}Data Modeling and Governance}{15}{}%
+\contentsline {section}{\numberline {3.5}Service Decomposition}{16}{}%
+\contentsline {section}{\numberline {3.6}Infrastructure and Deployment Strategy}{17}{}%
+\contentsline {chapter}{\chapternumberline {4}Implementation}{18}{}%
+\contentsline {section}{\numberline {4.1}Orchestrator and Event Flow}{18}{}%
+\contentsline {section}{\numberline {4.2}Data Management and the Claim Check Pattern}{18}{}%
+\contentsline {section}{\numberline {4.3}Model Wrapping and "Warm-Loading"}{18}{}%
+\contentsline {section}{\numberline {4.4}Architectural Guardrails and VAD Integration}{18}{}%
+\contentsline {chapter}{\chapternumberline {5}Evaluation}{19}{}%
+\contentsline {section}{\numberline {5.1}Real-Time Responsiveness (Latency)}{19}{}%
+\contentsline {section}{\numberline {5.2}Heterogeneous Scalability Testing}{19}{}%
+\contentsline {section}{\numberline {5.3}Robustness and Chaos Engineering}{19}{}%
+\contentsline {section}{\numberline {5.4}Architectural Fidelity (Pipeline Quality)}{19}{}%
+\contentsline {section}{\numberline {5.5}Modifiability Proof}{19}{}%
+\contentsline {chapter}{\chapternumberline {6}Conclusion}{20}{}%
+\contentsline {section}{\numberline {6.1}Future Work}{20}{}%
+\contentsline {appendix}{\chapternumberline {A}Requirement Specifications}{21}{}%
+\contentsline {section}{\numberline {A.1}Functional Requirements}{21}{}%
+\contentsline {section}{\numberline {A.2}Non-Functional Requirements}{22}{}%
+\contentsline {appendix}{\chapternumberline {B}Sequence Diagrams}{24}{}%
+\contentsline {appendix}{\chapternumberline {C}Data Contracts (Avro Schemas)}{25}{}%
+\contentsline {section}{\numberline {C.1}Base Envelope}{25}{}%
+\contentsline {section}{\numberline {C.2}Audio Ingestion}{25}{}%
+\contentsline {section}{\numberline {C.3}Speech Segmentation (VAD)}{26}{}%
+\contentsline {section}{\numberline {C.4}Translation Output}{27}{}%
+\contentsline {section}{\numberline {C.5}Synthesis Output (TTS)}{28}{}%
+\contentsline {chapter}{Bibliography}{29}{}%

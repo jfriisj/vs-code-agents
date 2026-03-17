@@ -1,40 +1,44 @@
 graph TD
-    subgraph Klienter [Frontend Klienter (app.js / api.js)]
+    subgraph Clients [Frontend Clients (app.js / api.js)]
         ClientA[Person A Browser]
         ClientB[Person B Browser]
     end
 
     subgraph API [API Gateway / Backend]
-        REST[REST API\nIndstillinger, Oprettelse]
-        WSS[WebSocket Server\nRealtids Lyd & JSON]
+        REST[REST API\nSettings, Creation\nToken Issuance]
+        WSS[WebSocket Server\nReal-time Audio & JSON\nAUTH control / strict origin]
     end
 
     subgraph EventBroker [Event-Driven Architecture]
-        KAFKA((Apache Kafka\nLog-based Broker))
+        KAFKA((Event Broker\nKafka impl. / ACL + mTLS))
     end
 
     subgraph Microservices [AI Pipeline (Ray Cluster)]
-        VAD[VAD Service\nFiltrerer stilhed]
-        ASR[ASR Service\nTalegenkendelse]
-        MT[MT Service\nMaskinoversættelse]
-        TTS[TTS Service\nTalesyntese]
+        VAD[VAD Service\nFilters silence]
+        ASR[ASR Service\nSpeech Recognition]
+        MT[MT Service\nMachine Translation]
+        TTS[TTS Service\nSpeech Synthesis]
     end
 
     subgraph Storage [Persistent Data]
-        DB[(PostgreSQL\nBrugere & Historik)]
-        MINIO[(MinIO / Object Store\nClaim Check & Filer)]
+        DB[(PostgreSQL\nUsers & History)]
+        MINIO[(MinIO / Object Store\nClaim Check, SSE, scoped access)]
     end
 
-    %% REST kald for opsætning
+    %% REST calls for setup
     ClientA -- "POST /sessions" --> REST
     ClientB -- "POST /sessions/{id}/join" --> REST
+    ClientA -- "POST /auth/token" --> REST
+    ClientB -- "POST /auth/token" --> REST
     REST --> DB
 
     %% WebSocket data streaming
-    ClientA -- "WebM Lyd-chunks" --> WSS
-    ClientB -- "WebM Lyd-chunks" --> WSS
+    ClientA -- "AUTH control message" --> WSS
+    ClientB -- "AUTH control message" --> WSS
+    ClientA -- "WebM Audio chunks" --> WSS
+    ClientB -- "WebM Audio chunks" --> WSS
     
-    %% Kafka asynkront flow
+    %% Kafka asynchronous flow
     WSS -- "1. AudioInputEvent" --> KAFKA
     
     KAFKA -- "Event" --> VAD
@@ -49,16 +53,16 @@ graph TD
     KAFKA -- "Event" --> TTS
     TTS -- "5. AudioSynthesisEvent" --> KAFKA
 
-    %% Svar tilbage til frontenden via WebSocket
+    %% Response to frontend via WebSocket
     KAFKA -- "TRANSCRIPT_UPDATE" --> WSS
     KAFKA -- "AudioSynthesisEvent" --> WSS
     
-    WSS -- "JSON Opdatering" --> ClientA
-    WSS -- "JSON + Binær TTS Lyd" --> ClientB
+    WSS -- "JSON Update" --> ClientA
+    WSS -- "JSON + Binary TTS Audio" --> ClientB
 
-    %% Claim Check Mønster til store filer
-    WSS -. "Gemmer stor lyd (Claim Check)" .-> MINIO
-    TTS -. "Gemmer TTS lyd (Claim Check)" .-> MINIO
+    %% Claim Check Pattern for large files
+    WSS -. "Saves large audio (Claim Check / SSE)" .-> MINIO
+    TTS -. "Saves TTS audio (Claim Check / SSE)" .-> MINIO
 
     classDef frontend fill:#e1f5fe,stroke:#4fc3f7,stroke-width:2px;
     classDef api fill:#fff3e0,stroke:#ffb74d,stroke-width:2px;

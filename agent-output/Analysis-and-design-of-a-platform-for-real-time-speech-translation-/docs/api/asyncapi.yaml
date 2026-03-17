@@ -1,10 +1,10 @@
 asyncapi: 2.6.0
 info:
-  title: TaleOversæt WebSocket API
+  title: Real-Time Speech Translation WebSocket API
   version: 0.2.0
   description: >
-    Event-drevet API til håndtering af realtids 2-vejs taleoversættelse og konference-mode.
-    Dette API håndterer streaming af binær lyd (Audio) og JSON-kontrolbeskeder/transkriptioner.
+    Event-driven API for real-time two-way speech translation and conference mode.
+    This API handles streaming of binary audio and JSON control messages and transcripts.
   contact:
     name: Jon Friis Jakobsen
 
@@ -12,36 +12,36 @@ servers:
   production:
     url: wss://api.taleoversaet.dk/ws
     protocol: wss
-    description: Produktionsserver til aktive oversættelsessessioner.
+    description: Production server for active translation sessions.
     security:
       - bearerAuth: []
   development:
     url: ws://localhost:8080/ws
     protocol: ws
-    description: Lokal udviklingsserver.
+    description: Local development server.
     security:
       - bearerAuth: []
 
 channels:
   /sessions/{sessionId}:
-    description: Kanalen for en specifik oversættelsessession.
+    description: Channel for a specific translation session.
     parameters:
       sessionId:
-        description: Det unikke ID for sessionen, som blev oprettet via REST API'et.
+        description: Unique session ID created through the REST API.
         schema:
           type: string
-    
-    # PUBLISH: Hvad frontend SENDER til backend
+
+    # PUBLISH: messages sent by the client to the server
     publish:
-      description: Beskeder som klienten (frontend) sender til serveren.
+      description: Messages sent by the client (frontend) to the server. The first control message after connect must be AUTH; binary audio chunks before AUTHORIZED status are rejected.
       message:
         oneOf:
           - $ref: '#/components/messages/ClientAudioStream'
           - $ref: '#/components/messages/ClientControlMessage'
 
-    # SUBSCRIBE: Hvad frontend MODTAGER fra backend
+    # SUBSCRIBE: messages received by the client from the server
     subscribe:
-      description: Beskeder og events som klienten (frontend) lytter efter fra serveren.
+      description: Messages and events that the client (frontend) listens for from the server.
       message:
         oneOf:
           - $ref: '#/components/messages/ServerAudioStream'
@@ -53,12 +53,12 @@ channels:
 components:
   messages:
     # ---------------------------------------------------------
-    # FRA KLIENT (FRONTEND) -> TIL SERVER
+    # FROM CLIENT (FRONTEND) -> TO SERVER
     # ---------------------------------------------------------
     ClientAudioStream:
       name: ClientAudioStream
-      title: Lydstream fra mikrofon
-      summary: Rå binær lyddokumentation (f.eks. PCM eller Opus chunks) fra brugerens mikrofon.
+      title: Microphone audio stream
+      summary: Raw binary audio data (for example PCM or Opus chunks) from the user's microphone. Accepted only after AUTH_STATUS=AUTHORIZED.
       contentType: application/octet-stream
       payload:
         type: string
@@ -66,21 +66,21 @@ components:
 
     ClientControlMessage:
       name: ClientControlMessage
-      title: Kontrolbesked fra klient
-      summary: JSON besked til at styre sessionen (f.eks. pause, skift stemme).
+      title: Client control message
+      summary: JSON message used to control the session (for example pause or change voice).
       description: |
-        `CHANGE_LANGUAGE` og `CHANGE_VOICE` skal bruge værdier fra REST capability-kilden `/demo/capabilities`; query-string token transport is forbidden, websocket auth is established through `AUTH` control message after connect, sessionId is not an authorization credential, token-session claim binding is mandatory, and strict-origin allowlist is required.
+        `CHANGE_LANGUAGE` and `CHANGE_VOICE` must use values from the REST capability source `/demo/capabilities`; query-string token transport is forbidden; WebSocket authentication is established through an `AUTH` control message after connect; `sessionId` is not an authorization credential; token-session claim binding is mandatory; a strict origin allowlist is required; and runtime tokens MUST be short-lived (<= 300s).
       contentType: application/json
       payload:
         $ref: '#/components/schemas/ClientControlPayload'
 
     # ---------------------------------------------------------
-    # FRA SERVER -> TIL KLIENT (FRONTEND)
+    # FROM SERVER -> TO CLIENT (FRONTEND)
     # ---------------------------------------------------------
     ServerAudioStream:
       name: ServerAudioStream
-      title: Syntetiseret lydstream (TTS)
-      summary: Binær lyd (Text-to-Speech) af den oversatte tale, som frontend skal afspille.
+      title: Synthesized audio stream (TTS)
+      summary: Binary audio (text-to-speech) of the translated speech that the frontend should play back.
       contentType: application/octet-stream
       payload:
         type: string
@@ -89,37 +89,37 @@ components:
     ServerAuthStatus:
       name: ServerAuthStatus
       title: WebSocket AUTH status
-      summary: Serverens eksplicitte auth-acknowledgement og fejlklassifikation til klientens recovery-flow.
+      summary: Explicit authentication acknowledgement and error classification from the server for the client's recovery flow.
       contentType: application/json
       payload:
         $ref: '#/components/schemas/AuthStatusPayload'
 
     ServerTranscriptEvent:
       name: ServerTranscriptEvent
-      title: Live Transkriptions Opdatering
-      summary: JSON besked med den løbende transkription og oversættelse.
+      title: Live transcription update
+      summary: JSON message containing the ongoing transcription and translation.
       contentType: application/json
       payload:
         $ref: '#/components/schemas/TranscriptEventPayload'
 
     ServerConferenceStats:
       name: ServerConferenceStats
-      title: Konference Statistik
-      summary: Opdatering om antal lyttere fordelt på sprog (kun relevant for Konference Mode).
+      title: Conference statistics
+      summary: Update containing the number of listeners per language (relevant only for Conference Mode).
       contentType: application/json
       payload:
         $ref: '#/components/schemas/ConferenceStatsPayload'
 
     ServerError:
       name: ServerError
-      title: WebSocket Fejl
-      summary: Fejlbesked fra serveren (f.eks. hvis lyden afbrydes).
+      title: WebSocket error
+      summary: Error message from the server (for example when the audio stream is interrupted).
       contentType: application/json
       payload:
         $ref: '#/components/schemas/ErrorPayload'
 
   schemas:
-    # --- DTO'er for JSON payloads ---
+    # --- DTOs for JSON payloads ---
     ClientControlPayload:
       type: object
       required:
@@ -133,6 +133,7 @@ components:
           properties:
             token:
               type: string
+              description: Short-lived, session-bound JWT. It must never be sent in the URL or logged in telemetry.
             voiceId:
               type: string
             targetLanguage:
@@ -156,7 +157,7 @@ components:
             status:
               type: string
               enum:
-                [AUTHORIZED, INVALID_TOKEN, EXPIRED_TOKEN, REVOKED_TOKEN, SESSION_BINDING_MISMATCH, SERVICE_UNAVAILABLE, NETWORK_UNAVAILABLE, TIMEOUT]
+                [AUTHORIZED, AUTH_REQUIRED, INVALID_TOKEN, EXPIRED_TOKEN, REVOKED_TOKEN, SESSION_BINDING_MISMATCH, ORIGIN_NOT_ALLOWED, RATE_LIMITED, SERVICE_UNAVAILABLE, NETWORK_UNAVAILABLE, TIMEOUT]
             message:
               type: string
               example: "Token validation failed"
@@ -184,13 +185,13 @@ components:
               example: "00:01:23"
             originalText:
               type: string
-              example: "Så lad os starte med"
+              example: "Let us start with"
             translatedText:
               type: string
               example: "So let's start with"
             isFinal:
               type: boolean
-              description: true hvis sætningen er færdig, false hvis det er et live-gæt.
+              description: true when the sentence is complete, false when it is still a live hypothesis.
 
     ConferenceStatsPayload:
       type: object
@@ -242,7 +243,7 @@ components:
               enum: [AUDIO_STREAM_INTERRUPTED, GUARDRAIL_INTERVENTION, VAD_REJECTED]
             message:
               type: string
-              example: "Forbindelsen til mikrofonen blev afbrudt."
+              example: "The microphone connection was interrupted."
   securitySchemes:
     bearerAuth:
       type: http

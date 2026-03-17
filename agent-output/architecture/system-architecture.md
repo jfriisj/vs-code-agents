@@ -13,6 +13,7 @@ Status: CURRENT
 ## 1. Changelog
 | Date       | Change                                      | Rationale                                     |
 |------------|---------------------------------------------|-----------------------------------------------|
+| 2026-03-17 | Plan 003 (Epic 1.3) Architecture Review.    | APPROVED for Analysis and Design Chapter.     |
 | 2026-03-17 | Plan 002 (Epic 1.2) Architecture Review.    | APPROVED for Research Framing and Background. |
 | 2026-03-16 | Plan Revision 3 Reconciliation (Epic 1.1).  | Align with governance-fix and execution paths. |
 | 2026-03-16 | Plan Review Reconciliation (Epic 1.1).      | Align plan with architectural findings.       |
