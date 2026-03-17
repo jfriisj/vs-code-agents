@@ -1,2 +1,0 @@
-No persistent problems after restoring negative tests.
-All governance checks passed in final run.

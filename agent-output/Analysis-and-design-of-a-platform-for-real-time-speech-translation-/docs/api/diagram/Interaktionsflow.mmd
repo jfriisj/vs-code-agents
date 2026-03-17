@@ -1,0 +1,63 @@
+sequenceDiagram
+    autonumber
+    actor UserA as Person A (Vært)
+    participant UIA as Frontend (Person A)
+    participant REST as REST API Gateway
+    participant WS as WebSocket Server
+    participant UIB as Frontend (Person B)
+    actor UserB as Person B (Gæst)
+
+    %% Flow 1: Person A starter sessionen
+    rect rgb(240, 248, 255)
+    Note over UserA, WS: 1. Oprettelse af Live Session
+    UserA->>UIA: Klikker "Start Live Session"
+    UIA->>REST: POST /sessions (Sender sprogvalg)
+    REST-->>UIA: Returnerer sessionId & websocketUrl
+    UIA->>WS: Åbner WebSocket (?token=...)
+    WS-->>UIA: Forbindelse Åben
+    UIA->>UserA: Beder om Mikrofon-adgang
+    UIA->>UIA: Viser "Kopier Invitationslink"
+    end
+
+    %% Flow 2: Person B tilslutter sig via link
+    rect rgb(245, 255, 250)
+    Note over UserA, UserB: 2. Invitation og Tilslutning
+    UserA->>UserB: Sender link (ex: /?join=sess_123)
+    UserB->>UIB: Åbner linket i browseren
+    UIB->>UIB: JS opdager ?join parameteren
+    UIB->>REST: POST /sessions/sess_123/join
+    REST-->>UIB: Returnerer websocketUrl
+    UIB->>WS: Åbner WebSocket (?token=...)
+    WS-->>UIB: Forbindelse Åben
+    UIB->>UserB: Beder om Mikrofon-adgang
+    end
+
+    %% Flow 3: Realtids streaming og oversættelse
+    rect rgb(255, 250, 240)
+    Note over UserA, UserB: 3. Realtids Lyd & Transkribering
+    
+    %% Person A taler
+    UserA->>UIA: Taler i mikrofonen
+    loop Hvert 250ms
+        UIA->>WS: Sender Audio Chunk (Binær WebM)
+    end
+    
+    %% Backend behandler
+    Note over WS: Backend (Kafka) udfører VAD -> ASR -> MT -> TTS
+    
+    %% Sender transkript (Delvis)
+    WS-->>UIA: JSON: TRANSCRIPT_UPDATE (isFinal: false)
+    WS-->>UIB: JSON: TRANSCRIPT_UPDATE (isFinal: false)
+    UIA->>UserA: Viser grå/gennemsigtig tekst (Lytter...)
+    UIB->>UserB: Viser grå/gennemsigtig tekst (Oversætter...)
+
+    %% Sender transkript (Færdig) + Lyd
+    WS-->>UIA: JSON: TRANSCRIPT_UPDATE (isFinal: true)
+    WS-->>UIB: JSON: TRANSCRIPT_UPDATE (isFinal: true)
+    UIA->>UserA: Færdiggør taleboble
+    UIB->>UserB: Færdiggør taleboble
+    
+    %% Modtager oversat lyd (Person B modtager syntetisk lyd)
+    WS-->>UIB: Binær data (Syntetiseret TTS Lyd)
+    UIB->>UserB: Afspiller den oversatte lyd
+    end

@@ -1,6 +1,0 @@
-User prompt sequence:
-- "what would be the approach now to test that it all works ?"
-- "continue"
-
-Test objective:
-- Execute a concrete, auditable verification including controlled negative tests and full restoration.

@@ -1,0 +1,54 @@
+\contentsline {chapter}{Contents}{ii}{}%
+\contentsline {chapter}{\chapternumberline {1}Introduction}{2}{}%
+\contentsline {section}{\numberline {1.1}Background and Motivation}{2}{}%
+\contentsline {section}{\numberline {1.2}Problem Statement}{2}{}%
+\contentsline {section}{\numberline {1.3}Research Questions}{3}{}%
+\contentsline {subsection}{Main Research Question}{3}{}%
+\contentsline {subsection}{Sub-questions}{3}{}%
+\contentsline {section}{\numberline {1.4}Success Criteria}{4}{}%
+\contentsline {subsection}{Real-Time Success}{4}{}%
+\contentsline {subsection}{Scientific Rigor and Evidence Handling}{4}{}%
+\contentsline {subsection}{Evaluation Orientation}{4}{}%
+\contentsline {section}{\numberline {1.5}Research Contribution and Scope}{5}{}%
+\contentsline {subsection}{Research Contribution}{5}{}%
+\contentsline {subsection}{Scope Boundaries}{5}{}%
+\contentsline {section}{\numberline {1.6}Thesis Structure and Question Traceability}{5}{}%
+\contentsline {chapter}{\chapternumberline {2}Background}{7}{}%
+\contentsline {section}{\numberline {2.1}State of the Art in Speech Translation}{7}{}%
+\contentsline {section}{\numberline {2.2}Microservices and ML Maintainability}{7}{}%
+\contentsline {section}{\numberline {2.3}Event-Driven Architecture (EDA)}{8}{}%
+\contentsline {section}{\numberline {2.4}AI Pipeline Components}{9}{}%
+\contentsline {section}{\numberline {2.5}Challenges in Distributed Architectures}{9}{}%
+\contentsline {section}{\numberline {2.6}Quality Assurance: From Testing to Evaluation}{10}{}%
+\contentsline {section}{\numberline {2.7}Synthesis and Design Implications}{10}{}%
+\contentsline {chapter}{\chapternumberline {3}Analysis and Design}{12}{}%
+\contentsline {section}{\numberline {3.1}Architectural Drivers}{12}{}%
+\contentsline {section}{\numberline {3.2}Quality Attribute Analysis}{12}{}%
+\contentsline {section}{\numberline {3.3}High-Level System Architecture}{12}{}%
+\contentsline {section}{\numberline {3.4}Data Modeling and Governance}{12}{}%
+\contentsline {section}{\numberline {3.5}Service Decomposition}{12}{}%
+\contentsline {section}{\numberline {3.6}Infrastructure and Deployment Strategy}{12}{}%
+\contentsline {chapter}{\chapternumberline {4}Implementation}{13}{}%
+\contentsline {section}{\numberline {4.1}Orchestrator and Event Flow}{13}{}%
+\contentsline {section}{\numberline {4.2}Data Management and the Claim Check Pattern}{13}{}%
+\contentsline {section}{\numberline {4.3}Model Wrapping and "Warm-Loading"}{13}{}%
+\contentsline {section}{\numberline {4.4}Architectural Guardrails and VAD Integration}{13}{}%
+\contentsline {chapter}{\chapternumberline {5}Evaluation}{14}{}%
+\contentsline {section}{\numberline {5.1}Real-Time Responsiveness (Latency)}{14}{}%
+\contentsline {section}{\numberline {5.2}Heterogeneous Scalability Testing}{14}{}%
+\contentsline {section}{\numberline {5.3}Robustness and Chaos Engineering}{14}{}%
+\contentsline {section}{\numberline {5.4}Architectural Fidelity (Pipeline Quality)}{14}{}%
+\contentsline {section}{\numberline {5.5}Modifiability Proof}{14}{}%
+\contentsline {chapter}{\chapternumberline {6}Conclusion}{15}{}%
+\contentsline {section}{\numberline {6.1}Future Work}{15}{}%
+\contentsline {appendix}{\chapternumberline {A}Requirement Specifications}{16}{}%
+\contentsline {section}{\numberline {A.1}Functional Requirements}{16}{}%
+\contentsline {section}{\numberline {A.2}Non-Functional Requirements}{17}{}%
+\contentsline {appendix}{\chapternumberline {B}Sequence Diagrams}{19}{}%
+\contentsline {appendix}{\chapternumberline {C}Data Contracts (Avro Schemas)}{20}{}%
+\contentsline {section}{\numberline {C.1}Base Envelope}{20}{}%
+\contentsline {section}{\numberline {C.2}Audio Ingestion}{20}{}%
+\contentsline {section}{\numberline {C.3}Speech Segmentation (VAD)}{21}{}%
+\contentsline {section}{\numberline {C.4}Translation Output}{22}{}%
+\contentsline {section}{\numberline {C.5}Synthesis Output (TTS)}{23}{}%
+\contentsline {chapter}{Bibliography}{24}{}%

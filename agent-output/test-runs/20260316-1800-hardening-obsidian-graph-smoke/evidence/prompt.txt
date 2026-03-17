@@ -1,6 +1,0 @@
-User prompt sequence:
-- "are there any findings that require we change anything in agents, skills or tools"
-- "do it, also i want to be sure the agents use obsidian graph correctly"
-
-Objective:
-- Implement optional hardening and enforce Obsidian graph correctness.

@@ -1,0 +1,73 @@
+graph TD
+    subgraph Klienter [Frontend Klienter (app.js / api.js)]
+        ClientA[Person A Browser]
+        ClientB[Person B Browser]
+    end
+
+    subgraph API [API Gateway / Backend]
+        REST[REST API\nIndstillinger, Oprettelse]
+        WSS[WebSocket Server\nRealtids Lyd & JSON]
+    end
+
+    subgraph EventBroker [Event-Driven Architecture]
+        KAFKA((Apache Kafka\nLog-based Broker))
+    end
+
+    subgraph Microservices [AI Pipeline (Ray Cluster)]
+        VAD[VAD Service\nFiltrerer stilhed]
+        ASR[ASR Service\nTalegenkendelse]
+        MT[MT Service\nMaskinoversættelse]
+        TTS[TTS Service\nTalesyntese]
+    end
+
+    subgraph Storage [Persistent Data]
+        DB[(PostgreSQL\nBrugere & Historik)]
+        MINIO[(MinIO / Object Store\nClaim Check & Filer)]
+    end
+
+    %% REST kald for opsætning
+    ClientA -- "POST /sessions" --> REST
+    ClientB -- "POST /sessions/{id}/join" --> REST
+    REST --> DB
+
+    %% WebSocket data streaming
+    ClientA -- "WebM Lyd-chunks" --> WSS
+    ClientB -- "WebM Lyd-chunks" --> WSS
+    
+    %% Kafka asynkront flow
+    WSS -- "1. AudioInputEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> VAD
+    VAD -- "2. SpeechSegmentEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> ASR
+    ASR -- "3. TextRecognizedEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> MT
+    MT -- "4. TextTranslatedEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> TTS
+    TTS -- "5. AudioSynthesisEvent" --> KAFKA
+
+    %% Svar tilbage til frontenden via WebSocket
+    KAFKA -- "TRANSCRIPT_UPDATE" --> WSS
+    KAFKA -- "AudioSynthesisEvent" --> WSS
+    
+    WSS -- "JSON Opdatering" --> ClientA
+    WSS -- "JSON + Binær TTS Lyd" --> ClientB
+
+    %% Claim Check Mønster til store filer
+    WSS -. "Gemmer stor lyd (Claim Check)" .-> MINIO
+    TTS -. "Gemmer TTS lyd (Claim Check)" .-> MINIO
+
+    classDef frontend fill:#e1f5fe,stroke:#4fc3f7,stroke-width:2px;
+    classDef api fill:#fff3e0,stroke:#ffb74d,stroke-width:2px;
+    classDef broker fill:#f3e5f5,stroke:#ce93d8,stroke-width:2px;
+    classDef microservice fill:#e8f5e9,stroke:#81c784,stroke-width:2px;
+    classDef storage fill:#eceff1,stroke:#b0bec5,stroke-width:2px;
+
+    class ClientA,ClientB frontend;
+    class REST,WSS api;
+    class KAFKA broker;
+    class VAD,ASR,MT,TTS microservice;
+    class DB,MINIO storage;

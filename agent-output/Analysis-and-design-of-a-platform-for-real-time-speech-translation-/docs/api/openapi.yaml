@@ -1,0 +1,572 @@
+openapi: 3.0.3
+info:
+  title: Realtids Taleoversættelse API
+  description: >
+    API specifikation for TaleOversæt platformen. Håndterer REST requests 
+    for dashboard, indstillinger, transkripter og sessionshåndtering. 
+    (Realtidslyd og live-transkription håndteres via WebSockets efter en session er oprettet).
+  version: 0.2.0
+  contact:
+    name: Jon Jakobsen
+servers:
+  - url: 'https://api.taleoversaet.dk/v1'
+    description: Produktionsserver
+  - url: 'http://localhost:8080/v1'
+    description: Lokal udviklingsserver
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/token:
+    post:
+      summary: Udsted runtime access token
+      description: Udsteder en kortlivet access token til frontend runtime provisioning-flow.
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTokenRequest'
+      responses:
+        '200':
+          description: Token udstedt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenIssueResponse'
+        '401':
+          description: Uautoriseret token-anmodning
+
+  /dashboard/stats:
+    get:
+      summary: Hent dashboard statistik
+      description: Returnerer nøgletal til brugerens forside.
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+  /activity-stream:
+    get:
+      summary: Hent aktivitetsstrøm
+      description: Henter seneste hændelser til højre sidebar.
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+
+  /demo/capabilities:
+    get:
+      summary: Hent unified gateway capabilities
+      description: Returnerer gateway capability snapshot for source/target sprog, tuple-berettigelse og stemmevalg pr. målsprog.
+      tags:
+        - Indstillinger
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  source_languages:
+                    type: array
+                    items:
+                      type: string
+                  target_languages:
+                    type: array
+                    items:
+                      type: string
+                  language_pairs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source:
+                          type: string
+                        target:
+                          type: string
+                  voices_by_target_language:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+
+  /settings:
+    get:
+      summary: Hent brugerindstillinger
+      tags:
+        - Indstillinger
+      responses:
+        '200':
+          description: Brugerens globale sprog- og ML-indstillinger.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+    put:
+      summary: Opdater brugerindstillinger
+      tags:
+        - Indstillinger
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settings'
+      responses:
+        '200':
+          description: Indstillinger opdateret
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+
+  /sessions:
+    get:
+      summary: Hent tidligere sessioner
+      tags:
+        - Sessioner
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Liste over sessioner
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+    post:
+      summary: Opret ny realtidssession
+      description: >
+        Opretter en ny session (2-vejs eller konference) og returnerer 
+        en WebSocket URL (wss://), som frontend skal forbinde til for streaming.
+      tags:
+        - Sessioner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+      responses:
+        '201':
+          description: Session oprettet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionConnectionResponse'
+
+  # ===== NYT ENDPOINT TIL FR-005 (LYD UPLOAD) =====
+  /sessions/{sessionId}/audio:
+    post:
+      summary: Upload lydfil til session
+      description: Alternativ til streaming. Uploader en præ-indspillet lydfil til batch-processing (FR-005).
+      tags:
+        - Sessioner
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Lydfilen der skal oversættes (f.eks. .wav eller .mp3).
+      responses:
+        '202':
+          description: Lyd modtaget og lagt i kø til processing
+  /sessions/{sessionId}/join:
+    post:
+      summary: Tilslut en eksisterende session
+      description: Gør det muligt for Person B at joine Person A's aktive session via et invitationslink.
+      tags:
+        - Sessioner
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Vellykket tilslutning
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionConnectionResponse'
+  # =================================================
+
+  /transcripts:
+    get:
+      summary: Hent gemte transkripter
+      tags:
+        - Transkripter
+      parameters:
+        - name: search
+          in: query
+          description: Søgeterm til at filtrere transkripter
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Succes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transcript'
+
+  /transcripts/{id}/export:
+    get:
+      summary: Eksporter transkript
+      tags:
+        - Transkripter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [txt, pdf]
+            default: txt
+      responses:
+        '200':
+          description: Binær fil (tekst eller PDF)
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /team:
+    get:
+      summary: Hent teammedlemmer
+      tags:
+        - Team
+      responses:
+        '200':
+          description: Liste over brugere i teamet
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamMember'
+
+  /team/invite:
+    post:
+      summary: Inviter nyt medlem
+      tags:
+        - Team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '204':
+          description: Invitation sendt
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    IssueTokenRequest:
+      type: object
+      properties:
+        grantType:
+          type: string
+          enum: [session]
+          default: session
+
+    TokenIssueResponse:
+      type: object
+      required:
+        - accessToken
+        - tokenType
+        - expiresIn
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOi..."
+        tokenType:
+          type: string
+          enum: [Bearer]
+          example: "Bearer"
+        expiresIn:
+          type: integer
+          description: Token levetid i sekunder.
+          example: 300
+        jti:
+          type: string
+          description: Token-identitetskorrelation til revocation/telemetry.
+          example: "jti-abc-123"
+
+    DashboardStats:
+      type: object
+      required:
+        - translatedHoursThisMonth
+        - savedTranscriptsCount
+        - topLanguagePair
+      properties:
+        translatedHoursThisMonth:
+          type: number
+          format: float
+          example: 24.5
+        savedTranscriptsCount:
+          type: integer
+          example: 128
+        topLanguagePair:
+          type: object
+          properties:
+            source:
+              type: string
+              example: "da-DK"
+            target:
+              type: string
+              example: "en-US"
+
+    UserBasic:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        avatarUrl:
+          type: string
+
+    Activity:
+      type: object
+      required:
+        - id
+        - type
+        - message
+        - timestamp
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [SESSION_STARTED, TRANSCRIPT_SAVED, SETTINGS_UPDATED, USER_JOINED]
+        user:
+          $ref: '#/components/schemas/UserBasic'
+        message:
+          type: string
+          example: "startede en Live 2-vejs session"
+        timestamp:
+          type: string
+          format: date-time
+
+    Voice:
+      type: object
+      required:
+        - id
+        - name
+        - gender
+      properties:
+        id:
+          type: string
+          example: "da-male-1"
+        name:
+          type: string
+          example: "Dansk Mand 1"
+        gender:
+          type: string
+          enum: [male, female, neutral]
+
+    Language:
+      type: object
+      required:
+        - code
+        - name
+        - voices
+      properties:
+        code:
+          type: string
+          example: "da-DK"
+        name:
+          type: string
+          example: "Dansk"
+        voices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Voice'
+
+    Settings:
+      type: object
+      required:
+        - defaultSourceLanguage
+        - defaultTargetLanguage
+        - useDomainDictionary
+        - autoDetectLanguageSwitch
+      properties:
+        defaultSourceLanguage:
+          type: string
+          example: "da-DK"
+        defaultTargetLanguage:
+          type: string
+          example: "en-US"
+        useDomainDictionary:
+          type: boolean
+          example: true
+          description: Brug specialiseret IT/Software ordliste
+        autoDetectLanguageSwitch:
+          type: boolean
+          example: true
+
+    CreateSessionRequest:
+      type: object
+      required:
+        - type
+        - sourceLanguage
+        - targetLanguage
+      properties:
+        type:
+          type: string
+          enum: [TWO_WAY, CONFERENCE]
+        sourceLanguage:
+          type: string
+          example: "da-DK"
+        targetLanguage:
+          type: string
+          example: "en-US"
+        voiceId:
+          type: string
+          description: TTS Stemme ID (hvis relevant for modparten)
+
+    SessionConnectionResponse:
+      type: object
+      required:
+        - sessionId
+        - websocketUrl
+        - status
+      properties:
+        sessionId:
+          type: string
+        websocketUrl:
+          type: string
+          format: uri
+          example: "wss://api.taleoversaet.dk/ws/sessions/sess_98765"
+        status:
+          type: string
+          enum: [INITIALIZED, ACTIVE, FAILED]
+
+    Session:
+      type: object
+      required:
+        - id
+        - type
+        - startDate
+        - durationSeconds
+        - sourceLanguage
+        - targetLanguage
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [TWO_WAY, CONFERENCE]
+        startDate:
+          type: string
+          format: date-time
+        durationSeconds:
+          type: integer
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+        transcriptId:
+          type: string
+          nullable: true
+
+    Transcript:
+      type: object
+      required:
+        - id
+        - title
+        - date
+        - sourceLanguage
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        date:
+          type: string
+          format: date-time
+        sourceLanguage:
+          type: string
+
+    TeamMember:
+      type: object
+      required:
+        - id
+        - name
+        - role
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        avatarUrl:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, DEVELOPER, VIEWER]

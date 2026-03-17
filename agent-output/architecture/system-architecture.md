@@ -1,67 +1,61 @@
 ---
 ID: 1
 Origin: 1
-UUID: 22222222
-Status: Active
-handoff_id: "[[WF-1]]"
+UUID: a2b8c3d4
+Status: CURRENT
 ---
 
-# VS Code Agents - System Architecture
+# System Architecture: Real-Time Speech-to-Speech Translation Platform
 
-**Last Updated**: 2026-03-13
-**Architect**: 04-Architect (GitHub Copilot)
-**Status**: DRAFT - Initializing Foundation
+**Last Updated**: 2026-03-16
+**Status**: [ACTIVE] Reconciled from Thesis Narrative Baseline (Epic 1.1)
 
-## Changelog
-| Date | Change | Rationale | Plan/Epic |
-|------|--------|-----------|-----------|
-| 2026-03-15 | Approved Planka Sync Strategy | Added mapping durability & telemetry requirements. | Plan-003 |
-| 2026-03-15 | Formalized Memory Invariants | Added ID Contract & 10-Line Rule. | Plan-002 |
-| 2026-03-13 | Initial Architecture Draft | Establish baseline for multi-agent system. | Epic 1.1 |
+## 1. Changelog
+| Date       | Change                                      | Rationale                                     |
+|------------|---------------------------------------------|-----------------------------------------------|
+| 2026-03-17 | Plan 002 (Epic 1.2) Architecture Review.    | APPROVED for Research Framing and Background. |
+| 2026-03-16 | Plan Revision 3 Reconciliation (Epic 1.1).  | Align with governance-fix and execution paths. |
+| 2026-03-16 | Plan Review Reconciliation (Epic 1.1).      | Align plan with architectural findings.       |
+| 2026-03-16 | Initial baseline consolidation from thesis. | Align architecture docs with thesis statement. |
 
-## Purpose
-A multi-agent workflow system for GitHub Copilot in VS Code that brings structure, quality gates, and long-term memory to AI-assisted development.
+## 2. Purpose
+A platform for real-time, event-driven speech-to-speech translation (ASR, MT, TTS) balancing latency, scalability, and robustness as a cost-effective alternative to proprietary cloud APIs.
 
-## High-Level Architecture
-The system follows a role-based multi-agent pattern where specialized agents handle distinct parts of the development lifecycle, coordinated via shared memory (Obsidian) and agile tracking (Planka).
+## 3. High-Level Architecture
+The system follows an **Event-Driven Microservices** pattern.
 
-### Components
-1. **Roadmap Agent**: Owns `product-roadmap.md` and high-level Epic synchronization.
-2. **Architect Agent**: Owns `system-architecture.md`, ADRs, and structural invariants.
-3. **Analyst Agent**: Performs research and provides technical context.
-4. **Planner/Critic Agent**: Creates and validates executable implementation plans.
-5. **Implementer/QA Agent**: Executes plans and verifies quality.
+### 3.1 Component Diagram (Draft)
+```mermaid
+graph TD
+    Client[Client Browser/App] -->|WebSocket| Gateway[Ingress Gateway]
+    Gateway -->|Stream| ASR[Speech-to-Text Service]
+    ASR -->|Text Event| Broker(Event Broker / Kafka)
+    Broker -->|Text| MT[Machine Translation Service]
+    MT -->|Translated Text| Broker
+    Broker -->|Translated Text| TTS[Text-to-Speech Service]
+    TTS -->|Audio Chunk| Gateway
+    Gateway -->|Audio Stream| Client
+```
 
-## Runtime Flows
-- **Memory Initialization**: [Date: 2026-03-15] Reconciled from Plan-002: Standardized `WF-` ID contract (`WF-E<epic-id>`, `WF-P<plan-id>`, etc.) and 10-Line Rule.
-- **Epic Initiation**: User -> Roadmap Agent -> Planka Epic Card -> Architecture Assessment.
-- **Task Execution**: Architect Review -> Planner -> Critic Review -> Implementer -> QA -> Architect Audit.
+## 4. Architectural Drivers
+- **Latency (P99 < 2s)**: End-to-end speech-in to audio-out.
+- **Scalability**: Horizontal scaling of GPU-heavy translation and ASR workers.
+- **Robustness**: Handling of component failure (e.g., ASR crash) without session state loss.
+- **Evidence Traceability**: Every architectural claim must map to a "Normal-vs-Debug" telemetry baseline.
 
-## Data Boundaries
-- **Workspace**: Source code and local configuration.
-- **Agent Output**: Standardized directory structure for agent artifacts (`/agent-output/`).
-- **Memory**: Obsidian vault for relational context and handoffs using `WF-<ID>` nodes in `agent-output/workflows/`.
-- **Agile**: Planka for execution visibility and status tracking.
+## 5. Technical Decisions (ADR)
+| ID | Decision                   | Rationale                                       | Status   |
+|----|----------------------------|-------------------------------------------------|----------|
+| 1  | Event-Driven Pipeline      | Decouple heavy AI processing stages for scaling.| Accepted |
+| 2  | WebSocket Ingress          | Low-overhead bidirectional audio streaming.    | Accepted |
+| 3  | Claim-Check Pattern (S3)   | Handle large audio artifacts in event flow.    | Proposed |
+| 4  | Implementation Separation  | Move companion assets to implementation paths. | Accepted |
+| 5  | Utility Tree Requirement   | Mandatory QA mapping for all thesis arguments.  | Accepted |
+| 6  | Normal-vs-Debug Telemetry  | Enforce privacy-safe shareable evidence.        | Accepted |
 
-## Quality Attributes
-- **Maintainability**: Strict separation of concerns between roles.
-- **Traceability**: Unified numbering and document lifecycle (`document-lifecycle` skill).
-- **Persistence**: Long-term memory decoupled from chat history.
+## 6. Quality Attributes & Problem Areas
+- **Clock Drift**: Synchronizing latency measurements across distributed workers.
+- **Cold Start**: GPU allocation latency for scaling workers.
 
-## Problem Areas
-- [ ] Circular dependencies between agent toolsets.
-- [ ] Context window limits for large architectural summaries.
-
-## Decisions (ADRs)
-- **ADR-002: Dynamic Planka-Roadmap Sync (Idempotent Architecture)**
-  - **Context**: Static IDs in Planka vary across board instances. Manual status sync is error-prone.
-  - **Choice**: Use name-based list resolution and diff-based sync with mandatory telemetry logging.
-  - **Consequences**: Robust visibility across environments; overhead of metadata retrieval.
-- **ADR-001: Role-Based Agent Specialization**
-  - **Context**: LLMs struggle with multi-stage complex tasks in a single prompt.
-  - **Choice**: Separate roles into specialized agents with distinct toolsets.
-  - **Consequences**: Higher quality output; requires robust handoff mechanism.
-
-## Recommendations
-- Enforce **Den Gyldne Rengøringsregel**: Leave the architecture cleaner than you found it.
-- Prioritize telemetry/observability in all new module designs.
+---
+[[WF-E1.1]]

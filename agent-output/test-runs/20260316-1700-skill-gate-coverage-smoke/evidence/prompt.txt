@@ -1,6 +1,0 @@
-User prompt sequence:
-- "does the test runs use all the skills correctly ?"
-- "continue"
-
-Objective:
-- Add enforceable skill-gate validation and prove it with positive + negative smoke checks.
