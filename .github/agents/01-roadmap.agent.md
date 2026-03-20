@@ -4,7 +4,7 @@ name: 01-Roadmap
 target: vscode
 argument-hint: Describe the epic, feature, or strategic question to address
 tools: [read/readFile, edit/createDirectory, edit/createFile, edit/editFiles, search, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Request Plan Creation
     agent: 02-Planner

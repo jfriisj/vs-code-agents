@@ -1,10 +1,6 @@
 ---
 name: analysis-methodology
-description: A structured approach to investigating unknowns, classifying findings by confidence level, and tracking remaining gaps. Integrates strictly with Obsidian (Native MCP) for memory and Planka (Native MCP) for task tracking.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "1.2"
+description: A structured approach to investigating unknowns, classifying findings by confidence level, and tracking remaining gaps. Integrates strictly with Obsidian (Native MCP) for memory and Planka (Native MCP) for task tracking. Use this skill when performing root cause analysis, investigating bugs/incidents, or evaluating system behavior.
 ---
 
 # Analysis Methodology

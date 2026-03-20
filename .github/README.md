@@ -114,6 +114,7 @@ copilot --agent 02-planner --prompt "Create a plan for adding user authenticatio
 | [reference/required-files-catalog.md](reference/required-files-catalog.md) | Required file inventory and recovery/scaffolding rules |
 | [CHANGELOG.md](CHANGELOG.md) | Notable repository changes |
 | [obsidian-workflow skill](skills/obsidian-workflow/SKILL.md) | WF-node memory workflow patterns |
+| [document-conversion-pandoc skill](skills/document-conversion-pandoc/SKILL.md) | Standardized PDF/EPUB to Markdown conversion workflow |
 
 ---
 
@@ -218,6 +219,7 @@ If you rename a server (e.g. `filesystem` → `fs`), the tool prefix changes acc
         ├── code-review-checklist/
         ├── code-review-standards/
         ├── cross-repo-contract/
+        ├── document-conversion-pandoc/
         ├── document-lifecycle/
         ├── engineering-standards/
         ├── planka-workflow/

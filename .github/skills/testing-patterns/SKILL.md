@@ -1,10 +1,6 @@
 ---
 name: testing-patterns
-description: TDD workflow, test pyramid, coverage, mocking anti-patterns, and Triad of Truth integration. Uses Progressive Disclosure to lazy-load language-specific framework syntax.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "2.0"
+description: TDD workflow, test pyramid, coverage, mocking anti-patterns, and Triad of Truth integration. Uses Progressive Disclosure to lazy-load language-specific framework syntax. Use this skill when designing test strategies, writing tests, or reviewing QA artifacts.
 ---
 
 # Testing Patterns & Methodology

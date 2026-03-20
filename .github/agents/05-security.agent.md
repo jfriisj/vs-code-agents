@@ -3,8 +3,8 @@ description: Comprehensive security audit specialist - architecture, code, depen
 name: 05-Security
 target: vscode
 argument-hint: Describe the code, component, or PR to security-review
-tools: [execute/getTerminalOutput, execute/createAndRunTask, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, search, web, 'filesystem/*', 'analyzer/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+tools: [execute/getTerminalOutput, execute/createAndRunTask, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, search, web, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
+model: GPT-5.4 mini (copilot)
 handoffs:
   - label: Update Plan
     agent: 02-Planner
@@ -174,7 +174,6 @@ Load `security-patterns` skill for detailed methodology. Quick reference:
 
 **Automated checks**: Use native tools only:
 - Use `search` with security regex patterns for secret detection and unsafe patterns.
-- Use `analyzer/*` for static analysis support.
 - Use `filesystem/*` + package manifests for dependency and supply-chain review context.
 
 

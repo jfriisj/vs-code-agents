@@ -38,9 +38,10 @@ If WF node is missing, create a minimal compliant node before proceeding.
 | Role | Primary tool families | Must avoid by default |
 |---|---|---|
 | Roadmap/Planner/Critic | `filesystem/*`, `obsidian/*`, `planka/*` | direct code edits, broad terminal workflows |
-| Analyst/Architect/Security | `filesystem/*`, `obsidian/*`, `planka/*`, `analyzer/*` | implementation mutations unless explicitly requested |
-| Implementer | code edit/read/search + `analyzer/*` + targeted `planka/*`/`obsidian/*` | planner-owned artifact edits |
-| Code Reviewer/QA/UAT | read/search + role docs + `planka/*`/`obsidian/*` | production code implementation |
+| Analyst/Architect/Security | `filesystem/*`, `obsidian/*`, `planka/*` | implementation mutations unless explicitly requested |
+| Implementer | code edit/read/search + optional lightweight `analyzer/*` preflight on touched Python files + targeted `planka/*`/`obsidian/*` | planner-owned artifact edits |
+| Code Reviewer/QA | read/search + role docs + `analyzer/*` + `planka/*`/`obsidian/*` | production code implementation |
+| UAT | read/search + role docs + `planka/*`/`obsidian/*` | production code implementation |
 | DevOps | release/doc tooling + `planka/*`/`obsidian/*` | feature coding |
 | Retrospective/PI | documentation + `planka/*`/`obsidian/*` | source-code feature changes |
 

@@ -2,7 +2,8 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-WORKFLOW_DIR="$ROOT/agent-output/workflows"
+WORKFLOW_DIR="$ROOT/workflows"
+WORKFLOW_DIR_SET=0
 CHANGED_ONLY=0
 BASE_REF=""
 MAX_SUMMARY_BULLETS=3
@@ -41,6 +42,7 @@ while [ "$#" -gt 0 ]; do
     --workflow-dir)
       [ "$#" -ge 2 ] || { usage; exit 2; }
       WORKFLOW_DIR=$2
+      WORKFLOW_DIR_SET=1
       shift 2
       ;;
     --changed-only)
@@ -76,6 +78,10 @@ done
 
 if [ "${WORKFLOW_DIR#"$ROOT"}" = "$WORKFLOW_DIR" ]; then
   WORKFLOW_DIR=$(CDPATH= cd -- "$WORKFLOW_DIR" && pwd)
+fi
+
+if [ ! -d "$WORKFLOW_DIR" ] && [ "$WORKFLOW_DIR_SET" -eq 0 ] && [ -d "$ROOT/agent-output/workflows" ]; then
+  WORKFLOW_DIR="$ROOT/agent-output/workflows"
 fi
 
 if [ ! -d "$WORKFLOW_DIR" ]; then

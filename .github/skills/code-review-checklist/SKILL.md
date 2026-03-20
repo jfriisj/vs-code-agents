@@ -1,10 +1,6 @@
 ---
 name: code-review-checklist
-description: Structured code review criteria for pre-implementation (Critic) and post-implementation (Security/Code Reviewer). Exclusively uses token-efficient MCP tools (Analyzer, Filesystem, Search) to replace legacy bash scripts. Integrates strictly with Obsidian/Planka.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "1.2"
+description: Structured code review criteria for pre-implementation (Critic) and post-implementation (Security/Code Reviewer). Exclusively uses token-efficient MCP tools (Analyzer, Filesystem, Search) to replace legacy bash scripts. Integrates strictly with Obsidian/Planka. Use this skill when performing code reviews, whether reviewing plans (Critic) or implemented code (Code Reviewer/Security). This skill defines the specific checks to perform, the severity levels, and the exact tools to use for each check, ensuring a consistent and efficient review process across all agents.
 ---
 
 # Code Review Checklist

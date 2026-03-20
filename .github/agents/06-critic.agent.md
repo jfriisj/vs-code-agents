@@ -4,7 +4,7 @@ name: 06-Critic
 target: vscode
 argument-hint: Reference the plan or architecture document to critique (e.g., plan 002)
 tools: [execute/getTerminalOutput, execute/runInTerminal, read/readFile, read/terminalSelection, read/terminalLastCommand, edit, search, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+model: GPT-5.4 mini (copilot)
 handoffs:
   - label: Revise Plan
     agent: 02-Planner

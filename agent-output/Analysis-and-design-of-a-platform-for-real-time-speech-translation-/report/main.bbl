@@ -26,8 +26,7 @@
 
 \bibitem{bahdanau2014neural}
 Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio.
-\newblock Neural machine translation by jointly learning to align and
-  translate.
+\newblock Neural machine translation by jointly learning to align and translate.
 \newblock {\em arXiv preprint arXiv:1409.0473}, 2014.
 
 \bibitem{bass2021softwarearchitectureinpractice}
@@ -53,17 +52,13 @@ Thomas~H. Cormen, Charles~E. Leiserson, Ronald~L. Rivest, and Clifford Stein.
 
 \bibitem{hohpe2004enterprise}
 Gregor Hohpe and Bobby Woolf.
-\newblock {\em Enterprise Integration Patterns: Designing, Building, and
-  Deploying Messaging Solutions}.
+\newblock {\em Enterprise Integration Patterns: Designing, Building, and Deploying Messaging Solutions}.
 \newblock Addison-Wesley Professional, 2004.
 
 \bibitem{inaguma2023unity}
-Hirofumi Inaguma, Sravya Popuri, Gabriel Ilharco, Wei-Ning Hsu, Tal Remez, and
-  Ann Lee.
-\newblock Unity: Two-pass direct speech-to-speech translation with discrete
-  units.
-\newblock In {\em Proceedings of the 61st Annual Meeting of the Association for
-  Computational Linguistics (ACL)}, pages 15315--15339, 2023.
+Hirofumi Inaguma, Sravya Popuri, Gabriel Ilharco, Wei-Ning Hsu, Tal Remez, and Ann Lee.
+\newblock Unity: Two-pass direct speech-to-speech translation with discrete units.
+\newblock In {\em Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (ACL)}, pages 15315--15339, 2023.
 
 \bibitem{kim2025science}
 Yubin Kim, Ken Gu, Chanwoo Park, et~al.
@@ -77,8 +72,7 @@ Martin Kleppmann.
 
 \bibitem{kleppmann2017}
 Martin Kleppmann.
-\newblock {\em Designing Data-Intensive Applications: The Big Ideas Behind
-  Reliable, Scalable, and Maintainable Systems}.
+\newblock {\em Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems}.
 \newblock O'Reilly Media, 2017.
 
 \bibitem{kubernetes2023}
@@ -90,16 +84,13 @@ Martin Kleppmann.
 \bibitem{kudo2024stats}
 {KUDO}.
 \newblock 10 stats \& breakthroughs in ai speech translation in 2024.
-\newblock
-  \url{https://kudo.ai/blog/the-10-most-important-statistics-breakthroughs-in-ai-speech-translation-from-2024/},
-  2024.
+\newblock \url{https://kudo.ai/blog/the-10-most-important-statistics-breakthroughs-in-ai-speech-translation-from-2024/}, 2024.
 \newblock Accessed: 2025-07-30, Blog post.
 
 \bibitem{kumar2025realtime}
 B.~P.~Pradeep Kumar and Shreehari Menon.
 \newblock Real-time speech-to-speech translator: Analysis and implementation.
-\newblock In {\em 2025 4th International Conference on Distributed Computing
-  and Electrical Circuits and Electronics (ICDCECE)}. IEEE, 2025.
+\newblock In {\em 2025 4th International Conference on Distributed Computing and Electrical Circuits and Electronics (ICDCECE)}. IEEE, 2025.
 
 \bibitem{Lindholm-Yellin:99}
 Tim Lindholm and Frank Yellin.
@@ -109,9 +100,7 @@ Tim Lindholm and Frank Yellin.
 \bibitem{azure_speech}
 {Microsoft}.
 \newblock Azure ai speech service.
-\newblock
-  \url{https://learn.microsoft.com/en-us/azure/ai-services/speech-service/},
-  2024.
+\newblock \url{https://learn.microsoft.com/en-us/azure/ai-services/speech-service/}, 2024.
 \newblock Accessed: 2026-02-13.
 
 \bibitem{microsoft_translator}
@@ -123,24 +112,18 @@ Tim Lindholm and Frank Yellin.
 \bibitem{mordor2024speech}
 {Mordor Intelligence}.
 \newblock Speech to speech translation market size \& share analysis.
-\newblock
-  \url{https://www.mordorintelligence.com/industry-reports/speech-to-speech-translation},
-  2024.
+\newblock \url{https://www.mordorintelligence.com/industry-reports/speech-to-speech-translation}, 2024.
 \newblock Accessed: 2025-07-30.
 
 \bibitem{newman2019monolith}
 Sam Newman.
-\newblock {\em Monolith to Microservices: Evolutionary Patterns to Transform
-  Your Monolith}.
+\newblock {\em Monolith to Microservices: Evolutionary Patterns to Transform Your Monolith}.
 \newblock O'Reilly Media, 2019.
 
 \bibitem{oinam2025ai}
-Shaphaba Oinam, Bharat Sharma, Penumalli~Dindi Venkat, and Pushpendra~Ratnam
-  Verma.
-\newblock Ai driven voice translator: Enhancing multilingual communication
-  through real-time translation.
-\newblock In {\em 2025 12th International Conference on Reliability, Infocom
-  Technologies and Optimization (ICRITO)}. IEEE, 2025.
+Shaphaba Oinam, Bharat Sharma, Penumalli~Dindi Venkat, and Pushpendra~Ratnam Verma.
+\newblock Ai driven voice translator: Enhancing multilingual communication through real-time translation.
+\newblock In {\em 2025 12th International Conference on Reliability, Infocom Technologies and Optimization (ICRITO)}. IEEE, 2025.
 
 \bibitem{qian2025scaling}
 Chen Qian, Zihao Xie, Yifei Wang, et~al.
@@ -148,8 +131,7 @@ Chen Qian, Zihao Xie, Yifei Wang, et~al.
 \newblock {\em arXiv preprint arXiv:2511.09525}, 2025.
 
 \bibitem{radford2022whisper}
-Alec Radford, Jong~Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and
-  Ilya Sutskever.
+Alec Radford, Jong~Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and Ilya Sutskever.
 \newblock Robust speech recognition via large-scale weak supervision.
 \newblock {\em arXiv preprint arXiv:2212.04356}, 2022.
 
@@ -170,29 +152,23 @@ UNESCO.
 \newblock Accessed: 2026-01-26.
 
 \bibitem{vaswani2017attention}
-Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
-  Aidan~N. Gomez, \L{}ukasz Kaiser, and Illia Polosukhin.
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan~N. Gomez, \L{}ukasz Kaiser, and Illia Polosukhin.
 \newblock Attention is all you need.
-\newblock In {\em Advances in Neural Information Processing Systems},
-  volume~30, 2017.
+\newblock In {\em Advances in Neural Information Processing Systems}, volume~30, 2017.
 
 \bibitem{wang2020fairseq}
-Changhan Wang, Anne Wu, Juan Pino, Alexei Baevski, Michael Auli, and Alexis
-  Conneau.
+Changhan Wang, Anne Wu, Juan Pino, Alexei Baevski, Michael Auli, and Alexis Conneau.
 \newblock Fairseq s2t: Fast speech-to-text modeling with fairseq.
-\newblock In {\em Proceedings of the 58th Annual Meeting of the Association for
-  Computational Linguistics}, 2020.
+\newblock In {\em Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics}, 2020.
 
 \bibitem{xu2025scalability}
 Ping Xu, Aditi Sharma, and Jonas M{\"u}ller.
-\newblock Scalability and maintainability challenges and solutions in machine
-  learning: Systematic literature review.
+\newblock Scalability and maintainability challenges and solutions in machine learning: Systematic literature review.
 \newblock {\em arXiv preprint arXiv:2504.11079}, 2025.
 
 \bibitem{zhang2024direct}
 Y.~Zhang et~al.
-\newblock Direct speech-to-speech translation: Architecture and optimization,
-  2024.
+\newblock Direct speech-to-speech translation: Architecture and optimization, 2024.
 \newblock Preprint.
 
 \end{thebibliography}

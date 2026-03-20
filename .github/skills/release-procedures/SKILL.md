@@ -1,10 +1,6 @@
 ---
 name: release-procedures
-description: Version management, release verification, and deployment procedures for software releases. Includes semver guidance, version consistency checks, and platform-specific constraints.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "1.0"
+description: Version management, release verification, and deployment procedures for software releases. Includes semver guidance, version consistency checks, and platform-specific constraints. Use this skill when preparing a release, updating version files, or coordinating release-related tasks across agents.
 ---
 
 # Release Procedures

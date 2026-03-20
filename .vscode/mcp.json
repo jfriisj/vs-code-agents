@@ -17,7 +17,7 @@
     },
      "obsidian": {
       "command": "npx",
-      "args": ["@bitbonsai/mcpvault@latest", "${workspaceFolder}/agent-output"]
+      "args": ["@bitbonsai/mcpvault@latest", "${workspaceFolder}"]
     }
   }
 }

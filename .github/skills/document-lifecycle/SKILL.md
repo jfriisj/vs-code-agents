@@ -1,10 +1,6 @@
 ---
 name: document-lifecycle
-description: Unified document lifecycle management. Defines terminal statuses, unified numbering via .next-id, close procedures, and orphan detection. Uses native filesystem MCP tools.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "2.0"
+description: Unified document lifecycle management. Defines terminal statuses, unified numbering via .next-id, close procedures, and orphan detection. Uses native filesystem MCP tools. Use this skill when managing the state transitions of documents in `agent-output/`, ensuring consistent closure, and maintaining the integrity of the document lifecycle across all agents.
 ---
 
 # Document Lifecycle Skill

@@ -4,7 +4,7 @@ name: 11-DevOps
 target: vscode
 argument-hint: Specify the version to release or deployment task to perform
 tools: [execute/getTerminalOutput, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, search, 'filesystem/*', 'github/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+model: GPT-5.4 mini (copilot)
 handoffs:
   - label: Request Implementation Fixes
     agent: 07-Implementer

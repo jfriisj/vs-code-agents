@@ -1,10 +1,6 @@
 ---
 name: planka-workflow
 description: Agile Epic Management and synchronization contract for Planka MCP. Markdown remains the source of truth; Planka provides live agile execution visibility via Native MCP Tools exclusively. Python scripts are strictly forbidden.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "4.1"
 ---
 
 # Planka Workflow (Agile Epic Management)

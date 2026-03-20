@@ -15,6 +15,7 @@ handoff_id: "[[WF-UAT-003-analysis-and-design-value-validation]]"
 ## Change Log
 | Date & Time | Change | Rationale |
 |-------------|--------|-----------|
+| 2026-03-17 22:30 | Marked Epics 1.3/1.4 as Delivered and Release v0.3.0 as Delivered. | Architecture and System Truth chapters complete, QA passed, and release gate approved. |
 | 2026-03-17 21:45 | Marked Epic 1.3 as Delivered and Release v0.3.0 as Partially Delivered. | Plan 003 manuscript recovery complete, QA passed, UAT approved, and Stage 2 release gate approved. |
 | 2026-03-17 21:30 | Updated Epic 1.3 to Committed/EPIC APPROVED for v0.3.0. | Plan 003 manuscript recovery complete, QA passed, and UAT approved for implementation. |
 | 2026-03-17 21:15 | Marked Release v0.2.0 and Epic 1.2 as Delivered. | Plan 002 completed, QA/UAT passed, and Stage 2 release gate approved. |
@@ -95,7 +96,7 @@ As a Thesis Examiner, I want the introduction and background chapters to clearly
 
 ## Release v0.3.0 - Architecture and System Truth
 **Target Date**: 2026-04-14
-**Status**: In Progress
+**Status**: Delivered
 **Strategic Goal**: Turn platform architecture and implementation reality into a coherent thesis argument grounded in requirements and actual system behavior.
 
 ### Epic 1.3: Analysis and Design Chapter Consolidation
@@ -122,7 +123,7 @@ As a Thesis Reader, I want the analysis and design chapter to explain architectu
 
 ### Epic 1.4: Implementation Narrative and Reproducibility Traceability
 **Priority**: P0
-**Status**: Planned [CardID: 1732017089281000924] [BoardID: 1732011778738488761] [WF-E1.4]
+**Status**: Delivered [CardID: 1732017089281000924] [BoardID: 1732011778738488761] [WF-E1.4]
 
 **User Story**:
 As a Thesis Reader, I want the implementation chapter to describe how orchestration, event flow, model loading, VAD, artifact persistence, and deployment workflow were realized, so that the thesis reflects actual system behavior and reproducibility.
@@ -138,15 +139,15 @@ As a Thesis Reader, I want the implementation chapter to describe how orchestrat
 - Deployment and runtime artifacts under `Analysis-and-design-of-a-platform-for-real-time-speech-translation-/docs/`
 
 **Acceptance Criteria**:
-- [ ] Implementation chapter explains orchestrator/event flow, claim-check or object-storage usage, warm-loaded models, and VAD integration using actual system artifacts.
-- [ ] Runtime assumptions and deployment paths (Compose, Swarm, Ray, and Pulumi context) are described without contradicting requirements or scope.
-- [ ] Delivered MVP behavior is clearly distinguished from deferred or post-MVP capabilities.
+- [x] Implementation chapter explains orchestrator/event flow, claim-check or object-storage usage, warm-loaded models, and VAD integration using actual system artifacts.
+- [x] Runtime assumptions and deployment paths (Compose, Swarm, Ray, and Pulumi context) are described without contradicting requirements or scope.
+- [x] Delivered MVP behavior is clearly distinguished from deferred or post-MVP capabilities.
 
 ---
 
 ## Release v0.4.0 - Evaluation and Findings Synthesis
 **Target Date**: 2026-04-28
-**Status**: Planned
+**Status**: In Progress
 **Strategic Goal**: Synthesize benchmark and quality evidence into a defensible empirical thesis argument tied to the research questions.
 
 ### Epic 1.5: Evaluation Evidence Synthesis and Comparative Framing
@@ -205,16 +206,16 @@ As a Thesis Author, I want the conclusion, abstract, appendix, and final manuscr
 ---
 
 ## Active Release Tracker
-**Current Working Release**: v0.3.0
-**Last Delivered Release**: v0.2.0
-**Next Epic in Same Release (v0.3.0)**: Epic 1.4
+**Current Working Release**: v0.4.0
+**Last Delivered Release**: v0.3.0
+**Next Epic in Same Release (v0.4.0)**: Epic 1.5
 
 | Release | Scoped Epics | Plans Targeted | Plans UAT Approved | Plans Committed Locally | Epic UAT Decisions | Release Approval Status |
 |---------|---------------|----------------|--------------------|--------------------------|--------------------|-------------------------|
 | v0.1.0 | Epic 1.1 | Plan 001 | Yes | Yes | Epic 1.1: EPIC APPROVED | Delivered |
 | v0.2.0 | Epic 1.2 | Plan 002 | Yes | Yes | Epic 1.2: EPIC APPROVED | Delivered |
-| v0.3.0 | Epic 1.3, Epic 1.4 | Plan 003 | Yes | Yes | Epic 1.3: EPIC APPROVED | In Progress |
-| v0.4.0 | Epic 1.5 | TBD | No | No | Pending | Planned |
+| v0.3.0 | Epic 1.3, Epic 1.4 | Plan 003, Plan 004 | Yes | Yes | Epics 1.3/1.4: EPIC APPROVED | Delivered |
+| v0.4.0 | Epic 1.5 | TBD | No | No | Pending | In Progress |
 | v0.5.0 | Epic 1.6 | TBD | No | No | Pending | Planned |
 
 ### Epic Readiness Matrix
@@ -223,6 +224,6 @@ As a Thesis Author, I want the conclusion, abstract, appendix, and final manuscr
 | v0.1.0 | Epic 1.1 | Delivered | EPIC APPROVED | Plan 001 | None |
 | v0.2.0 | Epic 1.2 | Delivered | EPIC APPROVED | Plan 002 | None |
 | v0.3.0 | Epic 1.3 | Delivered | EPIC APPROVED | Plan 003 | None |
-| v0.3.0 | Epic 1.4 | Planned | EPIC NOT APPROVED | TBD | Planning not started |
+| v0.3.0 | Epic 1.4 | Delivered | EPIC APPROVED | Plan 004 | None |
 | v0.4.0 | Epic 1.5 | Planned | EPIC NOT APPROVED | TBD | Planning not started |
 | v0.5.0 | Epic 1.6 | Planned | EPIC NOT APPROVED | TBD | Planning not started |

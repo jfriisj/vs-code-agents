@@ -4,7 +4,7 @@ name: 10-UAT
 target: vscode
 argument-hint: Reference the implementation or plan to validate (e.g., plan 002)
 tools: [read/problems, read/readFile, search, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+model: GPT-5.4 mini (copilot)
 handoffs:
   - label: Report UAT Failure
     agent: 02-Planner

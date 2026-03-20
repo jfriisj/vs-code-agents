@@ -4,7 +4,7 @@ name: 12-Retrospective
 target: vscode
 argument-hint: Reference the completed plan or release to retrospect on
 tools: [read/readFile, edit/createDirectory, edit/createFile, search, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+model: GPT-5.4 mini (copilot)
 handoffs:
   - label: Update Architecture
     agent: 04-Architect

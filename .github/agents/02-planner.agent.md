@@ -4,7 +4,7 @@ name: 02-Planner
 target: vscode
 argument-hint: Describe the feature, epic, or change to plan
 tools: [execute/getTerminalOutput, execute/runInTerminal, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, edit/editNotebook, edit/rename, search, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+model: GPT-5.3-Codex (copilot)
 handoffs:
   - label: Validate Roadmap Alignment
     agent: 01-Roadmap

@@ -1,10 +1,6 @@
 ---
 name: code-review-standards
-description: Code review severity definitions, finding formats, and document templates. Integrates strictly with Obsidian/Planka via Native MCP for handoffs.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "1.1"
+description: Code review severity definitions, finding formats, and document templates. Integrates strictly with Obsidian/Planka via Native MCP for handoffs. Use this skill when defining review criteria, understanding severity levels, or creating the final code review artifact.
 ---
 
 # Code Review Standards

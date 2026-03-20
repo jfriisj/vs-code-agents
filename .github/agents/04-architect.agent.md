@@ -4,7 +4,7 @@ name: 04-Architect
 target: vscode
 argument-hint: Describe the feature, component, or system area requiring architectural review
 tools: [execute/getTerminalOutput, execute/createAndRunTask, execute/runInTerminal, read/problems, read/readFile, read/terminalSelection, read/terminalLastCommand, edit/createDirectory, edit/createFile, edit/editFiles, search, web, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+model: GPT-5.4 mini (copilot)
 handoffs:
   - label: Validate Roadmap Alignment
     agent: 01-Roadmap

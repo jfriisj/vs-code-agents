@@ -1,10 +1,6 @@
 ---
 name: security-patterns
-description: Comprehensive security methodology, OWASP Top 10, and templates. Uses Progressive Disclosure to lazy-load language-specific vulnerabilities via Native MCP.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "2.2"
+description: Comprehensive security methodology, OWASP Top 10, and templates. Uses Progressive Disclosure to lazy-load language-specific vulnerabilities via Native MCP. Use this skill for security audits, code reviews, and threat modeling.
 ---
 
 # Security Patterns & Methodology

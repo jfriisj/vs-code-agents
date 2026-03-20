@@ -1,10 +1,6 @@
 ---
 name: cross-repo-contract
-description: Maintains cross-repository API contracts through local definitions and type validation. Integrates strictly with Obsidian/Planka via Native MCP to coordinate breaking changes.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "1.1"
+description: Maintains cross-repository API contracts through local definitions and type validation. Integrates strictly with Obsidian/Planka via Native MCP to coordinate breaking changes. Use this skill when implementing API endpoints or clients, proposing contract changes, or validating contract adherence across repositories.
 ---
 
 # Cross-Repository API Contract

@@ -1,10 +1,6 @@
 ---
 name: architecture-patterns
-description: Common software architecture patterns, ADR templates, diagram templates, and anti-pattern detection. Integrates strictly with Obsidian (Native MCP) for memory graphs and Planka (Native MCP) for design constraints tracking.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "1.3"
+description: Common software architecture patterns, ADR templates, diagram templates, and anti-pattern detection. Integrates strictly with Obsidian (Native MCP) for memory graphs and Planka (Native MCP) for design constraints tracking. Use this skill when reviewing system design, planning architecture, evaluating tradeoffs, or documenting architectural decisions.
 ---
 
 # Architecture Patterns

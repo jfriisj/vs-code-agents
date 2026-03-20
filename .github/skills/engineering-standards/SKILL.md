@@ -1,10 +1,6 @@
 ---
 name: engineering-standards
-description: Core software engineering principles (SOLID, DRY, YAGNI, KISS) and refactoring catalog. Integrates strictly with Obsidian/Planka via Native MCP for tracking technical debt.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "3.0"
+description: Core software engineering principles (SOLID, DRY, YAGNI, KISS) and refactoring catalog. Integrates strictly with Obsidian/Planka via Native MCP for tracking technical debt. Use this skill when reviewing code, planning architecture, evaluating technical debt, or executing refactoring.
 ---
 
 # Engineering Standards & Refactoring

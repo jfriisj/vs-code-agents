@@ -1,10 +1,6 @@
 ---
 name: obsidian-workflow
-description: Relational memory graph workflow using native Obsidian MCP tools with strict token-efficient WF node conventions.
-license: MIT
-metadata:
-  author: groupzer0
-  version: "3.2"
+description: Relational memory graph workflow using native Obsidian MCP tools with strict token-efficient WF node conventions. Use this for multi-agent workflows that require structured handoffs, relational context, and artifact linking without duplicating content from `agent-output/*` artifacts.
 ---
 
 # Obsidian Workflow (Memory Graph)

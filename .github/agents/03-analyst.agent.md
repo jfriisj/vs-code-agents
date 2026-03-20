@@ -3,8 +3,8 @@ description: Research and analysis specialist for code-level investigation and d
 name: 03-Analyst
 target: vscode
 argument-hint: Describe the technical question, API, or system behavior to investigate
-tools: [execute/runNotebookCell, execute/getTerminalOutput, execute/runInTerminal, read, edit/createDirectory, edit/createFile, edit/editFiles, search, 'filesystem/*', 'analyzer/*', 'obsidian/*', 'planka/*', todo]
-model: Gemini 3 Flash (Preview) (copilot)
+tools: [execute/runNotebookCell, execute/getTerminalOutput, execute/runInTerminal, read, edit/createDirectory, edit/createFile, edit/editFiles, search, 'filesystem/*', 'obsidian/*', 'planka/*', todo]
+model: GPT-5.4 mini (copilot)
 handoffs:
   - label: Create/update Plan
     agent: 02-Planner
